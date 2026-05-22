@@ -1,6 +1,6 @@
 app_type = "simple"
 python_version = "3.11"
-registered_name = "workflow-graph-agent"
+registered_name = "nemeshek-webinar"
 worker_integrations = [
     "scia",
 ]

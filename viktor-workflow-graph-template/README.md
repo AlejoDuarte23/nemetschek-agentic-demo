@@ -21,7 +21,7 @@ This template combines:
 ## Run
 
 ```bash
-viktor-cli create-app "Workflow Graph Agent" --registered-name workflow-graph-agent
+viktor-cli create-app "nemeshek-webinar" --registered-name nemeshek-webinar
 viktor-cli clean-start
 ```
 

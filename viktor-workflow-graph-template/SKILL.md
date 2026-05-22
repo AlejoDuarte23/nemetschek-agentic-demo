@@ -38,7 +38,7 @@ This folder is the VIKTOR app template root. Copy the app files from this folder
 ## First Run
 
 ```bash
-viktor-cli create-app "Workflow Graph Agent" --registered-name workflow-graph-agent
+viktor-cli create-app "nemeshek-webinar" --registered-name nemeshek-webinar
 viktor-cli clean-start
 ```
 
