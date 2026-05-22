@@ -30,6 +30,7 @@ from workflow_graph.viewer import WorkflowViewer
 
 
 WORKFLOW_ENTITY_DIRECTORY_KEY = "workflow_entity_directory"
+WORKFLOW_HTML_STORAGE_KEY = "workflow_html"
 
 WorkflowNodeId = Literal[
     "wind_turbine_selector",
@@ -125,97 +126,134 @@ class RestEntityResponse(BaseModel):
     properties: dict[str, Any] | None = None
 
 
-WORKFLOW_APP_REGISTRY: dict[WorkflowNodeId, WorkflowAppTemplate] = {
-    "wind_turbine_selector": WorkflowAppTemplate(
-        node_id="wind_turbine_selector",
-        app_name="Wind Turbine Selector",
-        label="Wind Turbine Selector",
-        workspace_id=2544,
-        sibling_entity_id=12164,
-        method_name="view_turbine_data",
-        result_key="data",
-        storage_key=WIND_TURBINE_SELECTOR_STORAGE_KEY,
-        icon="WT",
-        icon_bg="#dbeafe",
-        depends_on=[],
-    ),
-    "cpt_pile_bearing": WorkflowAppTemplate(
-        node_id="cpt_pile_bearing",
-        app_name="CPT Pile Bearing",
-        label="CPT Pile Bearing",
-        workspace_id=2564,
-        sibling_entity_id=12165,
-        method_name="view_results",
-        result_key="data",
-        storage_key=CPT_PILE_BEARING_STORAGE_KEY,
-        icon="CPT",
-        icon_bg="#dcfce7",
-        depends_on=[],
-    ),
-    "foundation_analysis": WorkflowAppTemplate(
-        node_id="foundation_analysis",
-        app_name="Wind Turbine Foundation Analysis",
-        label="Foundation Analysis",
-        workspace_id=2677,
-        sibling_entity_id=12173,
-        method_name="view_results",
-        result_key="data",
-        storage_key=FOUNDATION_STORAGE_KEY,
-        icon="FND",
-        icon_bg="#fef3c7",
-        depends_on=["wind_turbine_selector", "cpt_pile_bearing"],
-    ),
-    "reinforcement": WorkflowAppTemplate(
-        node_id="reinforcement",
-        app_name="Reinforcement",
-        label="Reinforcement",
-        workspace_id=2640,
-        sibling_entity_id=12166,
-        method_name="view_results",
-        result_key="data",
-        storage_key=REINFORCEMENT_STORAGE_KEY,
-        icon="RF",
-        icon_bg="#ede9fe",
-        depends_on=["foundation_analysis"],
-    ),
-    "cost_analysis": WorkflowAppTemplate(
-        node_id="cost_analysis",
-        app_name="Wind Turbine Cost Analysis",
-        label="Cost Analysis",
-        workspace_id=2647,
-        sibling_entity_id=12169,
-        method_name="view_data",
-        result_key="data",
-        storage_key=COST_STORAGE_KEY,
-        icon="$",
-        icon_bg="#ccfbf1",
-        depends_on=["foundation_analysis", "reinforcement"],
-    ),
-}
+class WorkflowAlreadyExistsError(RuntimeError):
+    def __init__(self, directory: WorkflowEntityDirectory) -> None:
+        super().__init__("An active workflow entity directory already exists.")
+        self.directory = directory
 
 
-def default_run_name() -> str:
-    return f"Workflow Run - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+class WorkflowAppRegistry:
+    """Fixed app metadata for known workflow nodes."""
 
+    def __init__(self, templates: dict[WorkflowNodeId, WorkflowAppTemplate]) -> None:
+        self._templates = templates
 
-def normalize_api_base() -> str:
-    configured_base = os.getenv("VIKTOR_API_BASE")
-    if configured_base and configured_base.strip():
-        base = configured_base.strip().rstrip("/")
-        if not base.startswith("https://"):
-            raise ValueError("VIKTOR_API_BASE must be an absolute HTTPS URL.")
-        return base if base.endswith("/api") else f"{base}/api"
+    @classmethod
+    def wind_turbine_defaults(cls) -> "WorkflowAppRegistry":
+        return cls(
+            {
+                "wind_turbine_selector": WorkflowAppTemplate(
+                    node_id="wind_turbine_selector",
+                    app_name="Wind Turbine Selector",
+                    label="Wind Turbine Selector",
+                    workspace_id=2544,
+                    sibling_entity_id=12164,
+                    method_name="view_turbine_data",
+                    result_key="data",
+                    storage_key=WIND_TURBINE_SELECTOR_STORAGE_KEY,
+                    icon="WT",
+                    icon_bg="#dbeafe",
+                    depends_on=[],
+                ),
+                "cpt_pile_bearing": WorkflowAppTemplate(
+                    node_id="cpt_pile_bearing",
+                    app_name="CPT Pile Bearing",
+                    label="CPT Pile Bearing",
+                    workspace_id=2564,
+                    sibling_entity_id=12165,
+                    method_name="view_results",
+                    result_key="data",
+                    storage_key=CPT_PILE_BEARING_STORAGE_KEY,
+                    icon="CPT",
+                    icon_bg="#dcfce7",
+                    depends_on=[],
+                ),
+                "foundation_analysis": WorkflowAppTemplate(
+                    node_id="foundation_analysis",
+                    app_name="Wind Turbine Foundation Analysis",
+                    label="Foundation Analysis",
+                    workspace_id=2677,
+                    sibling_entity_id=12173,
+                    method_name="view_results",
+                    result_key="data",
+                    storage_key=FOUNDATION_STORAGE_KEY,
+                    icon="FND",
+                    icon_bg="#fef3c7",
+                    depends_on=["wind_turbine_selector", "cpt_pile_bearing"],
+                ),
+                "reinforcement": WorkflowAppTemplate(
+                    node_id="reinforcement",
+                    app_name="Reinforcement",
+                    label="Reinforcement",
+                    workspace_id=2640,
+                    sibling_entity_id=12166,
+                    method_name="view_results",
+                    result_key="data",
+                    storage_key=REINFORCEMENT_STORAGE_KEY,
+                    icon="RF",
+                    icon_bg="#ede9fe",
+                    depends_on=["foundation_analysis"],
+                ),
+                "cost_analysis": WorkflowAppTemplate(
+                    node_id="cost_analysis",
+                    app_name="Wind Turbine Cost Analysis",
+                    label="Cost Analysis",
+                    workspace_id=2647,
+                    sibling_entity_id=12169,
+                    method_name="view_data",
+                    result_key="data",
+                    storage_key=COST_STORAGE_KEY,
+                    icon="$",
+                    icon_bg="#ccfbf1",
+                    depends_on=["foundation_analysis", "reinforcement"],
+                ),
+            }
+        )
 
-    environment = get_optional_environment() or "demo.viktor.ai"
-    host = environment.strip().rstrip("/")
-    if host.startswith("https://"):
-        host = host.removeprefix("https://")
-    if "/" in host or not host.endswith(".viktor.ai"):
-        raise ValueError("VIKTOR_ENVIRONMENT must be host-only, for example demo.viktor.ai.")
-    return f"https://{host}/api"
+    def get(self, node_id: WorkflowNodeId) -> WorkflowAppTemplate:
+        return self._templates[node_id]
+
+    def as_dict(self) -> dict[WorkflowNodeId, WorkflowAppTemplate]:
+        return dict(self._templates)
+
+    def expand_node_ids(
+        self,
+        include_nodes: list[WorkflowNodeId],
+        *,
+        include_dependencies: bool,
+    ) -> list[WorkflowNodeId]:
+        ordered: list[WorkflowNodeId] = []
+
+        def add(node_id: WorkflowNodeId) -> None:
+            template = self.get(node_id)
+            if include_dependencies:
+                for dependency in template.depends_on:
+                    add(dependency)
+            if node_id not in ordered:
+                ordered.append(node_id)
+
+        for node_id in include_nodes:
+            add(node_id)
+        return ordered
+
+    def selected_templates(
+        self,
+        include_nodes: list[WorkflowNodeId],
+        *,
+        include_dependencies: bool,
+    ) -> list[WorkflowAppTemplate]:
+        return [
+            self.get(node_id)
+            for node_id in self.expand_node_ids(
+                include_nodes,
+                include_dependencies=include_dependencies,
+            )
+        ]
 
 
 class ViktorRestEntityClient:
+    """Small REST client for entity reads, creation, and saved-param updates."""
+
     def __init__(
         self,
         *,
@@ -224,9 +262,26 @@ class ViktorRestEntityClient:
         connect_timeout: float = 5.0,
         read_timeout: float = 30.0,
     ) -> None:
-        self.api_base = (api_base or normalize_api_base()).strip().rstrip("/")
+        self.api_base = (api_base or self.normalize_api_base()).strip().rstrip("/")
         self.timeout = (connect_timeout, read_timeout)
         self.auth_headers = {"Authorization": f"Bearer {(token or get_required_token()).strip()}"}
+
+    @staticmethod
+    def normalize_api_base() -> str:
+        configured_base = os.getenv("VIKTOR_API_BASE")
+        if configured_base and configured_base.strip():
+            base = configured_base.strip().rstrip("/")
+            if not base.startswith("https://"):
+                raise ValueError("VIKTOR_API_BASE must be an absolute HTTPS URL.")
+            return base if base.endswith("/api") else f"{base}/api"
+
+        environment = get_optional_environment() or "demo.viktor.ai"
+        host = environment.strip().rstrip("/")
+        if host.startswith("https://"):
+            host = host.removeprefix("https://")
+        if "/" in host or not host.endswith(".viktor.ai"):
+            raise ValueError("VIKTOR_ENVIRONMENT must be host-only, for example demo.viktor.ai.")
+        return f"https://{host}/api"
 
     @property
     def ui_base(self) -> str:
@@ -234,45 +289,6 @@ class ViktorRestEntityClient:
 
     def editor_url(self, *, workspace_id: int, entity_id: int) -> str:
         return f"{self.ui_base}/workspaces/{workspace_id}/app/editor/{entity_id}"
-
-    def _url(self, path: str) -> str:
-        return f"{self.api_base}/{path.lstrip('/')}"
-
-    def _request_json(
-        self,
-        method: str,
-        path: str,
-        *,
-        action: str,
-        params: dict[str, Any] | None = None,
-        json_body: dict[str, Any] | None = None,
-        allow_not_found: bool = False,
-    ) -> Any | None:
-        response = requests.request(
-            method,
-            self._url(path),
-            headers={
-                **self.auth_headers,
-                **({"Content-Type": "application/json"} if json_body is not None else {}),
-            },
-            params=params,
-            json=json_body,
-            timeout=self.timeout,
-        )
-        body = response.text[:500]
-        if allow_not_found and response.status_code == 404:
-            return None
-        if (
-            allow_not_found
-            and response.status_code == 403
-            and ("parent" in body.lower() or "tree" in body.lower())
-        ):
-            return None
-        if response.ok:
-            if not response.text.strip():
-                return {}
-            return response.json()
-        raise RuntimeError(f"{action} failed (status={response.status_code}): {body}")
 
     def get_entity(
         self,
@@ -310,26 +326,44 @@ class ViktorRestEntityClient:
             return None
         return RestEntityResponse.model_validate(payload)
 
-    def create_entity(
+    def create_sibling_from_template(
         self,
         *,
-        workspace_id: int,
-        entity_type: int | str,
-        name: str,
-        parent_entity_id: int | None,
-    ) -> RestEntityResponse:
-        body = {"entity_type": entity_type, "name": name, "properties": {}}
-        path = (
-            f"workspaces/{workspace_id}/entities/{parent_entity_id}/entities/"
-            if parent_entity_id
-            else f"workspaces/{workspace_id}/entities/"
+        template: WorkflowAppTemplate,
+        run_name: str,
+    ) -> WorkflowRunEntity:
+        sibling = self.get_entity(
+            workspace_id=template.workspace_id,
+            entity_id=template.sibling_entity_id,
         )
-        payload = self._request_json("POST", path, json_body=body, action="Create entity")
-        if isinstance(payload, list):
-            if not payload:
-                raise RuntimeError("Create entity returned an empty list.")
-            payload = payload[0]
-        return RestEntityResponse.model_validate(payload)
+        parent = self.get_parent_entity(
+            workspace_id=template.workspace_id,
+            entity_id=template.sibling_entity_id,
+        )
+        entity_name = f"{run_name} - {template.app_name}"
+        created = self._create_entity_with_fallback_type(
+            workspace_id=template.workspace_id,
+            entity_type=sibling.entity_type,
+            fallback_entity_type=sibling.entity_type_name,
+            name=entity_name,
+            parent_entity_id=parent.id if parent else None,
+        )
+        return WorkflowRunEntity(
+            node_id=template.node_id,
+            app_name=template.app_name,
+            label=template.label,
+            workspace_id=template.workspace_id,
+            sibling_entity_id=template.sibling_entity_id,
+            entity_id=created.id,
+            entity_name=created.name,
+            url=self.editor_url(workspace_id=template.workspace_id, entity_id=created.id),
+            method_name=template.method_name,
+            result_key=template.result_key,
+            storage_key=template.storage_key,
+            icon=template.icon,
+            icon_bg=template.icon_bg,
+            depends_on=template.depends_on,
+        )
 
     def set_entity_params(
         self,
@@ -351,36 +385,308 @@ class ViktorRestEntityClient:
             action="Set entity params",
         )
 
+    def _create_entity_with_fallback_type(
+        self,
+        *,
+        workspace_id: int,
+        entity_type: int | str,
+        fallback_entity_type: str | None,
+        name: str,
+        parent_entity_id: int | None,
+    ) -> RestEntityResponse:
+        try:
+            return self._create_entity(
+                workspace_id=workspace_id,
+                entity_type=entity_type,
+                name=name,
+                parent_entity_id=parent_entity_id,
+            )
+        except RuntimeError:
+            if not fallback_entity_type:
+                raise
+            return self._create_entity(
+                workspace_id=workspace_id,
+                entity_type=fallback_entity_type,
+                name=name,
+                parent_entity_id=parent_entity_id,
+            )
+
+    def _create_entity(
+        self,
+        *,
+        workspace_id: int,
+        entity_type: int | str,
+        name: str,
+        parent_entity_id: int | None,
+    ) -> RestEntityResponse:
+        body = {"entity_type": entity_type, "name": name, "properties": {}}
+        path = (
+            f"workspaces/{workspace_id}/entities/{parent_entity_id}/entities/"
+            if parent_entity_id
+            else f"workspaces/{workspace_id}/entities/"
+        )
+        payload = self._request_json("POST", path, json_body=body, action="Create entity")
+        if isinstance(payload, list):
+            if not payload:
+                raise RuntimeError("Create entity returned an empty list.")
+            payload = payload[0]
+        return RestEntityResponse.model_validate(payload)
+
+    def _request_json(
+        self,
+        method: str,
+        path: str,
+        *,
+        action: str,
+        params: dict[str, Any] | None = None,
+        json_body: dict[str, Any] | None = None,
+        allow_not_found: bool = False,
+    ) -> Any | None:
+        response = requests.request(
+            method,
+            self._url(path),
+            headers={
+                **self.auth_headers,
+                **({"Content-Type": "application/json"} if json_body is not None else {}),
+            },
+            params=params,
+            json=json_body,
+            timeout=self.timeout,
+        )
+        body = response.text[:500]
+        if allow_not_found and response.status_code == 404:
+            return None
+        if (
+            allow_not_found
+            and response.status_code == 403
+            and ("parent" in body.lower() or "tree" in body.lower())
+        ):
+            return None
+        if response.ok:
+            if not response.text.strip():
+                return {}
+            return response.json()
+        raise RuntimeError(f"{action} failed (status={response.status_code}): {body}")
+
+    def _url(self, path: str) -> str:
+        return f"{self.api_base}/{path.lstrip('/')}"
+
+
+class WorkflowEntityStore:
+    """Persists the active workflow run directory in VIKTOR entity storage."""
+
+    def __init__(self, *, storage_key: str = WORKFLOW_ENTITY_DIRECTORY_KEY) -> None:
+        self.storage_key = storage_key
+
+    def save(self, directory: WorkflowEntityDirectory) -> None:
+        vkt.Storage().set(
+            self.storage_key,
+            data=vkt.File.from_data(directory.model_dump_json(indent=2)),
+            scope="entity",
+        )
+
+    def try_load(self) -> WorkflowEntityDirectory | None:
+        try:
+            stored_file = vkt.Storage().get(self.storage_key, scope="entity")
+            raw = stored_file.getvalue_binary().decode("utf-8")
+            return WorkflowEntityDirectory.model_validate_json(raw)
+        except Exception:
+            return None
+
+    def load(self) -> WorkflowEntityDirectory:
+        directory = self.try_load()
+        if directory is None:
+            raise FileNotFoundError(f"Missing VIKTOR Storage key '{self.storage_key}'.")
+        return directory
+
+    def delete(self) -> None:
+        try:
+            vkt.Storage().delete(self.storage_key, scope="entity")
+        except Exception:
+            pass
+
+
+class WorkflowGraphPublisher:
+    """Publishes the workflow graph/plan from a run directory."""
+
+    def __init__(self, *, html_storage_key: str = WORKFLOW_HTML_STORAGE_KEY) -> None:
+        self.html_storage_key = html_storage_key
+
+    def publish(self, directory: WorkflowEntityDirectory) -> None:
+        workflow = self._build_workflow(directory)
+        state = build_canvas_state(directory.run_name, workflow)
+        viewer = WorkflowViewer(lambda: state)
+        save_canvas_state(state)
+        vkt.Storage().set(
+            self.html_storage_key,
+            data=vkt.File.from_data(
+                json.dumps({"workflow_name": directory.run_name, "html": viewer.write()})
+            ),
+            scope="entity",
+        )
+
+    @staticmethod
+    def _build_workflow(directory: WorkflowEntityDirectory) -> Workflow:
+        included = set(directory.entities)
+        return Workflow(
+            nodes=[
+                Node(
+                    id=entity.node_id,
+                    title=entity.label,
+                    icon=entity.icon,
+                    icon_bg=entity.icon_bg,
+                    url=entity.url,
+                    depends_on=[
+                        Connection(node_id=dependency)
+                        for dependency in entity.depends_on
+                        if dependency in included
+                    ],
+                )
+                for entity in directory.entities.values()
+            ]
+        )
+
+
+class WorkflowEntityService:
+    """Coordinates registry, REST entity creation, storage, and graph publishing."""
+
+    def __init__(
+        self,
+        *,
+        registry: WorkflowAppRegistry | None = None,
+        store: WorkflowEntityStore | None = None,
+        client: ViktorRestEntityClient | None = None,
+        graph_publisher: WorkflowGraphPublisher | None = None,
+    ) -> None:
+        self.registry = registry or DEFAULT_WORKFLOW_REGISTRY
+        self.store = store or WorkflowEntityStore()
+        self.client = client
+        self.graph_publisher = graph_publisher or WorkflowGraphPublisher()
+
+    def create_directory(
+        self,
+        *,
+        run_name: str | None,
+        include_nodes: list[WorkflowNodeId],
+        include_dependencies: bool,
+        replace_existing: bool,
+    ) -> WorkflowEntityDirectory:
+        existing = self.store.try_load()
+        if existing and not replace_existing:
+            raise WorkflowAlreadyExistsError(existing)
+
+        resolved_run_name = self._resolve_run_name(run_name)
+        client = self.client or ViktorRestEntityClient()
+        entities = {
+            template.node_id: client.create_sibling_from_template(
+                template=template,
+                run_name=resolved_run_name,
+            )
+            for template in self.registry.selected_templates(
+                list(dict.fromkeys(include_nodes)),
+                include_dependencies=include_dependencies,
+            )
+        }
+        directory = WorkflowEntityDirectory(
+            run_name=resolved_run_name,
+            created_at=datetime.now().isoformat(timespec="seconds"),
+            entities=entities,
+        )
+        self.store.save(directory)
+        self.graph_publisher.publish(directory)
+        return directory
+
+    def load_directory(self) -> WorkflowEntityDirectory:
+        return self.store.load()
+
+    def try_load_directory(self) -> WorkflowEntityDirectory | None:
+        return self.store.try_load()
+
+    def reset_directory(self) -> None:
+        self.store.delete()
+
+    def resolve_entity(self, node_id: WorkflowNodeId) -> WorkflowRunEntity:
+        directory = self.load_directory()
+        try:
+            return directory.entities[node_id]
+        except KeyError as exc:
+            raise KeyError(
+                f"Workflow run does not include node '{node_id}'. "
+                "Create a new directory including this node."
+            ) from exc
+
+    def read_last_saved_params(self, target: WorkflowRunEntity) -> dict[str, Any]:
+        entity = (self.client or ViktorRestEntityClient()).get_entity(
+            workspace_id=target.workspace_id,
+            entity_id=target.entity_id,
+            properties=True,
+            clean_params=True,
+        )
+        return entity.properties or {}
+
+    def set_last_saved_params(
+        self,
+        target: WorkflowRunEntity,
+        params: dict[str, Any],
+        *,
+        message: str,
+    ) -> None:
+        (self.client or ViktorRestEntityClient()).set_entity_params(
+            workspace_id=target.workspace_id,
+            entity_id=target.entity_id,
+            params=params,
+            message=message,
+        )
+
+    @staticmethod
+    def deep_merge(base: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
+        merged = copy.deepcopy(base)
+        for key, value in updates.items():
+            if isinstance(value, dict) and isinstance(merged.get(key), dict):
+                merged[key] = WorkflowEntityService.deep_merge(merged[key], value)
+            else:
+                merged[key] = copy.deepcopy(value)
+        return merged
+
+    @staticmethod
+    def _resolve_run_name(value: str | None) -> str:
+        return (value or default_run_name()).strip() or default_run_name()
+
+
+DEFAULT_WORKFLOW_REGISTRY = WorkflowAppRegistry.wind_turbine_defaults()
+
+# Kept for direct registry introspection and tests.
+WORKFLOW_APP_REGISTRY: dict[WorkflowNodeId, WorkflowAppTemplate] = (
+    DEFAULT_WORKFLOW_REGISTRY.as_dict()
+)
+
+
+def default_run_name() -> str:
+    return f"Workflow Run - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+
+
+def get_workflow_entity_service() -> WorkflowEntityService:
+    return WorkflowEntityService()
+
+
+def normalize_api_base() -> str:
+    return ViktorRestEntityClient.normalize_api_base()
+
 
 def save_entity_directory(directory: WorkflowEntityDirectory) -> None:
-    vkt.Storage().set(
-        WORKFLOW_ENTITY_DIRECTORY_KEY,
-        data=vkt.File.from_data(directory.model_dump_json(indent=2)),
-        scope="entity",
-    )
+    WorkflowEntityStore().save(directory)
 
 
 def try_load_entity_directory() -> WorkflowEntityDirectory | None:
-    try:
-        stored_file = vkt.Storage().get(WORKFLOW_ENTITY_DIRECTORY_KEY, scope="entity")
-        raw = stored_file.getvalue_binary().decode("utf-8")
-        return WorkflowEntityDirectory.model_validate_json(raw)
-    except Exception:
-        return None
+    return WorkflowEntityStore().try_load()
 
 
 def load_entity_directory() -> WorkflowEntityDirectory:
-    directory = try_load_entity_directory()
-    if directory is None:
-        raise FileNotFoundError(f"Missing VIKTOR Storage key '{WORKFLOW_ENTITY_DIRECTORY_KEY}'.")
-    return directory
+    return WorkflowEntityStore().load()
 
 
 def delete_entity_directory() -> None:
-    try:
-        vkt.Storage().delete(WORKFLOW_ENTITY_DIRECTORY_KEY, scope="entity")
-    except Exception:
-        pass
+    WorkflowEntityStore().delete()
 
 
 def expand_node_ids(
@@ -388,18 +694,10 @@ def expand_node_ids(
     *,
     include_dependencies: bool,
 ) -> list[WorkflowNodeId]:
-    ordered: list[WorkflowNodeId] = []
-
-    def add(node_id: WorkflowNodeId) -> None:
-        if include_dependencies:
-            for dependency in WORKFLOW_APP_REGISTRY[node_id].depends_on:
-                add(dependency)
-        if node_id not in ordered:
-            ordered.append(node_id)
-
-    for node_id in include_nodes:
-        add(node_id)
-    return ordered
+    return DEFAULT_WORKFLOW_REGISTRY.expand_node_ids(
+        include_nodes,
+        include_dependencies=include_dependencies,
+    )
 
 
 def create_empty_sibling_entity(
@@ -408,89 +706,15 @@ def create_empty_sibling_entity(
     template: WorkflowAppTemplate,
     run_name: str,
 ) -> WorkflowRunEntity:
-    sibling = client.get_entity(
-        workspace_id=template.workspace_id,
-        entity_id=template.sibling_entity_id,
-    )
-    parent = client.get_parent_entity(
-        workspace_id=template.workspace_id,
-        entity_id=template.sibling_entity_id,
-    )
-    entity_name = f"{run_name} - {template.app_name}"
-    try:
-        created = client.create_entity(
-            workspace_id=template.workspace_id,
-            entity_type=sibling.entity_type,
-            name=entity_name,
-            parent_entity_id=parent.id if parent else None,
-        )
-    except RuntimeError:
-        if not sibling.entity_type_name:
-            raise
-        created = client.create_entity(
-            workspace_id=template.workspace_id,
-            entity_type=sibling.entity_type_name,
-            name=entity_name,
-            parent_entity_id=parent.id if parent else None,
-        )
-    return WorkflowRunEntity(
-        node_id=template.node_id,
-        app_name=template.app_name,
-        label=template.label,
-        workspace_id=template.workspace_id,
-        sibling_entity_id=template.sibling_entity_id,
-        entity_id=created.id,
-        entity_name=created.name,
-        url=client.editor_url(workspace_id=template.workspace_id, entity_id=created.id),
-        method_name=template.method_name,
-        result_key=template.result_key,
-        storage_key=template.storage_key,
-        icon=template.icon,
-        icon_bg=template.icon_bg,
-        depends_on=template.depends_on,
-    )
+    return client.create_sibling_from_template(template=template, run_name=run_name)
 
 
 def save_workflow_graph_for_directory(directory: WorkflowEntityDirectory) -> None:
-    included = set(directory.entities)
-    workflow = Workflow(
-        nodes=[
-            Node(
-                id=entity.node_id,
-                title=entity.label,
-                icon=entity.icon,
-                icon_bg=entity.icon_bg,
-                url=entity.url,
-                depends_on=[
-                    Connection(node_id=dependency)
-                    for dependency in entity.depends_on
-                    if dependency in included
-                ],
-            )
-            for entity in directory.entities.values()
-        ]
-    )
-    state = build_canvas_state(directory.run_name, workflow)
-    viewer = WorkflowViewer(lambda: state)
-    save_canvas_state(state)
-    vkt.Storage().set(
-        "workflow_html",
-        data=vkt.File.from_data(
-            json.dumps({"workflow_name": directory.run_name, "html": viewer.write()})
-        ),
-        scope="entity",
-    )
+    WorkflowGraphPublisher().publish(directory)
 
 
 def resolve_workflow_entity(node_id: WorkflowNodeId) -> WorkflowRunEntity:
-    directory = load_entity_directory()
-    try:
-        return directory.entities[node_id]
-    except KeyError as exc:
-        raise KeyError(
-            f"Workflow run does not include node '{node_id}'. "
-            "Create a new directory including this node."
-        ) from exc
+    return get_workflow_entity_service().resolve_entity(node_id)
 
 
 def needs_workflow_run_response(*, tool: str, node_id: WorkflowNodeId) -> str:
@@ -510,14 +734,7 @@ def needs_workflow_run_response(*, tool: str, node_id: WorkflowNodeId) -> str:
 
 
 def read_last_saved_params(target: WorkflowRunEntity) -> dict[str, Any]:
-    client = ViktorRestEntityClient()
-    entity = client.get_entity(
-        workspace_id=target.workspace_id,
-        entity_id=target.entity_id,
-        properties=True,
-        clean_params=True,
-    )
-    return entity.properties or {}
+    return get_workflow_entity_service().read_last_saved_params(target)
 
 
 def set_last_saved_params(
@@ -526,25 +743,15 @@ def set_last_saved_params(
     *,
     message: str,
 ) -> None:
-    ViktorRestEntityClient().set_entity_params(
-        workspace_id=target.workspace_id,
-        entity_id=target.entity_id,
-        params=params,
+    get_workflow_entity_service().set_last_saved_params(
+        target,
+        params,
         message=message,
     )
 
 
 def deep_merge_params(base: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
-    merged = copy.deepcopy(base)
-    for key, value in updates.items():
-        if (
-            isinstance(value, dict)
-            and isinstance(merged.get(key), dict)
-        ):
-            merged[key] = deep_merge_params(merged[key], value)
-        else:
-            merged[key] = copy.deepcopy(value)
-    return merged
+    return WorkflowEntityService.deep_merge(base, updates)
 
 
 async def create_workflow_entity_directory_func(context: Any, args: str) -> str:
@@ -559,41 +766,24 @@ async def create_workflow_entity_directory_func(context: Any, args: str) -> str:
             retry_reason="Retry with include_nodes containing known workflow node ids.",
         )
 
-    existing = try_load_entity_directory()
-    if existing and not payload.replace_existing:
+    try:
+        directory = get_workflow_entity_service().create_directory(
+            run_name=payload.run_name,
+            include_nodes=payload.include_nodes,
+            include_dependencies=payload.include_dependencies,
+            replace_existing=payload.replace_existing,
+        )
+    except WorkflowAlreadyExistsError as exc:
         return tool_response(
             "workflow_exists",
-            message="An active workflow entity directory already exists.",
-            run_name=existing.run_name,
+            message=str(exc),
+            run_name=exc.directory.run_name,
             directory_storage_key=WORKFLOW_ENTITY_DIRECTORY_KEY,
             retry_action={
                 "tool": "get_workflow_entity_directory",
                 "reason": "Inspect the existing run before replacing it.",
             },
         )
-
-    try:
-        run_name = (payload.run_name or default_run_name()).strip() or default_run_name()
-        node_ids = expand_node_ids(
-            list(dict.fromkeys(payload.include_nodes)),
-            include_dependencies=payload.include_dependencies,
-        )
-        client = ViktorRestEntityClient()
-        entities = {
-            node_id: create_empty_sibling_entity(
-                client=client,
-                template=WORKFLOW_APP_REGISTRY[node_id],
-                run_name=run_name,
-            )
-            for node_id in node_ids
-        }
-        directory = WorkflowEntityDirectory(
-            run_name=run_name,
-            created_at=datetime.now().isoformat(timespec="seconds"),
-            entities=entities,
-        )
-        save_entity_directory(directory)
-        save_workflow_graph_for_directory(directory)
     except Exception as exc:
         return execution_error_response(
             tool="create_workflow_entity_directory",
@@ -616,7 +806,7 @@ async def create_workflow_entity_directory_func(context: Any, args: str) -> str:
 async def get_workflow_entity_directory_func(context: Any, args: str) -> str:
     try:
         GetWorkflowEntityDirectoryArgs.model_validate_json(args or "{}")
-        directory = load_entity_directory()
+        directory = get_workflow_entity_service().load_directory()
     except FileNotFoundError:
         return tool_response(
             "needs_workflow_run",
@@ -659,7 +849,7 @@ async def reset_workflow_entity_directory_func(context: Any, args: str) -> str:
             message="Set confirm=true to clear the active workflow entity directory.",
         )
 
-    delete_entity_directory()
+    get_workflow_entity_service().reset_directory()
     return tool_response(
         "completed",
         message="Workflow entity directory cleared.",
