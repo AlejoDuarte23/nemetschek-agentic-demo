@@ -1,0 +1,104 @@
+{
+  "type": "object",
+  "properties": {
+    "step1": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "default": 51.9694
+            },
+            "lon": {
+              "type": "number",
+              "default": 5.0965
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "lat": 51.9694,
+            "lon": 5.0965
+          }
+        },
+        "search_radius": {
+          "type": "number",
+          "default": 1.0
+        },
+        "min_cpt_depth": {
+          "type": "number",
+          "default": 20.0
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "location": {
+          "lat": 51.9694,
+          "lon": 5.0965
+        },
+        "search_radius": 1.0,
+        "min_cpt_depth": 20.0
+      }
+    },
+    "step2": {
+      "type": "object",
+      "properties": {
+        "sec_pile": {
+          "type": "object",
+          "properties": {
+            "pile_tip_level": {
+              "type": "number",
+              "default": -17.0
+            },
+            "pile_diameter": {
+              "type": "integer",
+              "default": 400
+            },
+            "pile_shape": {
+              "type": "string",
+              "default": "Round"
+            },
+            "pile_type": {
+              "type": "string",
+              "default": "Bored pile"
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "pile_tip_level": -17.0,
+            "pile_diameter": 400,
+            "pile_shape": "Round",
+            "pile_type": "Bored pile"
+          }
+        },
+        "sec_load": {
+          "type": "object",
+          "properties": {
+            "design_load": {
+              "type": "number",
+              "default": 1100.0
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "design_load": 1100.0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "sec_pile": {
+          "pile_tip_level": -17.0,
+          "pile_diameter": 400,
+          "pile_shape": "Round",
+          "pile_type": "Bored pile"
+        },
+        "sec_load": {
+          "design_load": 1100.0
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

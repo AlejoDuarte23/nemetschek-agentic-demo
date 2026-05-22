@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "distributed_load": {
+          "type": "number",
+          "default": 25.0
+        },
+        "number_of_reactions": {
+          "type": "integer",
+          "default": 6
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "distributed_load": 25.0,
+        "number_of_reactions": 6
+      }
+    }
+  },
+  "additionalProperties": false
+}

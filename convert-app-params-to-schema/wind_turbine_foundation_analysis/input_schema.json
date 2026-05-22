@@ -1,0 +1,156 @@
+{
+  "type": "object",
+  "properties": {
+    "step_geo": {
+      "type": "object",
+      "properties": {
+        "sec_mast": {
+          "type": "object",
+          "properties": {
+            "mast_diameter": {
+              "type": "number",
+              "default": 5.0
+            },
+            "mast_vertical_load": {
+              "type": "number",
+              "default": 4000.0
+            },
+            "mast_horizontal_load": {
+              "type": "number",
+              "default": 1500.0
+            },
+            "mast_moment": {
+              "type": "number",
+              "default": 150000.0
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "mast_diameter": 5.0,
+            "mast_vertical_load": 4000.0,
+            "mast_horizontal_load": 1500.0,
+            "mast_moment": 150000.0
+          }
+        },
+        "sec_plate": {
+          "type": "object",
+          "properties": {
+            "slab_diameter": {
+              "type": "number",
+              "default": 20.0
+            },
+            "slab_thickness": {
+              "type": "number",
+              "default": 3.0
+            },
+            "plate_edge_thickness": {
+              "type": "number",
+              "default": 1.0
+            },
+            "pedestal_height": {
+              "type": "number",
+              "default": 1.0
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "slab_diameter": 20.0,
+            "slab_thickness": 3.0,
+            "plate_edge_thickness": 1.0,
+            "pedestal_height": 1.0
+          }
+        },
+        "sec_piles": {
+          "type": "object",
+          "properties": {
+            "num_piles": {
+              "type": "integer",
+              "default": 30
+            },
+            "pile_length": {
+              "type": "number",
+              "default": 20.0
+            },
+            "pile_diameter": {
+              "type": "integer",
+              "default": 500
+            },
+            "pile_edge_distance": {
+              "type": "integer",
+              "default": 600
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "num_piles": 30,
+            "pile_length": 20.0,
+            "pile_diameter": 500,
+            "pile_edge_distance": 600
+          }
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "sec_mast": {
+          "mast_diameter": 5.0,
+          "mast_vertical_load": 4000.0,
+          "mast_horizontal_load": 1500.0,
+          "mast_moment": 150000.0
+        },
+        "sec_plate": {
+          "slab_diameter": 20.0,
+          "slab_thickness": 3.0,
+          "plate_edge_thickness": 1.0,
+          "pedestal_height": 1.0
+        },
+        "sec_piles": {
+          "num_piles": 30,
+          "pile_length": 20.0,
+          "pile_diameter": 500,
+          "pile_edge_distance": 600
+        }
+      }
+    },
+    "step_geo_tech": {
+      "type": "object",
+      "properties": {
+        "sec_tip": {
+          "type": "object",
+          "properties": {
+            "tip_stiffness": {
+              "type": "number",
+              "default": 50000.0
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "tip_stiffness": 50000.0
+          }
+        },
+        "sec_lateral": {
+          "type": "object",
+          "properties": {
+            "lateral_stiffness": {
+              "type": "number",
+              "default": 10000.0
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "lateral_stiffness": 10000.0
+          }
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "sec_tip": {
+          "tip_stiffness": 50000.0
+        },
+        "sec_lateral": {
+          "lateral_stiffness": 10000.0
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

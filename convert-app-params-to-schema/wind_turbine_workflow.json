@@ -1,0 +1,222 @@
+{
+  "workflow_id": "wind_turbine_foundation_workflow",
+  "name": "Wind Turbine Foundation Workflow",
+  "environment": "demo.viktor.ai",
+  "nodes": [
+    {
+      "node_id": "wind_turbine_selector",
+      "label": "Wind Turbine Selector",
+      "workspace_id": 2544,
+      "entity_id": 12164,
+      "url": "https://demo.viktor.ai/workspaces/2544/app/editor/12164",
+      "primary_method": "view_turbine_data",
+      "result_key": "data",
+      "storage_key": "wind_turbine_selector_data",
+      "icon": "WT",
+      "icon_bg": "#dbeafe"
+    },
+    {
+      "node_id": "cpt_pile_bearing",
+      "label": "CPT Pile Bearing",
+      "workspace_id": 2564,
+      "entity_id": 12165,
+      "url": "https://demo.viktor.ai/workspaces/2564/app/editor/12165",
+      "primary_method": "view_results",
+      "result_key": "data",
+      "storage_key": "cpt_pile_bearing_data",
+      "icon": "CPT",
+      "icon_bg": "#dcfce7"
+    },
+    {
+      "node_id": "wind_turbine_foundation_analysis",
+      "label": "Wind Turbine Foundation Analysis",
+      "workspace_id": 2651,
+      "entity_id": 12137,
+      "url": "https://demo.viktor.ai/workspaces/2651/app/editor/12137",
+      "primary_method": "view_results",
+      "result_key": "data",
+      "storage_key": "wind_turbine_foundation_data",
+      "icon": "FND",
+      "icon_bg": "#fef3c7",
+      "method_note": "The Results Summary DataView returns maximum/minimum pile Rz and governing m_xD/m_yD moment extremes. The SCIA sample app reads sample_apps/scia/base_model.esa from disk."
+    },
+    {
+      "node_id": "reinforcement",
+      "label": "Reinforcement",
+      "workspace_id": 2640,
+      "entity_id": 12166,
+      "url": "https://demo.viktor.ai/workspaces/2640/app/editor/12166",
+      "primary_method": "view_results",
+      "result_key": "data",
+      "storage_key": "reinforcement_data",
+      "icon": "RF",
+      "icon_bg": "#ede9fe"
+    },
+    {
+      "node_id": "wind_turbine_cost_analysis",
+      "label": "Wind Turbine Cost Analysis",
+      "workspace_id": 2647,
+      "entity_id": 12169,
+      "url": "https://demo.viktor.ai/workspaces/2647/app/editor/12169",
+      "primary_method": "view_data",
+      "result_key": "data",
+      "storage_key": "wind_turbine_cost_data",
+      "icon": "$",
+      "icon_bg": "#ccfbf1"
+    }
+  ],
+  "edges": [
+    {
+      "from": "wind_turbine_selector",
+      "to": "wind_turbine_foundation_analysis",
+      "status": "ready",
+      "mappings": [
+        {
+          "source": "data.tower.base_diameter",
+          "target": "step_geo.sec_mast.mast_diameter",
+          "transform": "pass through, m"
+        },
+        {
+          "source": "data.tower.base_vert_force",
+          "target": "step_geo.sec_mast.mast_vertical_load",
+          "transform": "pass through, kN"
+        },
+        {
+          "source": "data.tower.base_horiz_force",
+          "target": "step_geo.sec_mast.mast_horizontal_load",
+          "transform": "pass through, kN"
+        },
+        {
+          "source": "data.tower.base_moment",
+          "target": "step_geo.sec_mast.mast_moment",
+          "transform": "pass through, kNm"
+        }
+      ]
+    },
+    {
+      "from": "cpt_pile_bearing",
+      "to": "wind_turbine_foundation_analysis",
+      "status": "ready_with_engineering_transform",
+      "mappings": [
+        {
+          "source": "data.pile_info.length_item",
+          "target": "step_geo.sec_piles.pile_length",
+          "transform": "pass through, m"
+        },
+        {
+          "source": "data.pile_info.diameter_item",
+          "target": "step_geo.sec_piles.pile_diameter",
+          "transform": "pass through, mm"
+        },
+        {
+          "source": "data.results.rc_d",
+          "target": "step_geo.sec_piles.num_piles",
+          "transform": "engineering sizing/check input; default remains 30 unless a pile-count sizing rule is selected"
+        },
+        {
+          "source": "data.calc_params.qc_tip_item",
+          "target": "step_geo_tech.sec_tip.tip_stiffness",
+          "transform": "derive tip stiffness from CPT profile or project geotechnical rule"
+        },
+        {
+          "source": "data.results.rc_d",
+          "target": "foundation_capacity_check",
+          "transform": "compare against max pile reaction once foundation analysis table output is available"
+        }
+      ]
+    },
+    {
+      "from": "wind_turbine_foundation_analysis",
+      "to": "reinforcement",
+      "status": "partially_blocked",
+      "mappings": [
+        {
+          "source": "design rule",
+          "target": "tab_geometry.width",
+          "transform": "use a 1000 mm representative strip width for kNm/m plate moments unless the user requests another strip width"
+        },
+        {
+          "source": "params.step_geo.sec_plate.slab_thickness",
+          "target": "tab_geometry.height",
+          "transform": "m to mm for section depth"
+        },
+        {
+          "source": "data.Minimum m_xD+, data.Maximum m_xD-, data.Minimum m_yD+, data.Maximum m_yD-",
+          "target": "tab_loading.combinations",
+          "transform": "map each governing moment extreme to a reinforcement load combination with N_Ed = 0 kN for the representative strip"
+        }
+      ]
+    },
+    {
+      "from": "wind_turbine_foundation_analysis",
+      "to": "wind_turbine_cost_analysis",
+      "status": "ready",
+      "mappings": [
+        {
+          "source": "params.step_geo.sec_mast.mast_diameter",
+          "target": "step_1.mast.d_mast",
+          "transform": "m, round if app requires integer"
+        },
+        {
+          "source": "params.step_geo.sec_plate.slab_diameter",
+          "target": "step_1.plate.d_plate",
+          "transform": "m, round if app requires integer"
+        },
+        {
+          "source": "params.step_geo.sec_plate.slab_thickness",
+          "target": "step_1.plate.t_centre",
+          "transform": "m, round if app requires integer"
+        },
+        {
+          "source": "params.step_geo.sec_plate.plate_edge_thickness",
+          "target": "step_1.plate.t_edge",
+          "transform": "m, round if app requires integer"
+        },
+        {
+          "source": "params.step_geo.sec_plate.pedestal_height",
+          "target": "step_1.plate.h_pedestal",
+          "transform": "pass through, m"
+        },
+        {
+          "source": "params.step_geo.sec_piles.num_piles",
+          "target": "step_1.piles.n_piles",
+          "transform": "pass through"
+        },
+        {
+          "source": "params.step_geo.sec_piles.pile_length",
+          "target": "step_1.piles.pile_length",
+          "transform": "m, round if app requires integer"
+        },
+        {
+          "source": "params.step_geo.sec_piles.pile_diameter",
+          "target": "step_1.piles.pile_diameter",
+          "transform": "pass through, mm"
+        }
+      ]
+    },
+    {
+      "from": "reinforcement",
+      "to": "wind_turbine_cost_analysis",
+      "status": "ready_with_engineering_transform",
+      "mappings": [
+        {
+          "source": "data.section.kg_m3",
+          "target": "step_1.rebar.plate_main_reinforcement",
+          "transform": "use as estimated reinforcement intensity in kg/m3 or replace with project plate reinforcement assumption"
+        },
+        {
+          "source": "data.section.A_s and data.section.A_s2",
+          "target": "step_1.rebar.multiplication_factor",
+          "transform": "derive top/bottom reinforcement multiplier when needed; default is 2.0"
+        }
+      ]
+    }
+  ],
+  "default_sequence": [
+    "wind_turbine_selector",
+    "cpt_pile_bearing",
+    "wind_turbine_foundation_analysis",
+    "reinforcement",
+    "wind_turbine_cost_analysis"
+  ]
+}

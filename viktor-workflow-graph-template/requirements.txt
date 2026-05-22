@@ -1,0 +1,5 @@
+viktor
+openai-agents
+openai
+python-dotenv
+pydantic

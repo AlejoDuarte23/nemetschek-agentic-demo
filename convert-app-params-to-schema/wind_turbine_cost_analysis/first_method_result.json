@@ -1,0 +1,85 @@
+{
+  "method": {
+    "method_name": "view_data",
+    "source": "entity_type.views",
+    "label": "Results",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  "result_key": "data",
+  "result": [
+    {
+      "children": [],
+      "display_value": "589.05",
+      "explanation_label": "Flat bottom, flat top under mast, linearly tapered outer zone",
+      "key": "vol_plate",
+      "label": "Total volume plate",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "m\u00b3",
+      "value": 589.05
+    },
+    {
+      "children": [],
+      "display_value": "19.63",
+      "explanation_label": "Cylinder: \u00d8 5 m \u00d7 1.0 m height",
+      "key": "vol_pedestal",
+      "label": "Pedestal volume",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "m\u00b3",
+      "value": 19.63
+    },
+    {
+      "children": [],
+      "display_value": "35343.0",
+      "explanation_label": "60 kg/m\u00b3 \u00d7 589.05 m\u00b3",
+      "key": "rebar_mass",
+      "label": "Rebar mass (plate)",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "kg",
+      "value": 35343
+    },
+    {
+      "children": [],
+      "display_value": "70686.0",
+      "explanation_label": "35343.0 kg \u00d7 2.0 (multiplication factor)",
+      "key": "plate_total_reinforcement",
+      "label": "Plate total reinforcement",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "kg",
+      "value": 70686
+    },
+    {
+      "children": [],
+      "display_value": "600",
+      "explanation_label": "30 piles \u00d7 20 m each",
+      "key": "total_pile_length",
+      "label": "Total pile length",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "m",
+      "value": 600
+    }
+  ],
+  "attempted_methods": [
+    {
+      "method": {
+        "method_name": "view_data",
+        "source": "entity_type.views",
+        "label": "Results",
+        "view_type": "data",
+        "automatic_update": true
+      },
+      "status": "success",
+      "result_key": "data"
+    }
+  ]
+}

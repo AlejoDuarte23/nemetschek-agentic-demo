@@ -1,0 +1,37 @@
+[
+  {
+    "method_name": "view_cross_section",
+    "source": "entity_type.views",
+    "label": "Cross-Section",
+    "view_type": "plotly",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_mn_diagram",
+    "source": "entity_type.views",
+    "label": "M-N Interaction Diagram",
+    "view_type": "plotly",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_results",
+    "source": "entity_type.views",
+    "label": "Results",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_optimise",
+    "source": "entity_type.views",
+    "label": "Optimise Reinforcement",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  {
+    "method_name": "apply_optimised_params",
+    "source": "parametrization",
+    "label": "Optimize Reinforcement",
+    "node_type": "set-params-button",
+    "path": "tab_optimise.apply_btn"
+  }
+]

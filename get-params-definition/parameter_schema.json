@@ -1,0 +1,385 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VIKTOR Entity Parameters Schema",
+  "description": "Parameter structure for entity 11967 - simple (Controller)",
+  "type": "object",
+  "properties": {
+    "graph_solver": {
+      "type": "object",
+      "properties": {
+        "inputs_section": {
+          "type": "object",
+          "description": "Project inputs and data upload configuration",
+          "properties": {
+            "project_number": {
+              "type": "string",
+              "description": "Project identifier"
+            },
+            "selected_office": {
+              "type": ["string", "null"],
+              "description": "Office selection"
+            },
+            "bypass_data_upload": {
+              "type": "boolean",
+              "description": "Skip data upload process"
+            },
+            "upload_cpt": {
+              "type": "boolean",
+              "description": "Upload CPT (Cone Penetration Test) data"
+            },
+            "nkt_value": {
+              "type": "number",
+              "description": "NKT cone factor value",
+              "default": 14.0
+            },
+            "upload_spt": {
+              "type": "boolean",
+              "description": "Upload SPT (Standard Penetration Test) data"
+            },
+            "use_assumed_hammer_efficiency": {
+              "type": "boolean",
+              "description": "Use assumed hammer efficiency for SPT"
+            },
+            "reject_hammer_efficiency": {
+              "type": "boolean",
+              "description": "Reject hammer efficiency values"
+            },
+            "hammer_efficiency": {
+              "type": "number",
+              "description": "SPT hammer efficiency percentage",
+              "default": 60.0,
+              "minimum": 0,
+              "maximum": 100
+            },
+            "upload_geophysics": {
+              "type": "boolean",
+              "description": "Upload geophysical data"
+            }
+          }
+        },
+        "user_input": {
+          "type": "object",
+          "description": "User-defined input parameters",
+          "properties": {
+            "plot_std_dev_selection": {
+              "type": "boolean",
+              "description": "Enable standard deviation plotting"
+            },
+            "plot_std_dev_value": {
+              "type": "number",
+              "description": "Standard deviation value for plotting",
+              "default": 0.5
+            },
+            "gwt_selection": {
+              "type": "string",
+              "description": "Groundwater table selection mode",
+              "enum": ["Whole Site", "By Profile"],
+              "default": "Whole Site"
+            },
+            "gwt_wholesite": {
+              "type": "number",
+              "description": "Groundwater table depth for whole site (ft)",
+              "default": 0.0
+            },
+            "gwt_profile1": {
+              "type": "number",
+              "description": "Groundwater table depth for profile 1 (ft)",
+              "default": 0.0
+            },
+            "gwt_profile2": {
+              "type": "number",
+              "description": "Groundwater table depth for profile 2 (ft)",
+              "default": 0.0
+            },
+            "gwt_profile3": {
+              "type": "number",
+              "description": "Groundwater table depth for profile 3 (ft)",
+              "default": 0.0
+            },
+            "gwt_profile4": {
+              "type": "number",
+              "description": "Groundwater table depth for profile 4 (ft)",
+              "default": 0.0
+            },
+            "gwt_profile5": {
+              "type": "number",
+              "description": "Groundwater table depth for profile 5 (ft)",
+              "default": 0.0
+            }
+          }
+        },
+        "excel_section": {
+          "type": "object",
+          "description": "Excel file uploads and cached data",
+          "properties": {
+            "data_processed": {
+              "type": "boolean",
+              "description": "Indicates if data has been processed"
+            },
+            "cpt_file": {
+              "type": ["object", "null"],
+              "description": "Uploaded CPT Excel file"
+            },
+            "spt_file": {
+              "type": ["object", "null"],
+              "description": "Uploaded SPT Excel file"
+            },
+            "cached_model_points": {
+              "type": ["object", "null"],
+              "description": "Cached model point data"
+            },
+            "cached_explorations": {
+              "type": ["object", "null"],
+              "description": "Cached exploration data"
+            },
+            "cached_model_data": {
+              "type": ["object", "null"],
+              "description": "Cached model data"
+            },
+            "cached_all_model_data": {
+              "type": ["object", "null"],
+              "description": "Cached complete model data"
+            }
+          }
+        },
+        "material_section": {
+          "type": "object",
+          "description": "Material layer properties for multiple profiles",
+          "properties": {
+            "number_of_profiles": {
+              "type": "integer",
+              "description": "Number of soil profiles to analyze",
+              "default": 1,
+              "minimum": 1,
+              "maximum": 5
+            },
+            "layer_properties1_explorations": {
+              "type": "array",
+              "description": "Exploration selections for profile 1",
+              "items": {
+                "type": "string"
+              }
+            },
+            "layer_properties1": {
+              "type": "array",
+              "description": "Layer properties table for profile 1",
+              "items": {
+                "type": "object"
+              }
+            },
+            "layer_properties2_explorations": {
+              "type": "array",
+              "description": "Exploration selections for profile 2",
+              "items": {
+                "type": "string"
+              }
+            },
+            "layer_properties2": {
+              "type": "array",
+              "description": "Layer properties table for profile 2",
+              "items": {
+                "type": "object"
+              }
+            },
+            "layer_properties3_explorations": {
+              "type": "array",
+              "description": "Exploration selections for profile 3",
+              "items": {
+                "type": "string"
+              }
+            },
+            "layer_properties3": {
+              "type": "array",
+              "description": "Layer properties table for profile 3",
+              "items": {
+                "type": "object"
+              }
+            },
+            "layer_properties4_explorations": {
+              "type": "array",
+              "description": "Exploration selections for profile 4",
+              "items": {
+                "type": "string"
+              }
+            },
+            "layer_properties4": {
+              "type": "array",
+              "description": "Layer properties table for profile 4",
+              "items": {
+                "type": "object"
+              }
+            },
+            "layer_properties5_explorations": {
+              "type": "array",
+              "description": "Exploration selections for profile 5",
+              "items": {
+                "type": "string"
+              }
+            },
+            "layer_properties5": {
+              "type": "array",
+              "description": "Layer properties table for profile 5",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "data_analytics": {
+          "type": "object",
+          "description": "Data visualization and analytics configuration",
+          "properties": {
+            "profile_plots": {
+              "type": "boolean",
+              "description": "Enable profile plots"
+            },
+            "cpt_plots": {
+              "type": "boolean",
+              "description": "Enable CPT plots"
+            },
+            "spt_plots": {
+              "type": "boolean",
+              "description": "Enable SPT plots"
+            },
+            "selected_plots": {
+              "type": "array",
+              "description": "Selected plot types",
+              "items": {
+                "type": "string"
+              }
+            },
+            "profiles_to_include": {
+              "type": "array",
+              "description": "Profiles to include in visualization",
+              "items": {
+                "type": "string"
+              }
+            },
+            "custom_scatter_1_x": {
+              "type": "string",
+              "description": "X-axis parameter for custom scatter plot 1",
+              "default": "longitude"
+            },
+            "custom_scatter_1_y": {
+              "type": "string",
+              "description": "Y-axis parameter for custom scatter plot 1",
+              "default": "latitude"
+            },
+            "custom_scatter_1_heat_param": {
+              "type": "string",
+              "description": "Heat/color parameter for custom scatter plot 1",
+              "default": "unit_weight"
+            },
+            "custom_scatter_1_method": {
+              "type": "string",
+              "description": "Test method filter for custom scatter plot 1",
+              "default": "All"
+            },
+            "custom_scatter_1_min_depth": {
+              "type": "number",
+              "description": "Minimum depth filter for custom scatter plot 1 (ft)",
+              "default": 0.0
+            },
+            "custom_scatter_1_max_depth": {
+              "type": "number",
+              "description": "Maximum depth filter for custom scatter plot 1 (ft)",
+              "default": 100.0
+            },
+            "custom_scatter_2_x": {
+              "type": "string",
+              "description": "X-axis parameter for custom scatter plot 2",
+              "default": "longitude"
+            },
+            "custom_scatter_2_y": {
+              "type": "string",
+              "description": "Y-axis parameter for custom scatter plot 2",
+              "default": "latitude"
+            },
+            "custom_scatter_2_z_param": {
+              "type": "string",
+              "description": "Z-axis parameter for custom scatter plot 2",
+              "default": "unit_weight"
+            },
+            "custom_scatter_2_method": {
+              "type": "string",
+              "description": "Test method filter for custom scatter plot 2",
+              "default": "All"
+            },
+            "custom_scatter_2_min_depth": {
+              "type": "number",
+              "description": "Minimum depth filter for custom scatter plot 2 (ft)",
+              "default": 0.0
+            },
+            "custom_scatter_2_max_depth": {
+              "type": "number",
+              "description": "Maximum depth filter for custom scatter plot 2 (ft)",
+              "default": 100.0
+            },
+            "custom_scatter_3_x": {
+              "type": "string",
+              "description": "X-axis parameter for custom scatter plot 3",
+              "default": "longitude"
+            },
+            "custom_scatter_3_y": {
+              "type": "string",
+              "description": "Y-axis parameter for custom scatter plot 3",
+              "default": "latitude"
+            },
+            "custom_scatter_3_z_param": {
+              "type": "string",
+              "description": "Z-axis parameter for custom scatter plot 3",
+              "default": "unit_weight"
+            },
+            "custom_scatter_3_method": {
+              "type": "string",
+              "description": "Test method filter for custom scatter plot 3",
+              "default": "All"
+            },
+            "custom_scatter_3_min_depth": {
+              "type": "number",
+              "description": "Minimum depth filter for custom scatter plot 3 (ft)",
+              "default": 0.0
+            },
+            "custom_scatter_3_max_depth": {
+              "type": "number",
+              "description": "Maximum depth filter for custom scatter plot 3 (ft)",
+              "default": 100.0
+            },
+            "custom_depth_1_param": {
+              "type": "string",
+              "description": "Parameter for custom depth plot 1",
+              "default": "Es"
+            },
+            "custom_depth_2_param": {
+              "type": "string",
+              "description": "Parameter for custom depth plot 2",
+              "default": "nu"
+            },
+            "custom_histogram_1_param": {
+              "type": "string",
+              "description": "Parameter for custom histogram 1",
+              "default": "Es"
+            },
+            "custom_histogram_1_method": {
+              "type": "string",
+              "description": "Test method filter for custom histogram 1",
+              "default": "All"
+            },
+            "custom_histogram_2_param": {
+              "type": "string",
+              "description": "Parameter for custom histogram 2",
+              "default": "nu"
+            },
+            "custom_histogram_2_method": {
+              "type": "string",
+              "description": "Test method filter for custom histogram 2",
+              "default": "All"
+            }
+          }
+        }
+      },
+      "required": ["inputs_section", "user_input", "excel_section", "material_section", "data_analytics"]
+    }
+  },
+  "required": ["graph_solver"]
+}

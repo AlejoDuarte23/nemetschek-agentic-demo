@@ -1,0 +1,132 @@
+{
+  "type": "object",
+  "properties": {
+    "tab_geometry": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "integer",
+          "default": 1000
+        },
+        "height": {
+          "type": "integer",
+          "default": 3000
+        },
+        "cover": {
+          "type": "integer",
+          "default": 50
+        },
+        "stirrup_dia": {
+          "type": "integer",
+          "default": 10
+        },
+        "spacing_bottom": {
+          "type": "integer",
+          "default": 200
+        },
+        "dia_bottom": {
+          "type": "integer",
+          "default": 25
+        },
+        "spacing_top": {
+          "type": "integer",
+          "default": 200
+        },
+        "dia_top": {
+          "type": "integer",
+          "default": 16
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "width": 1000,
+        "height": 3000,
+        "cover": 50,
+        "stirrup_dia": 10,
+        "spacing_bottom": 200,
+        "dia_bottom": 25,
+        "spacing_top": 200,
+        "dia_top": 16
+      }
+    },
+    "tab_loading": {
+      "type": "object",
+      "properties": {
+        "concrete_class": {
+          "type": "string",
+          "default": "C25/30"
+        },
+        "steel_grade": {
+          "type": "string",
+          "default": "B500"
+        },
+        "combinations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "M_Ed": {
+                "type": "number"
+              },
+              "N_Ed": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "M_Ed",
+              "N_Ed"
+            ]
+          },
+          "default": [
+            {
+              "label": "LC1",
+              "M_Ed": -1000.0,
+              "N_Ed": -100.0
+            },
+            {
+              "label": "LC2",
+              "M_Ed": 3000.0,
+              "N_Ed": 100.0
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "concrete_class": "C25/30",
+        "steel_grade": "B500",
+        "combinations": [
+          {
+            "label": "LC1",
+            "M_Ed": -1000.0,
+            "N_Ed": -100.0
+          },
+          {
+            "label": "LC2",
+            "M_Ed": 3000.0,
+            "N_Ed": 100.0
+          }
+        ]
+      }
+    },
+    "tab_optimise": {
+      "type": "object",
+      "properties": {
+        "spacing_min": {
+          "type": "integer",
+          "default": 50
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "spacing_min": 50
+      }
+    }
+  },
+  "additionalProperties": false
+}

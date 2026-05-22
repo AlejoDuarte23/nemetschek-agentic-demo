@@ -1,0 +1,44 @@
+[
+  {
+    "method_name": "view_map",
+    "source": "entity_type.views",
+    "label": "Nearest CPT",
+    "view_type": "geojson_and_data",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_cpt",
+    "source": "entity_type.views",
+    "label": "CPT Profile",
+    "view_type": "plotly",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_results",
+    "source": "entity_type.views",
+    "label": "Bearing Capacity Results",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_depth_curve",
+    "source": "entity_type.views",
+    "label": "Bearing Capacity vs. Depth",
+    "view_type": "plotly",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_required_depth",
+    "source": "entity_type.views",
+    "label": "Required Pile Depth",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  {
+    "method_name": "download_cpt_xml",
+    "source": "parametrization",
+    "label": "\u2b07 Download CPT XML",
+    "node_type": "download-button",
+    "path": "step1.download_xml"
+  }
+]

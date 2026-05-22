@@ -1,0 +1,244 @@
+{
+  "method": {
+    "method_name": "view_results",
+    "source": "entity_type.views",
+    "label": "Bearing Capacity Results",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  "result_key": "data",
+  "result": [
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "Bored pile",
+          "explanation_label": "",
+          "key": "pile_type_item",
+          "label": "Pile type",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": "Bored pile"
+        },
+        {
+          "children": [],
+          "display_value": "Round",
+          "explanation_label": "",
+          "key": "pile_shape_item",
+          "label": "Cross-section",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": "Round"
+        },
+        {
+          "children": [],
+          "display_value": "400",
+          "explanation_label": "",
+          "key": "diameter_item",
+          "label": "Diameter / width",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm",
+          "value": 400
+        },
+        {
+          "children": [],
+          "display_value": "7.0",
+          "explanation_label": "",
+          "key": "ground_item",
+          "label": "Ground level (from CPT)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "m NAP",
+          "value": 7
+        },
+        {
+          "children": [],
+          "display_value": "24.0",
+          "explanation_label": "",
+          "key": "length_item",
+          "label": "Pile length",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "m",
+          "value": 24
+        },
+        {
+          "children": [],
+          "display_value": "-17.0",
+          "explanation_label": "",
+          "key": "tip_item",
+          "label": "Pile tip level",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "m NAP",
+          "value": -17
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "pile_info",
+      "label": "Pile configuration",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "0.5",
+          "explanation_label": "",
+          "key": "alpha_p_item",
+          "label": "\u03b1p (tip factor)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": 0.5
+        },
+        {
+          "children": [],
+          "display_value": "12.05",
+          "explanation_label": "",
+          "key": "qc_tip_item",
+          "label": "qc;tip (4D\u20138D average)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "MPa",
+          "value": 12.05
+        },
+        {
+          "children": [],
+          "display_value": "1.33",
+          "explanation_label": "",
+          "key": "xi3_item",
+          "label": "\u03be3 (correlation factor)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": 1.33
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "calc_params",
+      "label": "Calculation parameters",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "757.0",
+          "explanation_label": "",
+          "key": "rb_cal",
+          "label": "Rb;cal (base resistance)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kN",
+          "value": 757
+        },
+        {
+          "children": [],
+          "display_value": "2330.9",
+          "explanation_label": "",
+          "key": "rs_cal",
+          "label": "Rs;cal (shaft resistance)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kN",
+          "value": 2330.9
+        },
+        {
+          "children": [],
+          "display_value": "3087.9",
+          "explanation_label": "",
+          "key": "rc_cal",
+          "label": "Rc;cal (total characteristic)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kN",
+          "value": 3087.9
+        },
+        {
+          "children": [],
+          "display_value": "1934.8",
+          "explanation_label": "Rc;d = Rc;cal / (\u03be3 \u00d7 \u03b3) = 3087.9 / (1.33 \u00d7 1.2)",
+          "key": "rc_d",
+          "label": "Rc;d (design value)",
+          "prefix": "",
+          "status": "success",
+          "status_message": "",
+          "suffix": "kN",
+          "value": 1934.8
+        },
+        {
+          "children": [],
+          "display_value": "1100.0",
+          "explanation_label": "",
+          "key": "fc_d",
+          "label": "Fc;d (applied design load)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kN",
+          "value": 1100
+        },
+        {
+          "children": [],
+          "display_value": "0.569",
+          "explanation_label": "\u2705 OK \u2013 capacity sufficient",
+          "key": "util",
+          "label": "Utilisation Fc;d / Rc;d",
+          "prefix": "",
+          "status": "success",
+          "status_message": "",
+          "suffix": "",
+          "value": 0.569
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "results",
+      "label": "Bearing capacity",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    }
+  ],
+  "attempted_methods": [
+    {
+      "method": {
+        "method_name": "view_results",
+        "source": "entity_type.views",
+        "label": "Bearing Capacity Results",
+        "view_type": "data",
+        "automatic_update": true
+      },
+      "status": "success",
+      "result_key": "data"
+    }
+  ]
+}

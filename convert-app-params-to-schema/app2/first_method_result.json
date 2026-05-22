@@ -1,0 +1,256 @@
+{
+  "method": {
+    "method_name": "get_data_view",
+    "source": "entity_type.views",
+    "label": "Footing dimensions",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  "result_key": "data",
+  "result": [
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "3.80",
+          "explanation_label": "",
+          "key": "width",
+          "label": "B",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " m",
+          "value": 3.8
+        },
+        {
+          "children": [],
+          "display_value": "2.80",
+          "explanation_label": "",
+          "key": "length",
+          "label": "L",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " m",
+          "value": 2.8
+        },
+        {
+          "children": [],
+          "display_value": "0.60",
+          "explanation_label": "",
+          "key": "thickness",
+          "label": "Thickness",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " m",
+          "value": 0.6
+        },
+        {
+          "children": [],
+          "display_value": "10.64",
+          "explanation_label": "",
+          "key": "area",
+          "label": "Area",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " m2",
+          "value": 10.639999999999999
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "dimensions",
+      "label": "Footing dimensions",
+      "prefix": "",
+      "status": "success",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "150",
+          "explanation_label": "",
+          "key": "allowable",
+          "label": "Allowable pressure",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " kPa",
+          "value": 150
+        },
+        {
+          "children": [],
+          "display_value": "149.9",
+          "explanation_label": "",
+          "key": "maximum",
+          "label": "Maximum pressure",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " kPa",
+          "value": 149.87261009667026
+        },
+        {
+          "children": [],
+          "display_value": "89.5",
+          "explanation_label": "",
+          "key": "minimum",
+          "label": "Minimum pressure",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " kPa",
+          "value": 89.45370569280342
+        },
+        {
+          "children": [],
+          "display_value": "1.00",
+          "explanation_label": "",
+          "key": "utilization",
+          "label": "Bearing utilization",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": 0.9991507339778017
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "bearing",
+      "label": "Bearing check",
+      "prefix": "",
+      "status": "success",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "0.075",
+          "explanation_label": "",
+          "key": "eccentricity_x",
+          "label": "ex = |Mz| / N",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " m",
+          "value": 0.07461420528802655
+        },
+        {
+          "children": [],
+          "display_value": "0.063",
+          "explanation_label": "",
+          "key": "eccentricity_y",
+          "label": "ey = |My| / N",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " m",
+          "value": 0.06283301497939077
+        },
+        {
+          "children": [],
+          "display_value": "0.25",
+          "explanation_label": "",
+          "key": "ratio",
+          "label": "6(ex/B + ey/L)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": 0.2524540780421951
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "kern",
+      "label": "Middle kern check",
+      "prefix": "",
+      "status": "success",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "Row 2",
+          "explanation_label": "",
+          "key": "reaction",
+          "label": "Row",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": "Row 2"
+        },
+        {
+          "children": [],
+          "display_value": "1120.0",
+          "explanation_label": "",
+          "key": "p",
+          "label": "P",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " kN",
+          "value": 1120
+        },
+        {
+          "children": [],
+          "display_value": "80.0",
+          "explanation_label": "",
+          "key": "my",
+          "label": "My",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " kNm",
+          "value": 80
+        },
+        {
+          "children": [],
+          "display_value": "95.0",
+          "explanation_label": "",
+          "key": "mz",
+          "label": "Mz",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": " kNm",
+          "value": 95
+        },
+        {
+          "children": [],
+          "display_value": "bearing",
+          "explanation_label": "",
+          "key": "controlling_check",
+          "label": "Controlling check",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": "bearing"
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "critical",
+      "label": "Critical reaction",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    }
+  ]
+}

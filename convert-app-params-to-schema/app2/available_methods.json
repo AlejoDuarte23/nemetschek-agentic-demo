@@ -1,0 +1,9 @@
+[
+  {
+    "method_name": "get_data_view",
+    "source": "entity_type.views",
+    "label": "Footing dimensions",
+    "view_type": "data",
+    "automatic_update": true
+  }
+]

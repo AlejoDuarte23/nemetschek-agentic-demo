@@ -1,0 +1,172 @@
+{
+  "method": {
+    "method_name": "view_turbine_data",
+    "source": "entity_type.views",
+    "label": "Turbine Parameters",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  "result_key": "data",
+  "result": [
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "4.5",
+          "explanation_label": "Nameplate power output of the turbine at rated wind speed.",
+          "key": "capacity",
+          "label": "Rated capacity",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "MW",
+          "value": 4.5
+        },
+        {
+          "children": [],
+          "display_value": "120",
+          "explanation_label": "Distance from ground level to the rotor hub centre.",
+          "key": "hub_height",
+          "label": "Hub height",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "m",
+          "value": 120
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "general",
+      "label": "General",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "4.3",
+          "explanation_label": "Outer diameter of the tower at ground level (flange connection).",
+          "key": "base_diameter",
+          "label": "Base diameter",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "m",
+          "value": 4.3
+        },
+        {
+          "children": [],
+          "display_value": "170100.0",
+          "explanation_label": "Extreme design moment = thrust (1050 kN) \u00d7 hub height (120 m) \u00d7 load factor (1.35), per IEC 61400-1.",
+          "key": "base_moment",
+          "label": "Max. moment at base",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kNm",
+          "value": 170100
+        },
+        {
+          "children": [],
+          "display_value": "1418.0",
+          "explanation_label": "Extreme design shear = thrust (1050 kN) \u00d7 load factor (1.35), per IEC 61400-1.",
+          "key": "base_horiz_force",
+          "label": "Max. horizontal force at base",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kN",
+          "value": 1418
+        },
+        {
+          "children": [],
+          "display_value": "4267.0",
+          "explanation_label": "Vertical force = total weight (435 t) \u00d7 g (9.81 m/s\u00b2). Represents the gravitational load transferred to the foundation.",
+          "key": "base_vert_force",
+          "label": "Max. vertical force at base",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kN",
+          "value": 4267
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "tower",
+      "label": "Tower / Mast",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "105",
+          "explanation_label": "Combined weight of rotor blades, hub and nacelle.",
+          "key": "rna_weight",
+          "label": "Rotor-Nacelle Assembly (RNA)",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "t",
+          "value": 105
+        },
+        {
+          "children": [],
+          "display_value": "330",
+          "explanation_label": "Estimated steel tower weight for the selected hub height.",
+          "key": "tower_weight",
+          "label": "Tower",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "t",
+          "value": 330
+        },
+        {
+          "children": [],
+          "display_value": "435",
+          "explanation_label": "RNA + tower weight (foundation not included).",
+          "key": "total_weight",
+          "label": "Total turbine weight",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "t",
+          "value": 435
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "weight",
+      "label": "Weight",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    }
+  ],
+  "attempted_methods": [
+    {
+      "method": {
+        "method_name": "view_turbine_data",
+        "source": "entity_type.views",
+        "label": "Turbine Parameters",
+        "view_type": "data",
+        "automatic_update": true
+      },
+      "status": "success",
+      "result_key": "data"
+    }
+  ]
+}

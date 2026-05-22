@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "turbine_model": {
+      "type": "string",
+      "default": "Vestas V150-4.5 MW"
+    }
+  },
+  "additionalProperties": false
+}

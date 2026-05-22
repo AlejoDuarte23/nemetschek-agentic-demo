@@ -1,0 +1,182 @@
+{
+  "type": "object",
+  "properties": {
+    "step_1": {
+      "type": "object",
+      "properties": {
+        "mast": {
+          "type": "object",
+          "properties": {
+            "d_mast": {
+              "type": "integer",
+              "default": 5
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "d_mast": 5
+          }
+        },
+        "plate": {
+          "type": "object",
+          "properties": {
+            "d_plate": {
+              "type": "integer",
+              "default": 20
+            },
+            "t_centre": {
+              "type": "integer",
+              "default": 3
+            },
+            "t_edge": {
+              "type": "integer",
+              "default": 1
+            },
+            "h_pedestal": {
+              "type": "number",
+              "default": 1.0
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "d_plate": 20,
+            "t_centre": 3,
+            "t_edge": 1,
+            "h_pedestal": 1.0
+          }
+        },
+        "rebar": {
+          "type": "object",
+          "properties": {
+            "plate_main_reinforcement": {
+              "type": "integer",
+              "default": 60
+            },
+            "multiplication_factor": {
+              "type": "number",
+              "default": 2.0
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "plate_main_reinforcement": 60,
+            "multiplication_factor": 2.0
+          }
+        },
+        "piles": {
+          "type": "object",
+          "properties": {
+            "n_piles": {
+              "type": "integer",
+              "default": 30
+            },
+            "pile_length": {
+              "type": "integer",
+              "default": 20
+            },
+            "pile_diameter": {
+              "type": "integer",
+              "default": 500
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "n_piles": 30,
+            "pile_length": 20,
+            "pile_diameter": 500
+          }
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "mast": {
+          "d_mast": 5
+        },
+        "plate": {
+          "d_plate": 20,
+          "t_centre": 3,
+          "t_edge": 1,
+          "h_pedestal": 1.0
+        },
+        "rebar": {
+          "plate_main_reinforcement": 60,
+          "multiplication_factor": 2.0
+        },
+        "piles": {
+          "n_piles": 30,
+          "pile_length": 20,
+          "pile_diameter": 500
+        }
+      }
+    },
+    "step_2": {
+      "type": "object",
+      "properties": {
+        "concrete": {
+          "type": "object",
+          "properties": {
+            "cost_concrete": {
+              "type": "integer",
+              "default": 150
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "cost_concrete": 150
+          }
+        },
+        "rebar_cost": {
+          "type": "object",
+          "properties": {
+            "cost_rebar": {
+              "type": "integer",
+              "default": 900
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "cost_rebar": 900
+          }
+        },
+        "pile_costs": {
+          "type": "object",
+          "properties": {
+            "ref_diameter": {
+              "type": "integer",
+              "default": 500
+            },
+            "cost_pile_install": {
+              "type": "integer",
+              "default": 80
+            },
+            "cost_pile_material": {
+              "type": "integer",
+              "default": 120
+            }
+          },
+          "additionalProperties": false,
+          "default": {
+            "ref_diameter": 500,
+            "cost_pile_install": 80,
+            "cost_pile_material": 120
+          }
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "concrete": {
+          "cost_concrete": 150
+        },
+        "rebar_cost": {
+          "cost_rebar": 900
+        },
+        "pile_costs": {
+          "ref_diameter": 500,
+          "cost_pile_install": 80,
+          "cost_pile_material": 120
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

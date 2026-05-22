@@ -1,0 +1,73 @@
+{
+  "method": {
+    "method_name": "view_geometry",
+    "source": "entity_type.views",
+    "label": "3D Geometry",
+    "view_type": "geometry",
+    "automatic_update": true
+  },
+  "result_key": "geometry",
+  "result": {
+    "geometry": "https://viktor-storage-eu1.s3.amazonaws.com/tmp/925da3d1-6803-401e-bca9-b34054ceec94/viktor.gltf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAZWJWJ6TMJGMQGN5X%2F20260522%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260522T032412Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1ac6a89af00886c5bd358e5af2bcf21679a8b8ee06010c4e1af43dff9c2b53b1",
+    "geometry_type": "gltf",
+    "labels": [
+      {
+        "color": "#000000",
+        "html": "\u2300 20.0 m plate",
+        "size_factor": 1,
+        "text": [
+          "\u2300 20.0 m plate"
+        ],
+        "x": 0,
+        "y": 0,
+        "z": 3.3
+      }
+    ]
+  },
+  "attempted_methods": [
+    {
+      "method": {
+        "method_name": "view_results",
+        "source": "entity_type.views",
+        "label": "Results Summary",
+        "view_type": "data",
+        "automatic_update": false
+      },
+      "status": "failed",
+      "error": "VIKTOR job failed with status=failed: {'type': 'error_code', 'message': '', 'invalid_fields': {}}"
+    },
+    {
+      "method": {
+        "method_name": "view_pile_reactions",
+        "source": "entity_type.views",
+        "label": "Pile Reactions",
+        "view_type": "table",
+        "automatic_update": false
+      },
+      "status": "failed",
+      "error": "VIKTOR job failed with status=failed: {'type': 'error_code', 'message': '', 'invalid_fields': {}}"
+    },
+    {
+      "method": {
+        "method_name": "view_2d_internal_forces",
+        "source": "entity_type.views",
+        "label": "2D Internal Forces",
+        "view_type": "table",
+        "automatic_update": false
+      },
+      "status": "failed",
+      "error": "VIKTOR job failed with status=failed: {'type': 'error_code', 'message': '', 'invalid_fields': {}}"
+    },
+    {
+      "method": {
+        "method_name": "view_geometry",
+        "source": "entity_type.views",
+        "label": "3D Geometry",
+        "view_type": "geometry",
+        "automatic_update": true
+      },
+      "status": "success",
+      "result_key": "geometry"
+    }
+  ]
+}

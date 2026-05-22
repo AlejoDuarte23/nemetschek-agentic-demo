@@ -1,0 +1,16 @@
+[
+  {
+    "method_name": "view_data",
+    "source": "entity_type.views",
+    "label": "Results",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_cost",
+    "source": "entity_type.views",
+    "label": "Cost Estimate",
+    "view_type": "plotly_and_data",
+    "automatic_update": true
+  }
+]

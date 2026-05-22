@@ -1,0 +1,80 @@
+{
+  "graph_solver": {
+    "inputs_section": {
+      "project_number": "",
+      "selected_office": null,
+      "bypass_data_upload": false,
+      "upload_cpt": false,
+      "nkt_value": 14.0,
+      "upload_spt": false,
+      "use_assumed_hammer_efficiency": false,
+      "reject_hammer_efficiency": false,
+      "hammer_efficiency": 60.0,
+      "upload_geophysics": false
+    },
+    "user_input": {
+      "plot_std_dev_selection": false,
+      "plot_std_dev_value": 0.5,
+      "gwt_selection": "Whole Site",
+      "gwt_wholesite": 0.0,
+      "gwt_profile1": 0.0,
+      "gwt_profile2": 0.0,
+      "gwt_profile3": 0.0,
+      "gwt_profile4": 0.0,
+      "gwt_profile5": 0.0
+    },
+    "excel_section": {
+      "data_processed": false,
+      "cpt_file": null,
+      "spt_file": null,
+      "cached_model_points": null,
+      "cached_explorations": null,
+      "cached_model_data": null,
+      "cached_all_model_data": null
+    },
+    "material_section": {
+      "number_of_profiles": 1,
+      "layer_properties1_explorations": [],
+      "layer_properties1": [],
+      "layer_properties2_explorations": [],
+      "layer_properties2": [],
+      "layer_properties3_explorations": [],
+      "layer_properties3": [],
+      "layer_properties4_explorations": [],
+      "layer_properties4": [],
+      "layer_properties5_explorations": [],
+      "layer_properties5": []
+    },
+    "data_analytics": {
+      "profile_plots": false,
+      "cpt_plots": false,
+      "spt_plots": false,
+      "selected_plots": [],
+      "profiles_to_include": [],
+      "custom_scatter_1_x": "longitude",
+      "custom_scatter_1_y": "latitude",
+      "custom_scatter_1_heat_param": "unit_weight",
+      "custom_scatter_1_method": "All",
+      "custom_scatter_1_min_depth": 0.0,
+      "custom_scatter_1_max_depth": 100.0,
+      "custom_scatter_2_x": "longitude",
+      "custom_scatter_2_y": "latitude",
+      "custom_scatter_2_z_param": "unit_weight",
+      "custom_scatter_2_method": "All",
+      "custom_scatter_2_min_depth": 0.0,
+      "custom_scatter_2_max_depth": 100.0,
+      "custom_scatter_3_x": "longitude",
+      "custom_scatter_3_y": "latitude",
+      "custom_scatter_3_z_param": "unit_weight",
+      "custom_scatter_3_method": "All",
+      "custom_scatter_3_min_depth": 0.0,
+      "custom_scatter_3_max_depth": 100.0,
+      "custom_depth_1_param": "Es",
+      "custom_depth_2_param": "nu",
+      "custom_histogram_1_param": "Es",
+      "custom_histogram_1_method": "All",
+      "custom_histogram_2_param": "nu",
+      "custom_histogram_2_method": "All"
+    }
+  }
+}

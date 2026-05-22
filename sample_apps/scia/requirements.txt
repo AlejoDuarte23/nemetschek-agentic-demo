@@ -1,0 +1,4 @@
+viktor
+numpy
+plotly
+scipy

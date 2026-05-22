@@ -1,0 +1,203 @@
+{
+  "entity_info": {
+    "entity_id": 11967,
+    "entity_name": "simple",
+    "entity_type": "Controller",
+    "workspace_id": 2494,
+    "editor_url": "https://demo.viktor.ai/workspaces/2494/app/editor/11967"
+  },
+  "parameter_sections": {
+    "graph_solver": {
+      "description": "Main parametrization container",
+      "sections": [
+        {
+          "name": "inputs_section",
+          "description": "Project inputs and data upload configuration",
+          "field_count": 10,
+          "fields": [
+            "project_number",
+            "selected_office",
+            "bypass_data_upload",
+            "upload_cpt",
+            "nkt_value",
+            "upload_spt",
+            "use_assumed_hammer_efficiency",
+            "reject_hammer_efficiency",
+            "hammer_efficiency",
+            "upload_geophysics"
+          ]
+        },
+        {
+          "name": "user_input",
+          "description": "User-defined input parameters including GWT settings",
+          "field_count": 9,
+          "fields": [
+            "plot_std_dev_selection",
+            "plot_std_dev_value",
+            "gwt_selection",
+            "gwt_wholesite",
+            "gwt_profile1",
+            "gwt_profile2",
+            "gwt_profile3",
+            "gwt_profile4",
+            "gwt_profile5"
+          ]
+        },
+        {
+          "name": "excel_section",
+          "description": "Excel file uploads and cached data",
+          "field_count": 7,
+          "fields": [
+            "data_processed",
+            "cpt_file",
+            "spt_file",
+            "cached_model_points",
+            "cached_explorations",
+            "cached_model_data",
+            "cached_all_model_data"
+          ]
+        },
+        {
+          "name": "material_section",
+          "description": "Material layer properties for up to 5 profiles",
+          "field_count": 11,
+          "fields": [
+            "number_of_profiles",
+            "layer_properties1_explorations",
+            "layer_properties1",
+            "layer_properties2_explorations",
+            "layer_properties2",
+            "layer_properties3_explorations",
+            "layer_properties3",
+            "layer_properties4_explorations",
+            "layer_properties4",
+            "layer_properties5_explorations",
+            "layer_properties5"
+          ]
+        },
+        {
+          "name": "data_analytics",
+          "description": "Data visualization and analytics configuration",
+          "field_count": 29,
+          "fields": [
+            "profile_plots",
+            "cpt_plots",
+            "spt_plots",
+            "selected_plots",
+            "profiles_to_include",
+            "custom_scatter_1_x",
+            "custom_scatter_1_y",
+            "custom_scatter_1_heat_param",
+            "custom_scatter_1_method",
+            "custom_scatter_1_min_depth",
+            "custom_scatter_1_max_depth",
+            "custom_scatter_2_x",
+            "custom_scatter_2_y",
+            "custom_scatter_2_z_param",
+            "custom_scatter_2_method",
+            "custom_scatter_2_min_depth",
+            "custom_scatter_2_max_depth",
+            "custom_scatter_3_x",
+            "custom_scatter_3_y",
+            "custom_scatter_3_z_param",
+            "custom_scatter_3_method",
+            "custom_scatter_3_min_depth",
+            "custom_scatter_3_max_depth",
+            "custom_depth_1_param",
+            "custom_depth_2_param",
+            "custom_histogram_1_param",
+            "custom_histogram_1_method",
+            "custom_histogram_2_param",
+            "custom_histogram_2_method"
+          ]
+        }
+      ]
+    }
+  },
+  "statistics": {
+    "total_sections": 5,
+    "total_fields": 66,
+    "boolean_fields": 13,
+    "number_fields": 20,
+    "string_fields": 13,
+    "array_fields": 14,
+    "null_fields": 6
+  },
+  "field_types": {
+    "boolean": [
+      "bypass_data_upload",
+      "upload_cpt",
+      "upload_spt",
+      "use_assumed_hammer_efficiency",
+      "reject_hammer_efficiency",
+      "upload_geophysics",
+      "plot_std_dev_selection",
+      "data_processed",
+      "profile_plots",
+      "cpt_plots",
+      "spt_plots"
+    ],
+    "number": [
+      "nkt_value",
+      "hammer_efficiency",
+      "plot_std_dev_value",
+      "gwt_wholesite",
+      "gwt_profile1",
+      "gwt_profile2",
+      "gwt_profile3",
+      "gwt_profile4",
+      "gwt_profile5",
+      "number_of_profiles",
+      "custom_scatter_1_min_depth",
+      "custom_scatter_1_max_depth",
+      "custom_scatter_2_min_depth",
+      "custom_scatter_2_max_depth",
+      "custom_scatter_3_min_depth",
+      "custom_scatter_3_max_depth"
+    ],
+    "string": [
+      "project_number",
+      "gwt_selection",
+      "custom_scatter_1_x",
+      "custom_scatter_1_y",
+      "custom_scatter_1_heat_param",
+      "custom_scatter_1_method",
+      "custom_scatter_2_x",
+      "custom_scatter_2_y",
+      "custom_scatter_2_z_param",
+      "custom_scatter_2_method",
+      "custom_scatter_3_x",
+      "custom_scatter_3_y",
+      "custom_scatter_3_z_param",
+      "custom_scatter_3_method",
+      "custom_depth_1_param",
+      "custom_depth_2_param",
+      "custom_histogram_1_param",
+      "custom_histogram_1_method",
+      "custom_histogram_2_param",
+      "custom_histogram_2_method"
+    ],
+    "array": [
+      "selected_plots",
+      "profiles_to_include",
+      "layer_properties1_explorations",
+      "layer_properties1",
+      "layer_properties2_explorations",
+      "layer_properties2",
+      "layer_properties3_explorations",
+      "layer_properties3",
+      "layer_properties4_explorations",
+      "layer_properties4",
+      "layer_properties5_explorations",
+      "layer_properties5"
+    ],
+    "file_or_cached": [
+      "cpt_file",
+      "spt_file",
+      "cached_model_points",
+      "cached_explorations",
+      "cached_model_data",
+      "cached_all_model_data"
+    ]
+  }
+}

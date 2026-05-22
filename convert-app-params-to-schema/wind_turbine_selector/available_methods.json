@@ -1,0 +1,23 @@
+[
+  {
+    "method_name": "view_turbine_data",
+    "source": "entity_type.views",
+    "label": "Turbine Parameters",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_schematic",
+    "source": "entity_type.views",
+    "label": "Turbine Schematic",
+    "view_type": "plotly",
+    "automatic_update": true
+  },
+  {
+    "method_name": "view_comparison",
+    "source": "entity_type.views",
+    "label": "Turbine Comparison",
+    "view_type": "plotly",
+    "automatic_update": true
+  }
+]

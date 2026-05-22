@@ -1,0 +1,6 @@
+app_type = "simple"
+python_version = "3.11"
+registered_name = "workflow-graph-agent"
+worker_integrations = [
+    "scia",
+]

@@ -1,0 +1,187 @@
+{
+  "method": {
+    "method_name": "get_data_view",
+    "source": "entity_type.views",
+    "label": "Reaction loads",
+    "view_type": "table",
+    "automatic_update": true
+  },
+  "result_key": "table",
+  "result": {
+    "column_headers": [
+      {
+        "data_type": "string",
+        "id": "ae2a3a39a2b53ebbcd7d8c4164bbe0e1",
+        "title": "Reaction"
+      },
+      {
+        "data_type": "number",
+        "id": "cd6a4bd3acbf4a112ca309432cc82b08",
+        "title": "P [kN]"
+      },
+      {
+        "data_type": "number",
+        "id": "823d363edf3e9a412508d3d06e964759",
+        "title": "Vz [kN]"
+      },
+      {
+        "data_type": "number",
+        "id": "c9f6870953390c02b331daf8d32b7704",
+        "title": "Vy [kN]"
+      },
+      {
+        "data_type": "number",
+        "id": "651c200d319ed75760064bad500a1ca3",
+        "title": "My [kNm]"
+      },
+      {
+        "data_type": "number",
+        "id": "aa37ff89ba99e50325c3cafd8017ca79",
+        "title": "Mz [kNm]"
+      }
+    ],
+    "data": [
+      [
+        {
+          "value": "R1"
+        },
+        {
+          "value": 215.23
+        },
+        {
+          "value": 3.47
+        },
+        {
+          "value": 6.77
+        },
+        {
+          "value": 70.07
+        },
+        {
+          "value": -92.06
+        }
+      ],
+      [
+        {
+          "value": "R2"
+        },
+        {
+          "value": 301.34
+        },
+        {
+          "value": 11.33
+        },
+        {
+          "value": 9.52
+        },
+        {
+          "value": -35.34
+        },
+        {
+          "value": 67.06
+        }
+      ],
+      [
+        {
+          "value": "R3"
+        },
+        {
+          "value": 200.07
+        },
+        {
+          "value": 3.6
+        },
+        {
+          "value": 9.23
+        },
+        {
+          "value": -108.44
+        },
+        {
+          "value": -3.4
+        }
+      ],
+      [
+        {
+          "value": "R4"
+        },
+        {
+          "value": 303.87
+        },
+        {
+          "value": 17.19
+        },
+        {
+          "value": 21.9
+        },
+        {
+          "value": -148.51
+        },
+        {
+          "value": 211.11
+        }
+      ],
+      [
+        {
+          "value": "R5"
+        },
+        {
+          "value": 275.24
+        },
+        {
+          "value": 13.5
+        },
+        {
+          "value": 10.83
+        },
+        {
+          "value": 165.83
+        },
+        {
+          "value": 177.34
+        }
+      ],
+      [
+        {
+          "value": "R6"
+        },
+        {
+          "value": 158.46
+        },
+        {
+          "value": 11.86
+        },
+        {
+          "value": -10.48
+        },
+        {
+          "value": 10.18
+        },
+        {
+          "value": 15.42
+        }
+      ]
+    ],
+    "enable_sorting_and_filtering": true,
+    "row_headers": [
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      }
+    ]
+  }
+}

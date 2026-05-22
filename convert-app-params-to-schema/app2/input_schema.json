@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "properties": {
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "reactions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "p": {
+                "type": "number"
+              },
+              "my": {
+                "type": "number"
+              },
+              "mz": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "p",
+              "my",
+              "mz"
+            ]
+          },
+          "default": [
+            {
+              "p": 850.0,
+              "my": 65.0,
+              "mz": 40.0
+            },
+            {
+              "p": 1120.0,
+              "my": 80.0,
+              "mz": 95.0
+            },
+            {
+              "p": 760.0,
+              "my": 35.0,
+              "mz": 55.0
+            }
+          ]
+        },
+        "pad_thickness": {
+          "type": "number",
+          "default": 0.6
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "reactions": [
+          {
+            "p": 850.0,
+            "my": 65.0,
+            "mz": 40.0
+          },
+          {
+            "p": 1120.0,
+            "my": 80.0,
+            "mz": 95.0
+          },
+          {
+            "p": 760.0,
+            "my": 35.0,
+            "mz": 55.0
+          }
+        ],
+        "pad_thickness": 0.6
+      }
+    }
+  },
+  "additionalProperties": false
+}

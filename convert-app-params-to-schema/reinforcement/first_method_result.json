@@ -1,0 +1,304 @@
+{
+  "method": {
+    "method_name": "view_results",
+    "source": "entity_type.views",
+    "label": "Results",
+    "view_type": "data",
+    "automatic_update": true
+  },
+  "result_key": "data",
+  "result": [
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "1000",
+          "explanation_label": "",
+          "key": "width",
+          "label": "Width b",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm",
+          "value": 1000
+        },
+        {
+          "children": [],
+          "display_value": "3000",
+          "explanation_label": "",
+          "key": "height",
+          "label": "Height h",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm",
+          "value": 3000
+        },
+        {
+          "children": [],
+          "display_value": "50",
+          "explanation_label": "",
+          "key": "cover",
+          "label": "Clear cover",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm",
+          "value": 50
+        },
+        {
+          "children": [],
+          "display_value": "5",
+          "explanation_label": "",
+          "key": "n_bot",
+          "label": "Bottom bars",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": 5
+        },
+        {
+          "children": [],
+          "display_value": "2454.0",
+          "explanation_label": "",
+          "key": "A_s",
+          "label": "Bottom steel A_s",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm\u00b2",
+          "value": 2454
+        },
+        {
+          "children": [],
+          "display_value": "5",
+          "explanation_label": "",
+          "key": "n_top",
+          "label": "Top bars",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "",
+          "value": 5
+        },
+        {
+          "children": [],
+          "display_value": "1005.0",
+          "explanation_label": "",
+          "key": "A_s2",
+          "label": "Top steel A_s2",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm\u00b2",
+          "value": 1005
+        },
+        {
+          "children": [],
+          "display_value": "0.115",
+          "explanation_label": "",
+          "key": "rho",
+          "label": "Total \u03c1",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "%",
+          "value": 0.115
+        },
+        {
+          "children": [],
+          "display_value": "2927.5",
+          "explanation_label": "",
+          "key": "d",
+          "label": "Effective depth d",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm",
+          "value": 2927.5
+        },
+        {
+          "children": [],
+          "display_value": "9.05",
+          "explanation_label": "",
+          "key": "kg_m3",
+          "label": "Steel mass per m\u00b3",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kg/m\u00b3",
+          "value": 9.05
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "section",
+      "label": "Section & Reinforcement",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "-1000.0",
+          "explanation_label": "",
+          "key": "M_Ed_item",
+          "label": "M_Ed",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kNm",
+          "value": -1000
+        },
+        {
+          "children": [],
+          "display_value": "-100.0",
+          "explanation_label": "",
+          "key": "N_Ed_item",
+          "label": "N_Ed",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kN",
+          "value": -100
+        },
+        {
+          "children": [],
+          "display_value": "57.9",
+          "explanation_label": "",
+          "key": "x_item",
+          "label": "Neutral axis x",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm",
+          "value": 57.9
+        },
+        {
+          "children": [],
+          "display_value": "-1145.19",
+          "explanation_label": "",
+          "key": "M_Rd_item",
+          "label": "M_Rd",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kNm",
+          "value": -1145.19
+        },
+        {
+          "children": [],
+          "display_value": "0.873",
+          "explanation_label": "",
+          "key": "UC_item",
+          "label": "Unity check M_Ed / M_Rd",
+          "prefix": "",
+          "status": "success",
+          "status_message": "\u2705 OK",
+          "suffix": "",
+          "value": 0.873
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "combo_0",
+      "label": "LC1",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "display_value": "3000.0",
+          "explanation_label": "",
+          "key": "M_Ed_item",
+          "label": "M_Ed",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kNm",
+          "value": 3000
+        },
+        {
+          "children": [],
+          "display_value": "100.0",
+          "explanation_label": "",
+          "key": "N_Ed_item",
+          "label": "N_Ed",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kN",
+          "value": 100
+        },
+        {
+          "children": [],
+          "display_value": "79.8",
+          "explanation_label": "",
+          "key": "x_item",
+          "label": "Neutral axis x",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "mm",
+          "value": 79.8
+        },
+        {
+          "children": [],
+          "display_value": "3233.01",
+          "explanation_label": "",
+          "key": "M_Rd_item",
+          "label": "M_Rd",
+          "prefix": "",
+          "status": "info",
+          "status_message": "",
+          "suffix": "kNm",
+          "value": 3233.01
+        },
+        {
+          "children": [],
+          "display_value": "0.928",
+          "explanation_label": "",
+          "key": "UC_item",
+          "label": "Unity check M_Ed / M_Rd",
+          "prefix": "",
+          "status": "success",
+          "status_message": "\u2705 OK",
+          "suffix": "",
+          "value": 0.928
+        }
+      ],
+      "display_value": "",
+      "explanation_label": "",
+      "key": "combo_1",
+      "label": "LC2",
+      "prefix": "",
+      "status": "info",
+      "status_message": "",
+      "suffix": "",
+      "value": ""
+    }
+  ],
+  "attempted_methods": [
+    {
+      "method": {
+        "method_name": "view_results",
+        "source": "entity_type.views",
+        "label": "Results",
+        "view_type": "data",
+        "automatic_update": true
+      },
+      "status": "success",
+      "result_key": "data"
+    }
+  ]
+}
