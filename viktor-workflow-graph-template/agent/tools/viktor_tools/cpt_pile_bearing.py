@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
@@ -9,16 +10,16 @@ from agent.tools.viktor_tools.responses import (
 )
 from agent.tools.viktor_tools.sdk_compute import ViktorSdkComputeClient
 from agent.tools.viktor_tools.wind_turbine_common import (
-    CPT_PILE_BEARING_STORAGE_KEY,
     get_data_value,
     select_and_store_result,
 )
-
-
-CPT_PILE_BEARING_WORKSPACE_ID = 2564
-CPT_PILE_BEARING_ENTITY_ID = 12165
-CPT_PILE_BEARING_METHOD_NAME = "view_results"
-CPT_PILE_BEARING_RESULT_KEY = "data"
+from agent.tools.viktor_tools.workflow_entities import (
+    deep_merge_params,
+    needs_workflow_run_response,
+    read_last_saved_params,
+    resolve_workflow_entity,
+    set_last_saved_params,
+)
 
 
 class CptLocation(BaseModel):
@@ -67,8 +68,25 @@ def summarize_cpt_data(data: Any) -> dict[str, Any]:
 
 async def run_cpt_pile_bearing_func(context: Any, args: str) -> str:
     try:
-        payload = CptPileBearingParams.model_validate_json(args or "{}")
-    except ValidationError as exc:
+        explicit_args = json.loads(args) if args and args.strip() else {}
+        if not isinstance(explicit_args, dict):
+            raise ValueError("Tool arguments must be a JSON object.")
+        target = resolve_workflow_entity("cpt_pile_bearing")
+        saved_params = read_last_saved_params(target)
+        compute_payload = deep_merge_params(saved_params, explicit_args)
+        payload = CptPileBearingParams.model_validate(compute_payload or {})
+        compute_payload = deep_merge_params(payload.model_dump(), compute_payload)
+        set_last_saved_params(
+            target,
+            compute_payload,
+            message="Agent updated CPT pile bearing params for workflow run.",
+        )
+    except (FileNotFoundError, KeyError):
+        return needs_workflow_run_response(
+            tool="run_cpt_pile_bearing",
+            node_id="cpt_pile_bearing",
+        )
+    except (json.JSONDecodeError, ValueError, ValidationError) as exc:
         return validation_error_response(
             tool="run_cpt_pile_bearing",
             message="Invalid CPT pile bearing arguments.",
@@ -76,19 +94,25 @@ async def run_cpt_pile_bearing_func(context: Any, args: str) -> str:
             retry_tool="run_cpt_pile_bearing",
             retry_reason="Retry with step1 location/search inputs and step2 pile/load inputs.",
         )
+    except Exception as exc:
+        return execution_error_response(
+            tool="run_cpt_pile_bearing",
+            message="Could not read or update the workflow CPT entity.",
+            error=exc,
+        )
 
     try:
         client = ViktorSdkComputeClient()
         result = client.compute_method(
-            workspace_id=CPT_PILE_BEARING_WORKSPACE_ID,
-            entity_id=CPT_PILE_BEARING_ENTITY_ID,
-            method_name=CPT_PILE_BEARING_METHOD_NAME,
-            params=payload.model_dump(),
+            workspace_id=target.workspace_id,
+            entity_id=target.entity_id,
+            method_name=target.method_name,
+            params=compute_payload,
         )
         data = select_and_store_result(
             result=result,
-            result_key=CPT_PILE_BEARING_RESULT_KEY,
-            storage_key=CPT_PILE_BEARING_STORAGE_KEY,
+            result_key=target.result_key,
+            storage_key=target.storage_key,
         )
     except (KeyError, ValueError) as exc:
         return validation_error_response(
@@ -108,8 +132,10 @@ async def run_cpt_pile_bearing_func(context: Any, args: str) -> str:
     return tool_response(
         "completed",
         message="Computed pile bearing capacity and stored pile geometry for foundation analysis.",
-        method_name=CPT_PILE_BEARING_METHOD_NAME,
-        result_key=CPT_PILE_BEARING_RESULT_KEY,
-        storage_key=CPT_PILE_BEARING_STORAGE_KEY,
+        entity_id=target.entity_id,
+        entity_url=target.url,
+        method_name=target.method_name,
+        result_key=target.result_key,
+        storage_key=target.storage_key,
         summary=summarize_cpt_data(data),
     )

@@ -9,8 +9,10 @@
     <rule>When a SCIA result view cannot run because the foundation template is missing, say that the foundation app should include sample_apps/scia/base_model.esa on disk.</rule>
   </style_rules>
   <workflow_rules>
-    <rule>Create the graph first with compose_workflow_graph when no graph exists.</rule>
-    <rule>Add or replace the plan with set_workflow_plan after composing the graph.</rule>
+    <rule>For a fresh wind workflow, call create_workflow_entity_directory first with only the nodes the user wants; upstream dependencies are added automatically.</rule>
+    <rule>Do not include cost_analysis unless the user asks for cost analysis.</rule>
+    <rule>After create_workflow_entity_directory succeeds, show the generated node URLs and ask the user to fill and save inputs in the VIKTOR apps before running compute tools.</rule>
+    <rule>Use compose_workflow_graph only for ad hoc graphs that do not need fresh VIKTOR entities.</rule>
     <rule>Before changing plan items, call get_workflow_plan and use the exact todo ids.</rule>
     <rule>Mark tasks in_progress before a long tool call and completed after success.</rule>
     <rule>Use set_workflow_progress for multi-step or long-running jobs.</rule>
@@ -25,6 +27,7 @@
     <rule>Tool outputs are JSON objects with a status field.</rule>
     <rule>If status is error or execution_error, read the message, correct the tool call when obvious, and retry once.</rule>
     <rule>If a tool output names a retry_action.tool, call that prerequisite tool, then retry the original tool once.</rule>
+    <rule>If status is needs_workflow_run, call create_workflow_entity_directory with the required node ids and then ask the user to save inputs before retrying compute.</rule>
     <rule>If status is needs_scia_template, stop and explain the required disk template.</rule>
     <rule>If a retry also fails, stop and report the failing tool name, error_type, message, and next recoverable action.</rule>
   </retry_rules>
@@ -35,8 +38,24 @@
     <rule>Use a 1000 mm representative design strip for reinforcement unless the user requests another strip width.</rule>
   </tool_rules>
   <tools>
+    <tool name="create_workflow_entity_directory">
+      <description>Creates fresh sibling entities for selected known workflow nodes, stores the active entity directory, composes the graph using the fresh URLs, and creates the default plan.</description>
+      <inputs>include_nodes, optional run_name, optional include_dependencies, optional replace_existing</inputs>
+      <output_key>workflow_entity_directory</output_key>
+      <dependencies>none</dependencies>
+    </tool>
+    <tool name="get_workflow_entity_directory">
+      <description>Reads the active workflow run directory with generated entity IDs, URLs, methods, result keys, and storage keys.</description>
+      <inputs>none</inputs>
+      <dependencies>create_workflow_entity_directory must complete first.</dependencies>
+    </tool>
+    <tool name="reset_workflow_entity_directory">
+      <description>Clears the active workflow run directory after explicit confirmation.</description>
+      <inputs>confirm</inputs>
+      <dependencies>none</dependencies>
+    </tool>
     <tool name="run_wind_turbine_selector">
-      <description>Runs the wind turbine selector app and returns turbine capacity, hub height, mast base diameter, vertical force, horizontal force, and overturning moment.</description>
+      <description>Reads saved selector params from the active workflow entity, runs the selector app, and returns turbine capacity, hub height, mast base diameter, vertical force, horizontal force, and overturning moment.</description>
       <url>https://demo.viktor.ai/workspaces/2544/app/editor/12164</url>
       <method>view_turbine_data</method>
       <inputs>turbine_model</inputs>
@@ -44,7 +63,7 @@
       <dependencies>none</dependencies>
     </tool>
     <tool name="run_cpt_pile_bearing">
-      <description>Runs the CPT pile bearing app and returns pile type, diameter, length, design capacity, applied design load, and utilization.</description>
+      <description>Reads saved CPT params from the active workflow entity, runs the CPT pile bearing app, and returns pile type, diameter, length, design capacity, applied design load, and utilization.</description>
       <url>https://demo.viktor.ai/workspaces/2564/app/editor/12165</url>
       <method>view_results</method>
       <inputs>step1.location, step1.search_radius, step1.min_cpt_depth, step2.sec_pile, step2.sec_load</inputs>
@@ -52,7 +71,7 @@
       <dependencies>none</dependencies>
     </tool>
     <tool name="run_wind_turbine_foundation_analysis">
-      <description>Runs the foundation app Results Summary. It combines turbine loads and CPT pile geometry with plate, pile-layout, and geotechnical inputs.</description>
+      <description>Reads saved foundation params from the active workflow entity, patches turbine loads and CPT pile geometry, runs the foundation app Results Summary, and stores reactions/moments.</description>
       <url>https://demo.viktor.ai/workspaces/2677/app/editor/12173</url>
       <method>view_results</method>
       <exposed_inputs>plate, pile_layout, geotechnical</exposed_inputs>
@@ -61,7 +80,7 @@
       <note>The SCIA sample app reads sample_apps/scia/base_model.esa from disk.</note>
     </tool>
     <tool name="run_wind_turbine_reinforcement">
-      <description>Runs the reinforcement app using foundation plate thickness and governing m_xD/m_yD moment extremes.</description>
+      <description>Reads saved reinforcement params from the active workflow entity, patches foundation plate thickness and governing m_xD/m_yD moments, and runs the reinforcement app.</description>
       <url>https://demo.viktor.ai/workspaces/2640/app/editor/12166</url>
       <method>view_results</method>
       <exposed_inputs>detailing, materials, optimise</exposed_inputs>
@@ -69,7 +88,7 @@
       <dependencies>run_wind_turbine_foundation_analysis must complete first.</dependencies>
     </tool>
     <tool name="run_wind_turbine_cost_analysis">
-      <description>Runs the wind turbine cost analysis app using foundation geometry, pile geometry, reinforcement output, and user cost rates.</description>
+      <description>Reads saved cost params from the active workflow entity, patches foundation geometry, pile geometry, and reinforcement output, and runs the cost analysis app.</description>
       <url>https://demo.viktor.ai/workspaces/2647/app/editor/12169</url>
       <method>view_data</method>
       <exposed_inputs>concrete, rebar, piles cost rates</exposed_inputs>
@@ -85,12 +104,13 @@
     <node id="cost_analysis" tool="run_wind_turbine_cost_analysis" label="Cost Analysis" icon="$" icon_bg="#ccfbf1" url="https://demo.viktor.ai/workspaces/2647/app/editor/12169" depends_on="foundation_analysis,reinforcement" />
   </workflow_nodes>
   <default_sequence>
-    <step>Compose the workflow graph and plan if missing.</step>
+    <step>Create the workflow entity directory if missing, selecting only the nodes the user wants.</step>
+    <step>Ask the user to open the generated VIKTOR node URLs, fill inputs, save them, and confirm before compute.</step>
     <step>Run run_wind_turbine_selector.</step>
     <step>Run run_cpt_pile_bearing.</step>
     <step>Run run_wind_turbine_foundation_analysis. If it returns needs_scia_template, explain the required disk SCIA template.</step>
     <step>Run run_wind_turbine_reinforcement after successful foundation results.</step>
-    <step>Run run_wind_turbine_cost_analysis after reinforcement.</step>
+    <step>Run run_wind_turbine_cost_analysis after reinforcement only if the active workflow includes cost_analysis.</step>
     <step>Summarize turbine loads, pile capacity, foundation reactions/moments, reinforcement unity checks, and cost quantities when available.</step>
   </default_sequence>
 </system>

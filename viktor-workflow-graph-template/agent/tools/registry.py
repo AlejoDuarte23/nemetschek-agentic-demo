@@ -16,10 +16,16 @@ from agent.tools.graph_tools import (
 )
 from agent.tools.viktor_tools import (
     CptPileBearingParams,
+    CreateWorkflowEntityDirectoryArgs,
+    GetWorkflowEntityDirectoryArgs,
+    ResetWorkflowEntityDirectoryArgs,
     WindTurbineCostAnalysisParams,
     WindTurbineFoundationAnalysisParams,
     WindTurbineReinforcementParams,
     WindTurbineSelectorParams,
+    create_workflow_entity_directory_func,
+    get_workflow_entity_directory_func,
+    reset_workflow_entity_directory_func,
     run_cpt_pile_bearing_func,
     run_wind_turbine_cost_analysis_func,
     run_wind_turbine_foundation_analysis_func,
@@ -34,6 +40,9 @@ TOOL_DISPLAY_NAMES = {
     "set_workflow_plan": "Set Workflow Plan",
     "update_workflow_plan": "Update Workflow Plan",
     "set_workflow_progress": "Set Workflow Progress",
+    "create_workflow_entity_directory": "Create Workflow Entities",
+    "get_workflow_entity_directory": "Get Workflow Entities",
+    "reset_workflow_entity_directory": "Reset Workflow Entities",
     "run_wind_turbine_selector": "Run Wind Turbine Selector",
     "run_cpt_pile_bearing": "Run CPT Pile Bearing",
     "run_wind_turbine_foundation_analysis": "Run Foundation Analysis",
@@ -86,10 +95,33 @@ def get_tools() -> list[Any]:
             set_workflow_progress_func,
         ),
         function_tool(
+            "create_workflow_entity_directory",
+            (
+                "Create fresh sibling VIKTOR entities for selected known workflow "
+                "nodes, save the active entity directory, and compose the graph with "
+                "the new entity URLs."
+            ),
+            CreateWorkflowEntityDirectoryArgs,
+            create_workflow_entity_directory_func,
+        ),
+        function_tool(
+            "get_workflow_entity_directory",
+            "Return the active workflow run entity IDs, URLs, methods, and storage keys.",
+            GetWorkflowEntityDirectoryArgs,
+            get_workflow_entity_directory_func,
+        ),
+        function_tool(
+            "reset_workflow_entity_directory",
+            "Clear the active workflow entity directory after explicit confirmation.",
+            ResetWorkflowEntityDirectoryArgs,
+            reset_workflow_entity_directory_func,
+        ),
+        function_tool(
             "run_wind_turbine_selector",
             (
-                "Run the wind turbine selector VIKTOR app. Stores turbine capacity, "
-                "mast diameter, and base loads for foundation analysis."
+                "Read saved params from the active workflow selector entity, run the "
+                "wind turbine selector VIKTOR app, and store turbine capacity, mast "
+                "diameter, and base loads for foundation analysis."
             ),
             WindTurbineSelectorParams,
             run_wind_turbine_selector_func,
@@ -97,8 +129,9 @@ def get_tools() -> list[Any]:
         function_tool(
             "run_cpt_pile_bearing",
             (
-                "Run the CPT pile bearing VIKTOR app. Stores pile capacity, pile length, "
-                "and pile diameter for foundation analysis."
+                "Read saved params from the active workflow CPT entity, run the CPT "
+                "pile bearing VIKTOR app, and store pile capacity, pile length, and "
+                "pile diameter for foundation analysis."
             ),
             CptPileBearingParams,
             run_cpt_pile_bearing_func,
@@ -106,9 +139,9 @@ def get_tools() -> list[Any]:
         function_tool(
             "run_wind_turbine_foundation_analysis",
             (
-                "Run the wind turbine foundation SCIA Results Summary. Reads turbine "
-                "loads from run_wind_turbine_selector and pile geometry from "
-                "run_cpt_pile_bearing. Stores foundation params and result data."
+                "Read saved params from the active workflow foundation entity, patch "
+                "turbine loads and CPT pile geometry, run the SCIA Results Summary, "
+                "and store foundation params and result data."
             ),
             WindTurbineFoundationAnalysisParams,
             run_wind_turbine_foundation_analysis_func,
@@ -116,8 +149,9 @@ def get_tools() -> list[Any]:
         function_tool(
             "run_wind_turbine_reinforcement",
             (
-                "Run the reinforcement app using foundation plate thickness and "
-                "governing m_xD/m_yD moments from the foundation Results Summary."
+                "Read saved params from the active workflow reinforcement entity, "
+                "patch foundation plate thickness and governing m_xD/m_yD moments, "
+                "and run the reinforcement app."
             ),
             WindTurbineReinforcementParams,
             run_wind_turbine_reinforcement_func,
@@ -125,8 +159,8 @@ def get_tools() -> list[Any]:
         function_tool(
             "run_wind_turbine_cost_analysis",
             (
-                "Run the wind turbine cost analysis app using foundation geometry and "
-                "reinforcement output stored by upstream tools."
+                "Read saved params from the active workflow cost entity, patch "
+                "foundation geometry and reinforcement output, and run the cost app."
             ),
             WindTurbineCostAnalysisParams,
             run_wind_turbine_cost_analysis_func,

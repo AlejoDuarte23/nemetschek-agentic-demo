@@ -18,6 +18,14 @@ from agent.tools.viktor_tools.wind_turbine_selector import (
     WindTurbineSelectorParams,
     run_wind_turbine_selector_func,
 )
+from agent.tools.viktor_tools.workflow_entities import (
+    CreateWorkflowEntityDirectoryArgs,
+    GetWorkflowEntityDirectoryArgs,
+    ResetWorkflowEntityDirectoryArgs,
+    create_workflow_entity_directory_func,
+    get_workflow_entity_directory_func,
+    reset_workflow_entity_directory_func,
+)
 
 
 __all__ = [
@@ -26,6 +34,12 @@ __all__ = [
     "WindTurbineFoundationAnalysisParams",
     "WindTurbineReinforcementParams",
     "WindTurbineSelectorParams",
+    "CreateWorkflowEntityDirectoryArgs",
+    "GetWorkflowEntityDirectoryArgs",
+    "ResetWorkflowEntityDirectoryArgs",
+    "create_workflow_entity_directory_func",
+    "get_workflow_entity_directory_func",
+    "reset_workflow_entity_directory_func",
     "run_cpt_pile_bearing_func",
     "run_wind_turbine_cost_analysis_func",
     "run_wind_turbine_foundation_analysis_func",
