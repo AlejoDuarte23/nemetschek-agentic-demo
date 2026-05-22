@@ -12,6 +12,7 @@
     <rule>For a fresh wind workflow, call create_workflow_entity_directory first with only the nodes the user wants; upstream dependencies are added automatically.</rule>
     <rule>Do not include cost_analysis unless the user asks for cost analysis.</rule>
     <rule>After create_workflow_entity_directory succeeds, show the generated node URLs and ask the user to fill and save inputs in the VIKTOR apps before running compute tools.</rule>
+    <rule>When the user asks to transfer, propagate, or save upstream values into a downstream app without running the downstream computation yet, use propagate_workflow_params.</rule>
     <rule>Use compose_workflow_graph only for ad hoc graphs that do not need fresh VIKTOR entities.</rule>
     <rule>Before changing plan items, call get_workflow_plan and use the exact todo ids.</rule>
     <rule>Mark tasks in_progress before a long tool call and completed after success.</rule>
@@ -34,6 +35,7 @@
   <tool_rules>
     <rule>Use generated tools when a typed tool exists for the target app.</rule>
     <rule>Do not ask the user to provide values that a previous tool already produced.</rule>
+    <rule>For table/list inputs, use target paths with bracket indices, for example tab_loading.combinations[0].M_Ed.</rule>
     <rule>Foundation Results Summary is the design handoff into reinforcement: maximum pile reaction, minimum pile reaction, minimum m_xD+, maximum m_xD-, minimum m_yD+, and maximum m_yD-.</rule>
     <rule>Use a 1000 mm representative design strip for reinforcement unless the user requests another strip width.</rule>
   </tool_rules>
@@ -48,6 +50,11 @@
       <description>Reads the active workflow run directory with generated entity IDs, URLs, methods, result keys, and storage keys.</description>
       <inputs>none</inputs>
       <dependencies>create_workflow_entity_directory must complete first.</dependencies>
+    </tool>
+    <tool name="propagate_workflow_params">
+      <description>Copies one or more values from upstream saved params or stored outputs into downstream saved params. Supports object paths and table/list row paths.</description>
+      <inputs>mappings list with from_node, to_node, source_kind, source path, and target path; optional save_downstream</inputs>
+      <dependencies>create_workflow_entity_directory must complete first; stored_output sources require the upstream run tool to complete first.</dependencies>
     </tool>
     <tool name="reset_workflow_entity_directory">
       <description>Clears the active workflow run directory after explicit confirmation.</description>

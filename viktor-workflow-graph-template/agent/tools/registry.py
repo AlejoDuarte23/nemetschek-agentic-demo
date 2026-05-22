@@ -18,6 +18,7 @@ from agent.tools.viktor_tools import (
     CptPileBearingParams,
     CreateWorkflowEntityDirectoryArgs,
     GetWorkflowEntityDirectoryArgs,
+    PropagateWorkflowParamsArgs,
     ResetWorkflowEntityDirectoryArgs,
     WindTurbineCostAnalysisParams,
     WindTurbineFoundationAnalysisParams,
@@ -25,6 +26,7 @@ from agent.tools.viktor_tools import (
     WindTurbineSelectorParams,
     create_workflow_entity_directory_func,
     get_workflow_entity_directory_func,
+    propagate_workflow_params_func,
     reset_workflow_entity_directory_func,
     run_cpt_pile_bearing_func,
     run_wind_turbine_cost_analysis_func,
@@ -42,6 +44,7 @@ TOOL_DISPLAY_NAMES = {
     "set_workflow_progress": "Set Workflow Progress",
     "create_workflow_entity_directory": "Create Workflow Entities",
     "get_workflow_entity_directory": "Get Workflow Entities",
+    "propagate_workflow_params": "Propagate Workflow Params",
     "reset_workflow_entity_directory": "Reset Workflow Entities",
     "run_wind_turbine_selector": "Run Wind Turbine Selector",
     "run_cpt_pile_bearing": "Run CPT Pile Bearing",
@@ -109,6 +112,16 @@ def get_tools() -> list[Any]:
             "Return the active workflow run entity IDs, URLs, methods, and storage keys.",
             GetWorkflowEntityDirectoryArgs,
             get_workflow_entity_directory_func,
+        ),
+        function_tool(
+            "propagate_workflow_params",
+            (
+                "Propagate one or more explicit values from upstream saved params or "
+                "stored output into downstream saved params. Supports table/list "
+                "targets with bracket paths such as tab_loading.combinations[0].M_Ed."
+            ),
+            PropagateWorkflowParamsArgs,
+            propagate_workflow_params_func,
         ),
         function_tool(
             "reset_workflow_entity_directory",

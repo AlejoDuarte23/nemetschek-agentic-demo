@@ -26,6 +26,11 @@ from agent.tools.viktor_tools.workflow_entities import (
     get_workflow_entity_directory_func,
     reset_workflow_entity_directory_func,
 )
+from agent.tools.viktor_tools.workflow_param_propagation import (
+    PropagateWorkflowParamsArgs,
+    WorkflowParamMapping,
+    propagate_workflow_params_func,
+)
 
 
 __all__ = [
@@ -37,8 +42,11 @@ __all__ = [
     "CreateWorkflowEntityDirectoryArgs",
     "GetWorkflowEntityDirectoryArgs",
     "ResetWorkflowEntityDirectoryArgs",
+    "PropagateWorkflowParamsArgs",
+    "WorkflowParamMapping",
     "create_workflow_entity_directory_func",
     "get_workflow_entity_directory_func",
+    "propagate_workflow_params_func",
     "reset_workflow_entity_directory_func",
     "run_cpt_pile_bearing_func",
     "run_wind_turbine_cost_analysis_func",
