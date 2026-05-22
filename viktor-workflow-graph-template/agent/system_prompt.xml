@@ -53,7 +53,7 @@
     </tool>
     <tool name="run_wind_turbine_foundation_analysis">
       <description>Runs the foundation app Results Summary. It combines turbine loads and CPT pile geometry with plate, pile-layout, and geotechnical inputs.</description>
-      <url>https://demo.viktor.ai/workspaces/2651/app/editor/12137</url>
+      <url>https://demo.viktor.ai/workspaces/2677/app/editor/12173</url>
       <method>view_results</method>
       <exposed_inputs>plate, pile_layout, geotechnical</exposed_inputs>
       <output_key>data</output_key>
@@ -80,7 +80,7 @@
   <workflow_nodes>
     <node id="wind_turbine_selector" tool="run_wind_turbine_selector" label="Wind Turbine Selector" icon="WT" icon_bg="#dbeafe" url="https://demo.viktor.ai/workspaces/2544/app/editor/12164" />
     <node id="cpt_pile_bearing" tool="run_cpt_pile_bearing" label="CPT Pile Bearing" icon="CPT" icon_bg="#dcfce7" url="https://demo.viktor.ai/workspaces/2564/app/editor/12165" />
-    <node id="foundation_analysis" tool="run_wind_turbine_foundation_analysis" label="Foundation Analysis" icon="FND" icon_bg="#fef3c7" url="https://demo.viktor.ai/workspaces/2651/app/editor/12137" depends_on="wind_turbine_selector,cpt_pile_bearing" />
+    <node id="foundation_analysis" tool="run_wind_turbine_foundation_analysis" label="Foundation Analysis" icon="FND" icon_bg="#fef3c7" url="https://demo.viktor.ai/workspaces/2677/app/editor/12173" depends_on="wind_turbine_selector,cpt_pile_bearing" />
     <node id="reinforcement" tool="run_wind_turbine_reinforcement" label="Reinforcement" icon="RF" icon_bg="#ede9fe" url="https://demo.viktor.ai/workspaces/2640/app/editor/12166" depends_on="foundation_analysis" />
     <node id="cost_analysis" tool="run_wind_turbine_cost_analysis" label="Cost Analysis" icon="$" icon_bg="#ccfbf1" url="https://demo.viktor.ai/workspaces/2647/app/editor/12169" depends_on="foundation_analysis,reinforcement" />
   </workflow_nodes>

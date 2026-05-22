@@ -23,7 +23,7 @@ flowchart LR
 | --- | ---: | ---: | --- | --- |
 | Wind Turbine Selector | 2544 | 12164 | `view_turbine_data` | `data` |
 | CPT Pile Bearing | 2564 | 12165 | `view_results` | `data` |
-| Wind Turbine Foundation Analysis | 2651 | 12137 | `view_results` | `data` |
+| Wind Turbine Foundation Analysis | 2677 | 12173 | `view_results` | `data` |
 | Reinforcement | 2640 | 12166 | `view_results` | `data` |
 | Wind Turbine Cost Analysis | 2647 | 12169 | `view_data` | `data` |
 

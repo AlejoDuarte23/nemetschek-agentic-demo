@@ -24,8 +24,8 @@ from agent.tools.viktor_tools.wind_turbine_common import (
 )
 
 
-FOUNDATION_WORKSPACE_ID = 2651
-FOUNDATION_ENTITY_ID = 12137
+FOUNDATION_WORKSPACE_ID = 2677
+FOUNDATION_ENTITY_ID = 12173
 FOUNDATION_METHOD_NAME = "view_results"
 FOUNDATION_RESULT_KEY = "data"
 

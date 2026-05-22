@@ -30,9 +30,9 @@
     {
       "node_id": "wind_turbine_foundation_analysis",
       "label": "Wind Turbine Foundation Analysis",
-      "workspace_id": 2651,
-      "entity_id": 12137,
-      "url": "https://demo.viktor.ai/workspaces/2651/app/editor/12137",
+      "workspace_id": 2677,
+      "entity_id": 12173,
+      "url": "https://demo.viktor.ai/workspaces/2677/app/editor/12173",
       "primary_method": "view_results",
       "result_key": "data",
       "storage_key": "wind_turbine_foundation_data",
