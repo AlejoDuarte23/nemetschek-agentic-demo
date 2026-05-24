@@ -18,21 +18,21 @@ from agent.tools.viktor_tools import (
     CptPileBearingParams,
     CreateWorkflowEntityDirectoryArgs,
     GetWorkflowEntityDirectoryArgs,
-    PropagateWorkflowParamsArgs,
     ResetWorkflowEntityDirectoryArgs,
+    SetParamsInNodeArgs,
     WindTurbineCostAnalysisParams,
     WindTurbineFoundationAnalysisParams,
     WindTurbineReinforcementParams,
     WindTurbineSelectorParams,
     create_workflow_entity_directory_func,
     get_workflow_entity_directory_func,
-    propagate_workflow_params_func,
     reset_workflow_entity_directory_func,
     run_cpt_pile_bearing_func,
     run_wind_turbine_cost_analysis_func,
     run_wind_turbine_foundation_analysis_func,
     run_wind_turbine_reinforcement_func,
     run_wind_turbine_selector_func,
+    set_params_in_node_func,
 )
 
 
@@ -44,7 +44,7 @@ TOOL_DISPLAY_NAMES = {
     "set_workflow_progress": "Set Workflow Progress",
     "create_workflow_entity_directory": "Create Workflow Entities",
     "get_workflow_entity_directory": "Get Workflow Entities",
-    "propagate_workflow_params": "Propagate Workflow Params",
+    "set_params_in_node": "Set Params in Node",
     "reset_workflow_entity_directory": "Reset Workflow Entities",
     "run_wind_turbine_selector": "Run Wind Turbine Selector",
     "run_cpt_pile_bearing": "Run CPT Pile Bearing",
@@ -54,7 +54,14 @@ TOOL_DISPLAY_NAMES = {
 }
 
 
-def function_tool(name: str, description: str, schema: type[BaseModel], func: Any) -> Any:
+def function_tool(
+    name: str,
+    description: str,
+    schema: type[BaseModel],
+    func: Any,
+    *,
+    strict_json_schema: bool = True,
+) -> Any:
     from agents import FunctionTool
 
     return FunctionTool(
@@ -62,6 +69,7 @@ def function_tool(name: str, description: str, schema: type[BaseModel], func: An
         description=description,
         params_json_schema=schema.model_json_schema(),
         on_invoke_tool=func,
+        strict_json_schema=strict_json_schema,
     )
 
 
@@ -114,14 +122,14 @@ def get_tools() -> list[Any]:
             get_workflow_entity_directory_func,
         ),
         function_tool(
-            "propagate_workflow_params",
+            "set_params_in_node",
             (
-                "Propagate one or more explicit values from upstream saved params or "
-                "stored output into downstream saved params. Supports table/list "
-                "targets with bracket paths such as tab_loading.combinations[0].M_Ed."
+                "Set or deep-merge a JSON params object into the saved params of an "
+                "active workflow node. Use after building the downstream params object."
             ),
-            PropagateWorkflowParamsArgs,
-            propagate_workflow_params_func,
+            SetParamsInNodeArgs,
+            set_params_in_node_func,
+            strict_json_schema=False,
         ),
         function_tool(
             "reset_workflow_entity_directory",
