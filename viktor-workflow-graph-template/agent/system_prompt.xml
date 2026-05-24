@@ -24,6 +24,7 @@
     <rule>Run run_cpt_pile_bearing before foundation analysis so pile length and pile diameter are available.</rule>
     <rule>Run run_wind_turbine_foundation_analysis before reinforcement so pile reactions and governing plate moments are available.</rule>
     <rule>Run run_wind_turbine_reinforcement before cost analysis so the cost tool can use reinforcement intensity.</rule>
+    <rule>For optimization, cost minimization, design sweeps, or best-configuration requests, call list_skill_files and read_skill_file before planning the loop.</rule>
   </workflow_rules>
   <retry_rules>
     <rule>Tool outputs are JSON objects with a status field.</rule>
@@ -41,6 +42,37 @@
     <rule>Use a 1000 mm representative design strip for reinforcement unless the user requests another strip width.</rule>
   </tool_rules>
   <tools>
+    <tool name="list_skill_files">
+      <description>Lists local optimization skill files available to the agent.</description>
+      <inputs>none</inputs>
+      <dependencies>none</dependencies>
+    </tool>
+    <tool name="read_skill_file">
+      <description>Reads local optimization skill guidance without bloating the system prompt.</description>
+      <inputs>relative_path</inputs>
+      <dependencies>none</dependencies>
+    </tool>
+    <tool name="start_cost_optimization_study">
+      <description>Starts append-only storage for a wind turbine foundation cost optimization study.</description>
+      <inputs>study_name, objective, candidate_budget, variables, fixed_inputs, notes, replace_existing</inputs>
+      <output_key>wind_turbine_cost_optimization_study</output_key>
+      <dependencies>none</dependencies>
+    </tool>
+    <tool name="record_cost_optimization_candidate">
+      <description>Stores one evaluated candidate with design variables, outputs, feasibility, objective cost, and a flattened parallel-coordinate row.</description>
+      <inputs>candidate_id, status, feasible, variables, outputs, cost, notes</inputs>
+      <dependencies>start_cost_optimization_study must complete first.</dependencies>
+    </tool>
+    <tool name="get_cost_optimization_study">
+      <description>Reads the optimization study, best candidate, and parallel-coordinate rows.</description>
+      <inputs>include_candidates, max_candidates</inputs>
+      <dependencies>start_cost_optimization_study must complete first.</dependencies>
+    </tool>
+    <tool name="reset_cost_optimization_study">
+      <description>Clears the active cost optimization study after explicit confirmation.</description>
+      <inputs>confirm</inputs>
+      <dependencies>none</dependencies>
+    </tool>
     <tool name="create_workflow_entity_directory">
       <description>Creates fresh sibling entities for selected known workflow nodes, stores the active entity directory, composes the graph using the fresh URLs, and creates the default plan.</description>
       <inputs>include_nodes, optional run_name, optional include_dependencies, optional replace_existing</inputs>

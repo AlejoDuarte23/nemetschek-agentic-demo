@@ -1,0 +1,22 @@
+{
+  "storage_key": "wind_turbine_cost_optimization_study",
+  "row_shape": {
+    "candidate_id": "string",
+    "status": "pending | completed | failed | infeasible",
+    "feasible": "boolean",
+    "objective_value": "number | null",
+    "num_piles": "number | null",
+    "pile_edge_distance_mm": "number | null",
+    "slab_diameter_m": "number | null",
+    "slab_thickness_m": "number | null",
+    "plate_edge_thickness_m": "number | null",
+    "pedestal_height_m": "number | null",
+    "tip_stiffness_kn_per_m": "number | null",
+    "lateral_stiffness_kn_per_m2": "number | null",
+    "max_pile_reaction_kn": "number | null",
+    "min_pile_reaction_kn": "number | null",
+    "rebar_mass_kg": "number | null",
+    "total_pile_length_m": "number | null",
+    "total_cost": "number | null"
+  }
+}

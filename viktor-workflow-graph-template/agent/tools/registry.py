@@ -14,6 +14,22 @@ from agent.tools.graph_tools import (
     set_workflow_progress_func,
     update_workflow_plan_func,
 )
+from agent.tools.optimization_tools import (
+    GetCostOptimizationStudyArgs,
+    RecordCostOptimizationCandidateArgs,
+    ResetCostOptimizationStudyArgs,
+    StartCostOptimizationStudyArgs,
+    get_cost_optimization_study_func,
+    record_cost_optimization_candidate_func,
+    reset_cost_optimization_study_func,
+    start_cost_optimization_study_func,
+)
+from agent.tools.skill_tools import (
+    ListSkillFilesArgs,
+    ReadSkillFileArgs,
+    list_skill_files_func,
+    read_skill_file_func,
+)
 from agent.tools.viktor_tools import (
     CptPileBearingParams,
     CreateWorkflowEntityDirectoryArgs,
@@ -42,6 +58,12 @@ TOOL_DISPLAY_NAMES = {
     "set_workflow_plan": "Set Workflow Plan",
     "update_workflow_plan": "Update Workflow Plan",
     "set_workflow_progress": "Set Workflow Progress",
+    "list_skill_files": "List Skill Files",
+    "read_skill_file": "Read Skill File",
+    "start_cost_optimization_study": "Start Cost Optimization",
+    "record_cost_optimization_candidate": "Record Optimization Candidate",
+    "get_cost_optimization_study": "Get Cost Optimization",
+    "reset_cost_optimization_study": "Reset Cost Optimization",
     "create_workflow_entity_directory": "Create Workflow Entities",
     "get_workflow_entity_directory": "Get Workflow Entities",
     "set_params_in_node": "Set Params in Node",
@@ -104,6 +126,45 @@ def get_tools() -> list[Any]:
             "Set, replace, or clear execution progress below the plan.",
             SetWorkflowProgressArgs,
             set_workflow_progress_func,
+        ),
+        function_tool(
+            "list_skill_files",
+            "List local optimization skill files that can guide workflow and cost optimization requests.",
+            ListSkillFilesArgs,
+            list_skill_files_func,
+        ),
+        function_tool(
+            "read_skill_file",
+            "Read a local optimization skill file before answering or planning optimization workflows.",
+            ReadSkillFileArgs,
+            read_skill_file_func,
+        ),
+        function_tool(
+            "start_cost_optimization_study",
+            "Create or replace append-only storage for a wind turbine foundation cost optimization study.",
+            StartCostOptimizationStudyArgs,
+            start_cost_optimization_study_func,
+        ),
+        function_tool(
+            "record_cost_optimization_candidate",
+            (
+                "Append or replace one evaluated optimization candidate with design "
+                "variables, result metrics, feasibility, and objective cost."
+            ),
+            RecordCostOptimizationCandidateArgs,
+            record_cost_optimization_candidate_func,
+        ),
+        function_tool(
+            "get_cost_optimization_study",
+            "Read the active optimization study, best candidate, and parallel-coordinate rows.",
+            GetCostOptimizationStudyArgs,
+            get_cost_optimization_study_func,
+        ),
+        function_tool(
+            "reset_cost_optimization_study",
+            "Clear the active cost optimization study after explicit confirmation.",
+            ResetCostOptimizationStudyArgs,
+            reset_cost_optimization_study_func,
         ),
         function_tool(
             "create_workflow_entity_directory",
