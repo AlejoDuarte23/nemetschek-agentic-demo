@@ -16,6 +16,13 @@ export class WorkflowGraph {
     this.EDGE_W = (rootStyle.getPropertyValue("--edge-w") || "8").trim();
     this.EDGE_CURVE = 80;
 
+    const outputIcon = (label, stroke = "#111827") => `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" aria-hidden="true">
+        <rect x="6" y="8" width="32" height="28" rx="7" fill="none" stroke="${stroke}" stroke-width="2.4"/>
+        <path d="M13 28L19 22L24 26L31 17" fill="none" stroke="${stroke}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="22" y="15" fill="${stroke}" font-family="system-ui, sans-serif" font-size="8" font-weight="800" text-anchor="middle">${label}</text>
+      </svg>`;
+
     // Pastel colors and custom icons for each node type
     this.typeStyles = {
       sap2000_load_combos: {
@@ -216,6 +223,26 @@ export class WorkflowGraph {
           <line x1="15" y1="3" x2="15" y2="21"></line>
         </svg>`
       },
+      wind_turbine_selector: {
+        bg: "#dbeafe"
+      },
+      cpt_pile_bearing: {
+        bg: "#dcfce7"
+      },
+      foundation_analysis: {
+        bg: "#fef3c7"
+      },
+      reinforcement: {
+        bg: "#ede9fe"
+      },
+      cost_analysis: {
+        bg: "#ccfbf1"
+      },
+      show_hide_optimization_results: {
+        bg: "#e0f2fe",
+        isOutput: true,
+        icon: outputIcon("OPT", "#0369a1")
+      },
       default: {
         bg: "#E5E5E5",
         icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -225,6 +252,21 @@ export class WorkflowGraph {
         </svg>`
       }
     };
+
+    const viktorAppIcon = this.typeStyles.footing_design.icon;
+    [
+      "wind_turbine_selector",
+      "cpt_pile_bearing",
+      "foundation_analysis",
+      "reinforcement",
+      "cost_analysis",
+    ].forEach((type) => {
+      this.typeStyles[type] = {
+        ...this.typeStyles[type],
+        iconClassName: [this.typeStyles[type].iconClassName || "", "icon-viktor"].filter(Boolean).join(" "),
+        icon: viktorAppIcon,
+      };
+    });
 
     this.canvasState = { workflow: { nodes: [] }, plan: null, progress: null };
     this.data = { nodes: [] };
@@ -676,7 +718,13 @@ export class WorkflowGraph {
 
   _styleForNode(node) {
     const style = this.typeStyles[node.type] || this.typeStyles.default;
-    if (!node.icon) return style;
+    const hasTypedIcon = Boolean(node.type && node.type !== "default" && this.typeStyles[node.type]);
+    if (!node.icon || hasTypedIcon) {
+      return {
+        ...style,
+        bg: node.icon_bg || style.bg,
+      };
+    }
 
     return {
       ...style,

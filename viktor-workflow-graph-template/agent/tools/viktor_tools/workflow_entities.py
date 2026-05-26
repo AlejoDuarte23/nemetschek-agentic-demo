@@ -536,6 +536,7 @@ class WorkflowGraphPublisher:
                 Node(
                     id=entity.node_id,
                     title=entity.label,
+                    type=entity.node_id,
                     icon=entity.icon,
                     icon_bg=entity.icon_bg,
                     url=entity.url,
