@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Literal
 
 import viktor as vkt
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, ValidationError
 
 from agent.tools.viktor_tools.responses import (
     execution_error_response,
@@ -55,47 +55,26 @@ class StartCostOptimizationStudyArgs(BaseModel):
     replace_existing: bool = Field(default=False)
 
 
-class CandidateDesignVariables(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    num_piles: int | None = None
-    pile_diameter_mm: float | None = None
-    pile_length_m: float | None = None
-    pile_edge_distance_mm: float | None = None
-    slab_diameter_m: float | None = None
-    slab_thickness_m: float | None = None
-    plate_edge_thickness_m: float | None = None
-    pedestal_height_m: float | None = None
-    tip_stiffness_kn_per_m: float | None = None
-    lateral_stiffness_kn_per_m2: float | None = None
-    extra_variables: list[OptimizationScalar] = Field(default_factory=list)
-
-
-class CandidateOutputs(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    total_cost: float | None = None
-    concrete_cost: float | None = None
-    rebar_cost: float | None = None
-    pile_cost: float | None = None
-    plate_volume_m3: float | None = None
-    pedestal_volume_m3: float | None = None
-    rebar_mass_kg: float | None = None
-    total_pile_length_m: float | None = None
-    max_pile_reaction_kn: float | None = None
-    min_pile_reaction_kn: float | None = None
-    reinforcement_utilization: float | None = None
-    extra_outputs: list[OptimizationScalar] = Field(default_factory=list)
-
-
 class RecordCostOptimizationCandidateArgs(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     candidate_id: str = Field(..., description="Stable candidate id, for example cand-001.")
     status: CandidateStatus = "completed"
     feasible: bool = True
-    variables: CandidateDesignVariables = Field(default_factory=CandidateDesignVariables)
-    outputs: CandidateOutputs = Field(default_factory=CandidateOutputs)
+    variables: dict[str, JsonValue] = Field(
+        default_factory=dict,
+        description=(
+            "Flat or nested JSON object with varied candidate inputs. Examples: "
+            "num_piles, slab_thickness_m, or step_geo.sec_piles.num_piles."
+        ),
+    )
+    outputs: dict[str, JsonValue] = Field(
+        default_factory=dict,
+        description=(
+            "Flat or nested JSON object with candidate result metrics such as "
+            "total_cost, max_pile_reaction_kn, or rebar_mass_kg."
+        ),
+    )
     cost: float | None = Field(default=None, description="Objective cost. Uses outputs.total_cost if omitted.")
     notes: str | None = None
     input_storage_keys: list[str] = Field(default_factory=list)
@@ -121,8 +100,8 @@ class CostOptimizationCandidate(BaseModel):
     candidate_id: str
     status: CandidateStatus
     feasible: bool
-    variables: CandidateDesignVariables
-    outputs: CandidateOutputs
+    variables: dict[str, JsonValue]
+    outputs: dict[str, JsonValue]
     objective_value: float | None
     notes: str | None = None
     input_storage_keys: list[str] = Field(default_factory=list)
@@ -170,26 +149,54 @@ def try_load_study() -> CostOptimizationStudy | None:
         return None
 
 
-def scalar_to_row(row: dict[str, Any], scalar: OptimizationScalar) -> None:
-    if scalar.value is not None:
-        row[scalar.name] = scalar.value
+def to_float(value: Any) -> float | None:
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return None
+
+
+def flatten_json(value: Any, *, prefix: str = "") -> dict[str, Any]:
+    flattened: dict[str, Any] = {}
+
+    if isinstance(value, dict):
+        for key, item in value.items():
+            child_prefix = f"{prefix}.{key}" if prefix else str(key)
+            flattened.update(flatten_json(item, prefix=child_prefix))
+        return flattened
+
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            child_prefix = f"{prefix}[{index}]"
+            flattened.update(flatten_json(item, prefix=child_prefix))
+        return flattened
+
+    if prefix:
+        flattened[prefix] = value
+    return flattened
+
+
+def merge_row_values(row: dict[str, Any], values: dict[str, Any], *, collision_prefix: str) -> None:
+    for key, value in values.items():
+        if value is None:
+            continue
+        row_key = key if key not in row else f"{collision_prefix}_{key}"
+        row[row_key] = value
 
 
 def candidate_row(candidate: CostOptimizationCandidate) -> dict[str, Any]:
-    variables = candidate.variables.model_dump(exclude={"extra_variables"})
-    outputs = candidate.outputs.model_dump(exclude={"extra_outputs"})
     row: dict[str, Any] = {
         "candidate_id": candidate.candidate_id,
         "status": candidate.status,
         "feasible": candidate.feasible,
         "objective_value": candidate.objective_value,
     }
-    row.update({key: value for key, value in variables.items() if value is not None})
-    row.update({key: value for key, value in outputs.items() if value is not None})
-    for scalar in candidate.variables.extra_variables:
-        scalar_to_row(row, scalar)
-    for scalar in candidate.outputs.extra_outputs:
-        scalar_to_row(row, scalar)
+    merge_row_values(row, flatten_json(candidate.variables), collision_prefix="variable")
+    merge_row_values(row, flatten_json(candidate.outputs), collision_prefix="output")
     return row
 
 
@@ -326,7 +333,7 @@ async def record_cost_optimization_candidate_func(context: Any, args: str) -> st
 
     objective_value = payload.cost
     if objective_value is None:
-        objective_value = payload.outputs.total_cost
+        objective_value = to_float(payload.outputs.get("total_cost"))
 
     candidate = CostOptimizationCandidate(
         candidate_id=payload.candidate_id,

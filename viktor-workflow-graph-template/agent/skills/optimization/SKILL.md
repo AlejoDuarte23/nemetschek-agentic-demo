@@ -28,6 +28,8 @@ Good first-pass variables are:
 - `step_geo_tech.sec_tip.tip_stiffness`
 - `step_geo_tech.sec_lateral.lateral_stiffness`
 
+This foundation app is a round concrete plate with piles in a circular layout. Do not use rectangular grid fields such as `pile_layout.rows`, `pile_layout.cols`, `plate.length`, `plate.width`, `spacing_x`, or `spacing_y`.
+
 Only vary `pile_length` or `pile_diameter` when the user allows changing the CPT/pile design assumptions. Otherwise treat them as soil-output values from the CPT app.
 
 ## Loop
@@ -84,3 +86,5 @@ The optimization storage keeps one flattened row per candidate. Each row should 
 - objective value
 
 Use `get_cost_optimization_study` to retrieve `parallel_coordinates_rows` and `parallel_coordinates_dimensions`.
+
+`record_cost_optimization_candidate` accepts flat or nested variables and outputs. Prefer flat keys that match the actual app, for example `num_piles`, `slab_diameter_m`, and `slab_thickness_m`.

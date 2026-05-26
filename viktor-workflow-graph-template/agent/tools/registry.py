@@ -153,6 +153,7 @@ def get_tools() -> list[Any]:
             ),
             RecordCostOptimizationCandidateArgs,
             record_cost_optimization_candidate_func,
+            strict_json_schema=False,
         ),
         function_tool(
             "get_cost_optimization_study",

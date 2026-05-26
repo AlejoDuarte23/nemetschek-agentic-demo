@@ -1,4 +1,5 @@
 import asyncio
+import os
 import queue
 import threading
 from collections.abc import Callable, Iterator
@@ -6,7 +7,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import viktor as vkt
 from agents import (
     Agent,
     ItemHelpers,
@@ -17,6 +17,7 @@ from agents import (
 )
 from openai import AsyncOpenAI
 from openai.types.responses import ResponseTextDeltaEvent
+from dotenv import load_dotenv
 
 from agent.tools import TOOL_DISPLAY_NAMES, get_tools
 
@@ -24,17 +25,24 @@ from agent.tools import TOOL_DISPLAY_NAMES, get_tools
 
 PROMPT_PATH = Path(__file__).resolve().parent / "system_prompt.xml"
 MAX_AGENT_TURNS = 20
+DEFAULT_AGENT_MODEL = "gpt-5.4"
 
 event_loop: asyncio.AbstractEventLoop | None = None
 event_loop_thread: threading.Thread | None = None
 
 
-viktor_llm_client = AsyncOpenAI(
-    base_url=vkt.ViktorOpenAI.get_base_url(version="v1"),
-    api_key=vkt.ViktorOpenAI.get_api_key(),
-)
+load_dotenv(".env", override=False)
 
-set_default_openai_client(viktor_llm_client, use_for_tracing=False)
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise RuntimeError(
+        "Missing OPENAI_API_KEY. Add it to .env for local runs or to VIKTOR app "
+        "secrets before publishing."
+    )
+
+openai_client = AsyncOpenAI(api_key=openai_api_key)
+
+set_default_openai_client(openai_client, use_for_tracing=False)
 set_tracing_disabled(True)
 
 @dataclass
@@ -50,7 +58,7 @@ def load_system_prompt() -> str:
 def build_agent() -> Agent[AgentContext]:
     return Agent[AgentContext](
         name="VIKTOR Workflow Assistant",
-        model="openai.gpt-oss-120b",
+        model=os.getenv("OPENAI_AGENT_MODEL", DEFAULT_AGENT_MODEL),
         instructions=load_system_prompt(),
         tools=get_tools(),
     )

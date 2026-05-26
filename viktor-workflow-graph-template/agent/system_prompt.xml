@@ -24,6 +24,7 @@
     <rule>Run run_cpt_pile_bearing before foundation analysis so pile length and pile diameter are available.</rule>
     <rule>Run run_wind_turbine_foundation_analysis before reinforcement so pile reactions and governing plate moments are available.</rule>
     <rule>Run run_wind_turbine_reinforcement before cost analysis so the cost tool can use reinforcement intensity.</rule>
+    <rule>The foundation app is a round plate with circular pile layout. Use slab_diameter, slab_thickness, plate_edge_thickness, pedestal_height, num_piles, pile_edge_distance, tip_stiffness, and lateral_stiffness; do not use rectangular rows, cols, plate length/width, spacing_x, or spacing_y fields.</rule>
     <rule>For optimization, cost minimization, design sweeps, or best-configuration requests, call list_skill_files and read_skill_file before planning the loop.</rule>
   </workflow_rules>
   <retry_rules>
@@ -114,7 +115,7 @@
       <description>Reads saved foundation params from the active workflow entity, patches turbine loads and CPT pile geometry, runs the foundation app Results Summary, and stores reactions/moments.</description>
       <url>https://demo.viktor.ai/workspaces/2677/app/editor/12173</url>
       <method>view_results</method>
-      <exposed_inputs>plate, pile_layout, geotechnical</exposed_inputs>
+      <exposed_inputs>plate.slab_diameter, plate.slab_thickness, plate.plate_edge_thickness, plate.pedestal_height, pile_layout.num_piles, pile_layout.pile_edge_distance, geotechnical.tip_stiffness, geotechnical.lateral_stiffness</exposed_inputs>
       <output_key>data</output_key>
       <dependencies>run_wind_turbine_selector and run_cpt_pile_bearing must complete first.</dependencies>
       <note>The SCIA sample app reads sample_apps/scia/base_model.esa from disk.</note>
