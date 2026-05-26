@@ -36,8 +36,11 @@ Pile length is iterative. The CPT app needs an initial pile tip level or length 
 
 ## Loop
 
-1. Make sure a workflow entity directory exists for the needed nodes.
-2. Offer two input paths:
+1. Create a fresh entity-backed workflow graph immediately with `create_workflow_entity_directory`.
+   - Include `cost_analysis`; dependencies will add `wind_turbine_selector`, `cpt_pile_bearing`, `foundation_analysis`, and `reinforcement`.
+   - Use `replace_existing=true` so the graph uses newly created sibling entities for this optimization run.
+   - Do this before asking for turbine model, CPT coordinates, budget, or variable ranges.
+2. Show the workflow graph/node URLs and tell the user to go through the workflow. Offer two input paths:
    - Chat setup: ask for turbine model, exact CPT coordinates if known, and CPT pile assumptions, then run the typed tools with those values.
    - Manual setup: show the generated VIKTOR app URLs and ask the user to save inputs there.
 3. Run `run_wind_turbine_selector`.

@@ -172,7 +172,8 @@ def get_tools() -> list[Any]:
             (
                 "Create fresh sibling VIKTOR entities for selected known workflow "
                 "nodes, save the active entity directory, and compose the graph with "
-                "the new entity URLs."
+                "the new entity URLs. Use this first for new workflow creation, "
+                "design, or optimization requests."
             ),
             CreateWorkflowEntityDirectoryArgs,
             create_workflow_entity_directory_func,

@@ -100,8 +100,11 @@ class CreateWorkflowEntityDirectoryArgs(BaseModel):
         description="Automatically add upstream dependencies required by selected nodes.",
     )
     replace_existing: bool = Field(
-        default=False,
-        description="Replace an existing active workflow entity directory.",
+        default=True,
+        description=(
+            "Replace an existing active workflow entity directory. Defaults to true "
+            "so create requests produce a fresh entity-backed workflow graph."
+        ),
     )
 
 
@@ -780,8 +783,11 @@ async def create_workflow_entity_directory_func(context: Any, args: str) -> str:
             run_name=exc.directory.run_name,
             directory_storage_key=WORKFLOW_ENTITY_DIRECTORY_KEY,
             retry_action={
-                "tool": "get_workflow_entity_directory",
-                "reason": "Inspect the existing run before replacing it.",
+                "tool": "create_workflow_entity_directory",
+                "reason": (
+                    "Retry with replace_existing=true when the user asked to create "
+                    "a fresh workflow run."
+                ),
             },
         )
     except Exception as exc:
