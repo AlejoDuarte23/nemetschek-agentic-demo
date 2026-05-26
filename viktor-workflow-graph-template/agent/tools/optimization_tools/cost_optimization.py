@@ -16,6 +16,7 @@ from agent.tools.viktor_tools.wind_turbine_common import (
 
 
 COST_OPTIMIZATION_STORAGE_KEY = "wind_turbine_cost_optimization_study"
+SHOW_OPTIMIZATION_RESULTS_KEY = "show_optimization_results"
 
 CandidateStatus = Literal["pending", "completed", "failed", "infeasible"]
 OptimizationObjective = Literal["minimize_total_cost"]
@@ -92,6 +93,15 @@ class ResetCostOptimizationStudyArgs(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     confirm: bool = Field(default=False)
+
+
+class ShowHideOptimizationResultsArgs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    action: Literal["show", "hide"] = Field(
+        ...,
+        description="Show or hide the Optimization Results WebView.",
+    )
 
 
 class CostOptimizationCandidate(BaseModel):
@@ -445,9 +455,58 @@ async def reset_cost_optimization_study_func(context: Any, args: str) -> str:
         vkt.Storage().delete(COST_OPTIMIZATION_STORAGE_KEY, scope="entity")
     except Exception:
         pass
+    try:
+        vkt.Storage().delete(SHOW_OPTIMIZATION_RESULTS_KEY, scope="entity")
+    except Exception:
+        pass
 
     return tool_response(
         "completed",
         message="Cost optimization study cleared.",
         cleared_storage_key=COST_OPTIMIZATION_STORAGE_KEY,
+        hidden_view_key=SHOW_OPTIMIZATION_RESULTS_KEY,
+    )
+
+
+async def show_hide_optimization_results_func(context: Any, args: str) -> str:
+    try:
+        payload = ShowHideOptimizationResultsArgs.model_validate_json(args or "{}")
+    except ValidationError as exc:
+        return validation_error_response(
+            tool="show_hide_optimization_results",
+            message="Invalid optimization results visibility arguments.",
+            error=exc,
+            retry_tool="show_hide_optimization_results",
+        )
+
+    if payload.action == "show" and try_load_study() is None:
+        return tool_response(
+            "needs_prerequisite",
+            tool="show_hide_optimization_results",
+            message="No active cost optimization study exists to display.",
+            missing_storage_key=COST_OPTIMIZATION_STORAGE_KEY,
+            retry_action={
+                "tool": "start_cost_optimization_study",
+                "reason": "Start and record optimization candidates before showing results.",
+            },
+        )
+
+    try:
+        vkt.Storage().set(
+            SHOW_OPTIMIZATION_RESULTS_KEY,
+            data=vkt.File.from_data(payload.action),
+            scope="entity",
+        )
+    except Exception as exc:
+        return execution_error_response(
+            tool="show_hide_optimization_results",
+            message="Could not update optimization results visibility.",
+            error=exc,
+        )
+
+    return tool_response(
+        "completed",
+        message=f"Optimization results view set to {payload.action}.",
+        visibility=payload.action,
+        storage_key=SHOW_OPTIMIZATION_RESULTS_KEY,
     )

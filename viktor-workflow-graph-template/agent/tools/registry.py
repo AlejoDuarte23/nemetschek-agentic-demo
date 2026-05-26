@@ -18,10 +18,12 @@ from agent.tools.optimization_tools import (
     GetCostOptimizationStudyArgs,
     RecordCostOptimizationCandidateArgs,
     ResetCostOptimizationStudyArgs,
+    ShowHideOptimizationResultsArgs,
     StartCostOptimizationStudyArgs,
     get_cost_optimization_study_func,
     record_cost_optimization_candidate_func,
     reset_cost_optimization_study_func,
+    show_hide_optimization_results_func,
     start_cost_optimization_study_func,
 )
 from agent.tools.skill_tools import (
@@ -64,6 +66,7 @@ TOOL_DISPLAY_NAMES = {
     "record_cost_optimization_candidate": "Record Optimization Candidate",
     "get_cost_optimization_study": "Get Cost Optimization",
     "reset_cost_optimization_study": "Reset Cost Optimization",
+    "show_hide_optimization_results": "Show/Hide Optimization Results",
     "create_workflow_entity_directory": "Create Workflow Entities",
     "get_workflow_entity_directory": "Get Workflow Entities",
     "set_params_in_node": "Set Params in Node",
@@ -166,6 +169,12 @@ def get_tools() -> list[Any]:
             "Clear the active cost optimization study after explicit confirmation.",
             ResetCostOptimizationStudyArgs,
             reset_cost_optimization_study_func,
+        ),
+        function_tool(
+            "show_hide_optimization_results",
+            "Show or hide the Optimization Results WebView with the recorded parallel-coordinate runs.",
+            ShowHideOptimizationResultsArgs,
+            show_hide_optimization_results_func,
         ),
         function_tool(
             "create_workflow_entity_directory",

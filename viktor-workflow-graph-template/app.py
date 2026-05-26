@@ -1,12 +1,58 @@
+import json
+
 import viktor as vkt
 from dotenv import load_dotenv
 
 from agent.runner import AgentContext, workflow_agent_sync_stream
+from agent.tools.optimization_tools import SHOW_OPTIMIZATION_RESULTS_KEY
+from agent.tools.optimization_tools.cost_optimization import (
+    COST_OPTIMIZATION_STORAGE_KEY,
+    CostOptimizationStudy,
+    best_candidate,
+    parallel_dimensions,
+    parallel_rows,
+    study_summary,
+)
+from workflow_graph.optimization_results_viewer import OptimizationResultsViewer
 from workflow_graph.state import delete_canvas_state, load_canvas_state
 from workflow_graph.viewer import WorkflowViewer
 
 
 load_dotenv()
+
+
+def get_optimization_results_visibility(params, **kwargs) -> bool:
+    if not params.chat:
+        try:
+            vkt.Storage().delete(SHOW_OPTIMIZATION_RESULTS_KEY, scope="entity")
+        except Exception:
+            pass
+        return False
+
+    try:
+        return vkt.Storage().get(
+            SHOW_OPTIMIZATION_RESULTS_KEY,
+            scope="entity",
+        ).getvalue() == "show"
+    except Exception:
+        return False
+
+
+def _empty_html(message: str = "") -> str:
+    body = ""
+    if message:
+        body = (
+            "<div style='display:grid;place-items:center;min-height:100vh;"
+            "font-family:system-ui,sans-serif;color:#64748b;background:#f8fafc;'>"
+            f"{message}</div>"
+        )
+    return (
+        "<!doctype html><html><head><style>"
+        "body{margin:0;background:#fff;}"
+        "</style></head><body>"
+        f"{body}"
+        "</body></html>"
+    )
 
 
 class Parametrization(vkt.Parametrization):
@@ -44,9 +90,32 @@ class Controller(vkt.Controller):
         if canvas_state:
             return vkt.WebResult(html=WorkflowViewer(lambda: canvas_state).write())
 
-        html = (
-            "<!doctype html><html><head><style>"
-            "body{margin:0;background:#fff;}"
-            "</style></head><body></body></html>"
-        )
-        return vkt.WebResult(html=html)
+        return vkt.WebResult(html=_empty_html())
+
+    @vkt.WebView(
+        "Optimization Results",
+        width=100,
+        visible=get_optimization_results_visibility,
+    )
+    def optimization_results_view(self, params, **kwargs):
+        try:
+            stored_file = vkt.Storage().get(
+                COST_OPTIMIZATION_STORAGE_KEY,
+                scope="entity",
+            )
+            raw = json.loads(stored_file.getvalue_binary().decode("utf-8"))
+            study = CostOptimizationStudy.model_validate(raw)
+            rows = parallel_rows(study)
+            dimensions = parallel_dimensions(rows)
+            best = best_candidate(study)
+            html = OptimizationResultsViewer(
+                summary=study_summary(study),
+                rows=rows,
+                dimensions=dimensions,
+                best_candidate_id=best.candidate_id if best else None,
+            ).write()
+            return vkt.WebResult(html=html)
+        except Exception:
+            return vkt.WebResult(
+                html=_empty_html("No optimization results are available yet.")
+            )

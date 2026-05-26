@@ -59,7 +59,8 @@ Secondary variables can be added after the first sweep if needed:
    - Run `run_wind_turbine_cost_analysis`.
    - Call `record_cost_optimization_candidate` with variables, result metrics, feasibility, and total cost.
 7. Read the study with `get_cost_optimization_study`.
-8. Report the best feasible candidate and mention the number of failed or infeasible candidates.
+8. Call `show_hide_optimization_results` with `action="show"` so the Optimization Results WebView displays the candidate table and parallel-coordinate plot.
+9. Report the best feasible candidate and mention the number of failed or infeasible candidates.
 
 ## Candidate Isolation
 
@@ -109,3 +110,5 @@ The optimization storage keeps one flattened row per candidate. Each row should 
 Use `get_cost_optimization_study` to retrieve `parallel_coordinates_rows` and `parallel_coordinates_dimensions`.
 
 `record_cost_optimization_candidate` accepts flat or nested variables and outputs. Prefer flat keys that match the actual app, for example `num_piles`, `slab_diameter_m`, and `slab_thickness_m`.
+
+Use `show_hide_optimization_results` with `action="show"` after candidates are recorded. Use `action="hide"` only when the user asks to close the optimization results view.

@@ -3,10 +3,13 @@ from agent.tools.optimization_tools.cost_optimization import (
     OptimizationScalar,
     RecordCostOptimizationCandidateArgs,
     ResetCostOptimizationStudyArgs,
+    SHOW_OPTIMIZATION_RESULTS_KEY,
+    ShowHideOptimizationResultsArgs,
     StartCostOptimizationStudyArgs,
     get_cost_optimization_study_func,
     record_cost_optimization_candidate_func,
     reset_cost_optimization_study_func,
+    show_hide_optimization_results_func,
     start_cost_optimization_study_func,
 )
 
@@ -16,9 +19,12 @@ __all__ = [
     "OptimizationScalar",
     "RecordCostOptimizationCandidateArgs",
     "ResetCostOptimizationStudyArgs",
+    "SHOW_OPTIMIZATION_RESULTS_KEY",
+    "ShowHideOptimizationResultsArgs",
     "StartCostOptimizationStudyArgs",
     "get_cost_optimization_study_func",
     "record_cost_optimization_candidate_func",
     "reset_cost_optimization_study_func",
+    "show_hide_optimization_results_func",
     "start_cost_optimization_study_func",
 ]

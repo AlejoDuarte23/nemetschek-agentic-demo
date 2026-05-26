@@ -35,6 +35,7 @@
     <rule>Changing slab_diameter changes the pile ring radius and generally reduces axial pile reactions from overturning for the same pile count. Changing pile length or tip level changes the geotechnical design, so rerun run_cpt_pile_bearing before foundation for each such candidate.</rule>
     <rule>Run optimization candidates sequentially through the same fresh workflow entities. Do not create a new VIKTOR entity per candidate.</rule>
     <rule>The downstream saved params and latest storage outputs are overwritten between sequential candidates; this is expected and is not a comparison problem. The comparison data comes from record_cost_optimization_candidate, which must be called immediately after each candidate finishes.</rule>
+    <rule>When optimization candidates have been recorded or the user asks to see optimization results, call show_hide_optimization_results with action="show" so the Optimization Results WebView displays the parallel-coordinate runs. Use action="hide" when the user asks to hide or close it.</rule>
   </workflow_rules>
   <retry_rules>
     <rule>Tool outputs are JSON objects with a status field.</rule>
@@ -82,6 +83,11 @@
       <description>Clears the active cost optimization study after explicit confirmation.</description>
       <inputs>confirm</inputs>
       <dependencies>none</dependencies>
+    </tool>
+    <tool name="show_hide_optimization_results">
+      <description>Shows or hides the Optimization Results WebView with the recorded candidate table and parallel-coordinate plot.</description>
+      <inputs>action</inputs>
+      <dependencies>start_cost_optimization_study and at least one recorded candidate are recommended before show.</dependencies>
     </tool>
     <tool name="create_workflow_entity_directory">
       <description>Creates fresh sibling entities for selected known workflow nodes, stores the active entity directory, composes the graph using the fresh URLs, and creates the default plan.</description>
@@ -163,6 +169,7 @@
     <step>Run run_wind_turbine_reinforcement after successful foundation results.</step>
     <step>Run run_wind_turbine_cost_analysis after reinforcement only if the active workflow includes cost_analysis.</step>
     <step>For optimization, evaluate candidates one at a time on the same workflow entities and record each candidate immediately before moving to the next candidate.</step>
+    <step>After optimization candidates are recorded, call show_hide_optimization_results with action="show" and summarize the best candidate.</step>
     <step>Summarize turbine loads, pile capacity, foundation reactions/moments, reinforcement unity checks, and cost quantities when available.</step>
   </default_sequence>
 </system>
