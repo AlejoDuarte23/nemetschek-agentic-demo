@@ -20,7 +20,6 @@ from openai import AsyncOpenAI
 from openai.types.shared import Reasoning
 from openai.types.responses import ResponseTextDeltaEvent
 from dotenv import load_dotenv
-import viktor as vkt
 
 from agent.tools import TOOL_DISPLAY_NAMES, get_tools
 
@@ -38,10 +37,14 @@ event_loop_thread: threading.Thread | None = None
 
 load_dotenv(".env", override=False)
 
-openai_client = AsyncOpenAI(
-    base_url=vkt.ViktorOpenAI.get_base_url(version="v1"),
-    api_key=vkt.ViktorOpenAI.get_api_key(),
-)
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise RuntimeError(
+        "Missing OPENAI_API_KEY. Add it to .env for local runs or to VIKTOR app "
+        "secrets before publishing."
+    )
+
+openai_client = AsyncOpenAI(api_key=openai_api_key)
 
 set_default_openai_client(openai_client, use_for_tracing=False)
 set_tracing_disabled(True)
