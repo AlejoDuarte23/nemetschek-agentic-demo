@@ -17,7 +17,6 @@ from agent.tools.viktor_tools.wind_turbine_common import (
     get_number,
     read_json_from_storage,
     select_and_store_result,
-    write_json_to_storage,
 )
 from agent.tools.viktor_tools.workflow_entities import (
     deep_merge_params,
@@ -136,40 +135,12 @@ def required_pile_length_from_cpt_data(data: Any) -> float | None:
     return None
 
 
-def patch_foundation_pile_length_from_cpt(
-    *,
-    cpt_data: Any,
-    pile_diameter: int,
-) -> float:
+def required_pile_length_or_error(cpt_data: Any) -> float:
     required_length = required_pile_length_from_cpt_data(cpt_data)
     if required_length is None:
         raise ValueError(
             "CPT required-depth output did not include a required pile length or tip level."
         )
-
-    foundation_params = read_json_from_storage(FOUNDATION_PARAMS_STORAGE_KEY)
-    patched_params = deep_merge_params(
-        foundation_params,
-        {
-            "step_geo": {
-                "sec_piles": {
-                    "pile_length": required_length,
-                    "pile_diameter": pile_diameter,
-                }
-            }
-        },
-    )
-    write_json_to_storage(FOUNDATION_PARAMS_STORAGE_KEY, patched_params)
-
-    foundation_target = resolve_workflow_entity("foundation_analysis")
-    set_last_saved_params(
-        foundation_target,
-        patched_params,
-        message=(
-            "Agent updated foundation pile length from CPT required-depth output "
-            "without rerunning SCIA."
-        ),
-    )
     return required_length
 
 
@@ -243,7 +214,7 @@ async def run_cpt_pile_bearing_func(context: Any, args: str) -> str:
         compute_payload = deep_merge_params(payload.model_dump(), compute_payload)
         set_last_saved_params(
             target,
-            compute_payload,
+            deep_merge_params(saved_params, compute_payload),
             message=(
                 "Agent updated CPT pile bearing params from foundation reaction "
                 "and pile diameter."
@@ -277,10 +248,7 @@ async def run_cpt_pile_bearing_func(context: Any, args: str) -> str:
             result_key=target.result_key,
             storage_key=target.storage_key,
         )
-        required_length = patch_foundation_pile_length_from_cpt(
-            cpt_data=data,
-            pile_diameter=payload.step2.sec_pile.pile_diameter,
-        )
+        required_length = required_pile_length_or_error(data)
     except (KeyError, ValueError) as exc:
         return validation_error_response(
             tool="run_cpt_pile_bearing",
@@ -305,15 +273,27 @@ async def run_cpt_pile_bearing_func(context: Any, args: str) -> str:
     return tool_response(
         "completed",
         message=(
-            "Computed CPT required pile depth and patched the foundation pile length "
-            "without rerunning SCIA."
+            "Computed CPT required pile depth. Patch the foundation pile length with "
+            "set_params_in_node before reinforcement or cost analysis."
         ),
         entity_id=target.entity_id,
         entity_url=target.url,
         method_name=target.method_name,
         result_key=target.result_key,
         storage_key=target.storage_key,
-        patched_foundation_params_storage_key=FOUNDATION_PARAMS_STORAGE_KEY,
+        next_param_update={
+            "tool": "set_params_in_node",
+            "node_id": "foundation_analysis",
+            "merge": True,
+            "params": {
+                "step_geo": {
+                    "sec_piles": {
+                        "pile_length": required_length,
+                        "pile_diameter": payload.step2.sec_pile.pile_diameter,
+                    }
+                }
+            },
+        },
         required_pile_length_m=required_length,
         design_load_kN=payload.step2.sec_load.design_load,
         pile_diameter_mm=payload.step2.sec_pile.pile_diameter,

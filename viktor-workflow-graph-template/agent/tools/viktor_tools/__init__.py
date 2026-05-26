@@ -27,7 +27,9 @@ from agent.tools.viktor_tools.workflow_entities import (
     reset_workflow_entity_directory_func,
 )
 from agent.tools.viktor_tools.workflow_node_params import (
+    GetParamsInNodeArgs,
     SetParamsInNodeArgs,
+    get_params_in_node_func,
     set_params_in_node_func,
 )
 
@@ -40,10 +42,12 @@ __all__ = [
     "WindTurbineSelectorParams",
     "CreateWorkflowEntityDirectoryArgs",
     "GetWorkflowEntityDirectoryArgs",
+    "GetParamsInNodeArgs",
     "ResetWorkflowEntityDirectoryArgs",
     "SetParamsInNodeArgs",
     "create_workflow_entity_directory_func",
     "get_workflow_entity_directory_func",
+    "get_params_in_node_func",
     "reset_workflow_entity_directory_func",
     "run_cpt_pile_bearing_func",
     "set_params_in_node_func",

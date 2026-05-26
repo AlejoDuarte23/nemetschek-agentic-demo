@@ -111,7 +111,7 @@
         {
           "source": "CPT required depth result",
           "target": "params.step_geo.sec_piles.pile_length",
-          "transform": "patch foundation params and storage without rerunning SCIA"
+          "transform": "agent calls set_params_in_node to patch foundation params and storage without rerunning SCIA"
         }
       ]
     },

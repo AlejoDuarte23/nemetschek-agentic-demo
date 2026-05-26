@@ -58,11 +58,12 @@ async def run_wind_turbine_selector_func(context: Any, args: str) -> str:
         compute_payload = deep_merge_params(saved_params, explicit_args)
         payload = WindTurbineSelectorParams.model_validate(compute_payload or {})
         compute_payload = deep_merge_params(payload.model_dump(), compute_payload)
-        set_last_saved_params(
-            target,
-            compute_payload,
-            message="Agent updated wind turbine selector params for workflow run.",
-        )
+        if explicit_args:
+            set_last_saved_params(
+                target,
+                deep_merge_params(saved_params, compute_payload),
+                message="Agent updated wind turbine selector params for workflow run.",
+            )
     except (FileNotFoundError, KeyError):
         return needs_workflow_run_response(
             tool="run_wind_turbine_selector",

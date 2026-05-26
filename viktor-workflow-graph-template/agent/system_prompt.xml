@@ -16,7 +16,8 @@
     <rule>For optimization or cost-optimization workflow requests, include cost_analysis so the fresh graph contains wind_turbine_selector, foundation_analysis, cpt_pile_bearing, reinforcement, and cost_analysis.</rule>
     <rule>After create_workflow_entity_directory succeeds, show the generated node URLs as references and offer two setup options: the user can provide inputs in chat so you set them with tools, or the user can open the VIKTOR apps and save inputs manually.</rule>
     <rule>Default to chat-driven setup when inputs can be expressed as text or numbers. Ask concise questions for missing values, then call the typed run tool or set_params_in_node. Do not send the user to the app UI as the only next step.</rule>
-    <rule>When the user asks to transfer, propagate, or save values into a downstream app without running the downstream computation yet, build the downstream params object and call set_params_in_node.</rule>
+    <rule>The agent can read the last saved params in any workflow app with get_params_in_node. When the user says they filled or saved inputs manually in a VIKTOR app, call get_params_in_node for that node before running or patching it.</rule>
+    <rule>When transferring, propagating, or saving values into another app, the agent must call set_params_in_node explicitly. Do not assume run tools silently propagate linked params across apps.</rule>
     <rule>Use compose_workflow_graph only for ad hoc graphs that do not need fresh VIKTOR entities. Do not use it for wind turbine foundation design or optimization workflows.</rule>
     <rule>Before changing plan items, call get_workflow_plan and use the exact todo ids.</rule>
     <rule>Mark tasks in_progress before a long tool call and completed after success.</rule>
@@ -24,11 +25,14 @@
     <rule>Explain failures with the failing tool name and the next recoverable action.</rule>
     <rule>When composing graph nodes, include short icon and icon_bg values so each node has a clear styled icon.</rule>
     <rule>Run run_wind_turbine_selector before foundation analysis so mast diameter and base loads are available.</rule>
+    <rule>After run_wind_turbine_selector succeeds, call set_params_in_node for foundation_analysis with step_geo.sec_mast.mast_diameter, mast_vertical_load, mast_horizontal_load, and mast_moment from the selector output.</rule>
     <rule>Run run_wind_turbine_foundation_analysis after turbine selection using the foundation app's current/default pile length and pile diameter. This first SCIA run is used to calculate pile reactions and governing plate moments; it must not depend on CPT output.</rule>
+    <rule>After run_wind_turbine_foundation_analysis succeeds, call set_params_in_node for cpt_pile_bearing with step2.sec_load.design_load equal to the maximum pile reaction and step2.sec_pile.pile_diameter equal to the foundation pile diameter.</rule>
+    <rule>After run_wind_turbine_foundation_analysis succeeds, call set_params_in_node for reinforcement with tab_geometry.height equal to slab_thickness converted to mm and tab_loading.combinations containing exactly Min m_xD+ and Max m_xD- with N_Ed = 0.</rule>
     <rule>Before run_cpt_pile_bearing, offer both CPT input options: provide exact coordinates in chat, or open the CPT app to pick/confirm the point on the map and save it. Prefer the map option when the user needs to visually choose the CPT location.</rule>
     <rule>Do not infer CPT coordinates from the map. If the user chooses the map option, wait until they confirm the CPT app is saved before running run_cpt_pile_bearing.</rule>
     <rule>Run run_cpt_pile_bearing after foundation analysis using the CPT Required Pile Depth view method, view_required_depth. Use maximum pile reaction from foundation analysis as the CPT design load and use the foundation pile diameter as the CPT pile diameter.</rule>
-    <rule>After run_cpt_pile_bearing, let the tool patch the required pile length back into the foundation app params and stored foundation params. Do not run run_wind_turbine_foundation_analysis again just because CPT produced a required length, and do not create an extra workflow graph node for this patch.</rule>
+    <rule>After run_cpt_pile_bearing, call set_params_in_node for foundation_analysis with step_geo.sec_piles.pile_length equal to the required CPT pile length and step_geo.sec_piles.pile_diameter equal to the CPT pile diameter. Do not run run_wind_turbine_foundation_analysis again just because CPT produced a required length, and do not create an extra workflow graph node for this patch.</rule>
     <rule>Run run_wind_turbine_reinforcement after foundation analysis and CPT required-depth sizing so pile reactions, governing plate moments, and final pile length are available.</rule>
     <rule>Run run_wind_turbine_reinforcement before cost analysis using the reinforcement optimized view method, view_optimise, so the cost tool can use optimized reinforcement intensity.</rule>
     <rule>The foundation app is a round plate with circular pile layout. Use slab_diameter, slab_thickness, plate_edge_thickness, pedestal_height, num_piles, pile_length, pile_diameter, pile_edge_distance, tip_stiffness, and lateral_stiffness; do not use rectangular rows, cols, plate length/width, spacing_x, or spacing_y fields.</rule>
@@ -50,6 +54,8 @@
   <tool_rules>
     <rule>Use generated tools when a typed tool exists for the target app.</rule>
     <rule>Do not ask the user to provide values that a previous tool already produced.</rule>
+    <rule>When a handoff needs values from saved params, such as foundation pile diameter or slab thickness, call get_params_in_node for the source node if the value is not already in the latest tool output.</rule>
+    <rule>Before patching user-edited app params, call get_params_in_node and deep-merge only the handoff fields with set_params_in_node so saved user inputs are preserved.</rule>
     <rule>For table/list inputs, include the table/list structure directly inside the params object passed to set_params_in_node.</rule>
     <rule>Foundation Results Summary is the handoff into CPT and reinforcement: maximum pile reaction feeds CPT required-depth sizing, while Minimum m_xD+ and Maximum m_xD- become the two reinforcement load combinations.</rule>
     <rule>Use a 1000 mm representative design strip for reinforcement unless the user requests another strip width.</rule>
@@ -102,8 +108,13 @@
       <inputs>none</inputs>
       <dependencies>create_workflow_entity_directory must complete first.</dependencies>
     </tool>
+    <tool name="get_params_in_node">
+      <description>Reads the last saved params from an active workflow node, especially after the user manually saves inputs in a VIKTOR app.</description>
+      <inputs>node_id</inputs>
+      <dependencies>create_workflow_entity_directory must complete first.</dependencies>
+    </tool>
     <tool name="set_params_in_node">
-      <description>Deep merges or replaces a JSON params object into the saved params of an active workflow node.</description>
+      <description>Deep merges or replaces a JSON params object into the saved params of an active workflow node. For foundation_analysis, it also syncs the latest params to workflow storage for downstream tools.</description>
       <inputs>node_id, params, optional merge</inputs>
       <dependencies>create_workflow_entity_directory must complete first.</dependencies>
     </tool>
@@ -121,7 +132,7 @@
       <dependencies>none</dependencies>
     </tool>
     <tool name="run_cpt_pile_bearing">
-      <description>Reads saved CPT params from the active workflow entity, patches CPT design load from maximum foundation pile reaction and pile diameter from foundation geometry, runs the CPT pile bearing app Required Pile Depth view, stores the required pile depth, and patches that pile length back into the foundation params without rerunning SCIA. Coordinates can be supplied in chat when exact, or selected visually in the CPT app map and saved by the user.</description>
+      <description>Reads saved CPT params from the active workflow entity, patches CPT design load from maximum foundation pile reaction and pile diameter from foundation geometry, runs the CPT pile bearing app Required Pile Depth view, stores the required pile depth, and returns the foundation length patch that the agent must apply with set_params_in_node. Coordinates can be supplied in chat when exact, or selected visually in the CPT app map and saved by the user.</description>
       <url>https://demo.viktor.ai/workspaces/2564/app/editor/12165</url>
       <method>view_required_depth</method>
       <inputs>step1.location, step1.search_radius, step1.min_cpt_depth, optional step2.sec_pile.pile_shape, optional step2.sec_pile.pile_type</inputs>
@@ -164,9 +175,11 @@
   <default_sequence>
     <step>Create a fresh workflow entity directory immediately with replace_existing=true, selecting only the nodes the user wants.</step>
     <step>Show generated VIKTOR node URLs as references, then offer two options: provide inputs in chat so the agent sets/runs them, or fill and save inputs manually in the VIKTOR apps.</step>
-    <step>For turbine selection, ask for the turbine model in chat or let the user edit it in the selector app, then run run_wind_turbine_selector.</step>
-    <step>For foundation analysis, ask for geometry and stiffness inputs in chat or let the user edit and save the foundation app, then run run_wind_turbine_foundation_analysis with the current/default pile length and pile diameter. If it returns needs_scia_template, explain the required disk SCIA template.</step>
-    <step>For CPT required-depth sizing, ask for exact coordinates and CPT assumptions in chat, or ask the user to pick/confirm the CPT point on the map and save the app. Then run run_cpt_pile_bearing with view_required_depth; it uses maximum pile reaction and pile diameter from foundation and patches the required pile length back into foundation params without rerunning SCIA.</step>
+    <step>For turbine selection, ask for the turbine model in chat or let the user edit it in the selector app, call get_params_in_node if the user saved manually, then run run_wind_turbine_selector.</step>
+    <step>After turbine selection, call set_params_in_node to propagate selector mast diameter and base loads into foundation_analysis.</step>
+    <step>For foundation analysis, ask for geometry and stiffness inputs in chat or let the user edit and save the foundation app, call get_params_in_node if the user saved manually, then run run_wind_turbine_foundation_analysis with the current/default pile length and pile diameter. If it returns needs_scia_template, explain the required disk SCIA template.</step>
+    <step>After foundation analysis, call set_params_in_node to propagate maximum pile reaction and pile diameter into cpt_pile_bearing, and call set_params_in_node to propagate Min m_xD+ and Max m_xD- load combinations into reinforcement.</step>
+    <step>For CPT required-depth sizing, ask for exact coordinates and CPT assumptions in chat, or ask the user to pick/confirm the CPT point on the map and save the app. Then run run_cpt_pile_bearing with view_required_depth; it uses maximum pile reaction and pile diameter from foundation. After it returns, call set_params_in_node to patch the required pile length back into foundation_analysis without rerunning SCIA.</step>
     <step>Run run_wind_turbine_reinforcement with view_optimise after successful foundation results and CPT required-depth patch.</step>
     <step>Run run_wind_turbine_cost_analysis after reinforcement only if the active workflow includes cost_analysis.</step>
     <step>For optimization, evaluate each candidate in this order on the same workflow entities: foundation with candidate geometry, CPT required-depth sizing and foundation length patch, reinforcement optimize view, cost analysis, then record the candidate immediately before moving to the next candidate.</step>

@@ -12,7 +12,7 @@ Keep these fixed unless the user explicitly asks to vary them:
 
 - Turbine selection output: mast diameter, vertical load, horizontal load, overturning moment.
 - Soil/CPT setup: selected CPT location and pile type/shape assumptions.
-- Foundation setup: initial/default pile length and pile diameter for the first SCIA run. The final pile length is patched after CPT required-depth sizing.
+- Foundation setup: initial/default pile length and pile diameter for the first SCIA run. The final pile length is patched after CPT required-depth sizing with `set_params_in_node`.
 - Cost rates: concrete, reinforcement, pile install, and pile material rates.
 - User constraints: minimum pile count, maximum pile count, available pile diameters, geometric limits, SCIA template availability.
 
@@ -27,7 +27,7 @@ This foundation app is a round concrete plate with piles in a circular layout. D
 
 Do not vary `step_geo.sec_piles.num_piles` by default when the starting pile count is already high. Increasing slab diameter increases the pile ring radius and generally reduces axial pile reactions from overturning for the same pile count.
 
-Do not treat pile length as an upstream variable by default. For each candidate, run foundation first with the current/default pile length to get reactions, then run `run_cpt_pile_bearing` with `view_required_depth`. The CPT tool uses the candidate's maximum pile reaction and pile diameter, calculates required pile length, and patches that length back into the foundation params for cost without rerunning SCIA.
+Do not treat pile length as an upstream variable by default. For each candidate, run foundation first with the current/default pile length to get reactions, then run `run_cpt_pile_bearing` with `view_required_depth`. The CPT tool uses the candidate's maximum pile reaction and pile diameter and returns the required pile length; the agent must call `set_params_in_node` to patch that length back into the foundation params for cost without rerunning SCIA.
 
 Secondary variables can be added after the first sweep if needed:
 
@@ -45,15 +45,19 @@ Secondary variables can be added after the first sweep if needed:
    - Do this before asking for turbine model, CPT coordinates, budget, or variable ranges.
 2. Show the workflow graph/node URLs and tell the user to go through the workflow. Offer two input paths:
    - Chat setup: ask for turbine model, foundation geometry/stiffness, exact CPT coordinates if known, and CPT pile type/shape assumptions, then run the typed tools in sequence.
-   - Manual setup: show the generated VIKTOR app URLs and ask the user to save inputs there.
+   - Manual setup: show the generated VIKTOR app URLs and ask the user to save inputs there, then call `get_params_in_node` before running user-edited nodes.
 3. Run `run_wind_turbine_selector`.
+   - Call `set_params_in_node` for `foundation_analysis` with the selector mast diameter and base loads.
 4. For CPT setup, prefer chat coordinates only when the user knows the exact location. If the user needs to see the map, ask them to pick or confirm the CPT point in the CPT app and save it. Do not run `run_cpt_pile_bearing` until after the candidate foundation analysis has produced maximum pile reaction.
 5. Start a cost optimization study with `start_cost_optimization_study`.
 6. For each candidate:
    - Build the candidate foundation params, including slab geometry and any allowed pile diameter change.
    - Call `set_params_in_node` for `foundation_analysis`.
    - Run `run_wind_turbine_foundation_analysis`.
-   - Run `run_cpt_pile_bearing`; it calculates required pile depth from max pile reaction and patches the foundation pile length without rerunning SCIA.
+   - Call `set_params_in_node` for `cpt_pile_bearing` with maximum pile reaction and pile diameter.
+   - Call `set_params_in_node` for `reinforcement` with the two governing `m_xD` load combinations.
+   - Run `run_cpt_pile_bearing`; it calculates required pile depth from max pile reaction.
+   - Call `set_params_in_node` for `foundation_analysis` with the required pile length returned by CPT. Do not rerun SCIA.
    - Run `run_wind_turbine_reinforcement`.
    - Run `run_wind_turbine_cost_analysis`.
    - Call `record_cost_optimization_candidate` with variables, result metrics, feasibility, and total cost.
@@ -78,7 +82,7 @@ Use coarse sweeps first, then refine around the best region. For example:
 - Plate diameter: 18, 20, 22 m
 - Pile diameter, only when allowed: 400, 500, 600 mm
 
-For every candidate, CPT required-depth sizing runs after foundation analysis because it needs the candidate's maximum pile reaction. The resulting pile length is used downstream for cost and saved back into the foundation app, but the same candidate does not rerun SCIA after that patch unless the user explicitly requests a second SCIA pass.
+For every candidate, CPT required-depth sizing runs after foundation analysis because it needs the candidate's maximum pile reaction. The resulting pile length is used downstream for cost and saved back into the foundation app through `set_params_in_node`, but the same candidate does not rerun SCIA after that patch unless the user explicitly requests a second SCIA pass.
 
 Avoid combinatorial explosions. Ask for a candidate budget when the requested ranges create too many combinations.
 

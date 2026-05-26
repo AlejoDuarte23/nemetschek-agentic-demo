@@ -127,6 +127,8 @@ class RestEntityResponse(BaseModel):
     entity_type: int | str
     entity_type_name: str | None = None
     properties: dict[str, Any] | None = None
+    params: dict[str, Any] | None = None
+    last_saved_params: dict[str, Any] | None = None
 
 
 class WorkflowAlreadyExistsError(RuntimeError):
@@ -300,6 +302,7 @@ class ViktorRestEntityClient:
         entity_id: int,
         properties: bool = False,
         clean_params: bool = False,
+        param_types: bool = False,
     ) -> RestEntityResponse:
         payload = self._request_json(
             "GET",
@@ -307,7 +310,7 @@ class ViktorRestEntityClient:
             params={
                 "properties": str(properties).lower(),
                 "clean_params": str(clean_params).lower(),
-                "param_types": "false",
+                "param_types": str(param_types).lower(),
             },
             action="Get entity",
         )
@@ -625,8 +628,12 @@ class WorkflowEntityService:
             entity_id=target.entity_id,
             properties=True,
             clean_params=True,
+            param_types=True,
         )
-        return entity.properties or {}
+        for value in (entity.properties, entity.params, entity.last_saved_params):
+            if isinstance(value, dict) and value:
+                return value
+        return {}
 
     def set_last_saved_params(
         self,

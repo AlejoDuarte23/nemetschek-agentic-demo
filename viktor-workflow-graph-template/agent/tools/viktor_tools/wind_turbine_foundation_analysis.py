@@ -316,7 +316,7 @@ async def run_wind_turbine_foundation_analysis_func(context: Any, args: str) -> 
     try:
         set_last_saved_params(
             target,
-            compute_payload,
+            deep_merge_params(saved_params, compute_payload),
             message="Agent patched foundation params with turbine loads and current pile geometry.",
         )
     except Exception as exc:

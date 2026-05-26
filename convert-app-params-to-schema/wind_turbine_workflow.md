@@ -41,7 +41,7 @@ The foundation analysis result handoff is based on the app's `view_results` Data
 | Selector | Foundation | `tower.base_moment` -> `step_geo.sec_mast.mast_moment` |
 | Foundation | CPT | `Maximum pile reaction (Rz)` -> `step2.sec_load.design_load` |
 | Foundation | CPT | `params.step_geo.sec_piles.pile_diameter` -> `step2.sec_pile.pile_diameter` |
-| CPT | Foundation params | required pile depth/length -> `step_geo.sec_piles.pile_length` without rerunning SCIA |
+| CPT | Foundation params | required pile depth/length -> `step_geo.sec_piles.pile_length` via `set_params_in_node` without rerunning SCIA |
 | Foundation | Reinforcement | design rule -> `tab_geometry.width = 1000 mm` representative strip |
 | Foundation | Reinforcement | `step_geo.sec_plate.slab_thickness` -> `tab_geometry.height` after m-to-mm conversion |
 | Foundation | Reinforcement | `Minimum m_xD+`, `Maximum m_xD-` -> two `tab_loading.combinations` |

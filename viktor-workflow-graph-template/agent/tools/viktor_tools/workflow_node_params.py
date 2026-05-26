@@ -7,6 +7,10 @@ from agent.tools.viktor_tools.responses import (
     tool_response,
     validation_error_response,
 )
+from agent.tools.viktor_tools.wind_turbine_common import (
+    FOUNDATION_PARAMS_STORAGE_KEY,
+    write_json_to_storage,
+)
 from agent.tools.viktor_tools.workflow_entities import (
     WorkflowNodeId,
     get_workflow_entity_service,
@@ -35,11 +39,32 @@ class SetParamsInNodeArgs(BaseModel):
     )
 
 
+class GetParamsInNodeArgs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    node_id: WorkflowNodeId = Field(
+        ...,
+        description="Known workflow node id whose last saved VIKTOR params should be read.",
+    )
+
+
 class WorkflowNodeParamService:
-    """Updates saved params for an entity in the active workflow directory."""
+    """Reads and updates saved params for an entity in the active workflow directory."""
 
     def __init__(self) -> None:
         self.entity_service = get_workflow_entity_service()
+
+    def get_params(self, payload: GetParamsInNodeArgs) -> dict[str, Any]:
+        target = self.entity_service.resolve_entity(payload.node_id)
+        params = self.entity_service.read_last_saved_params(target)
+
+        return {
+            "node_id": payload.node_id,
+            "entity_id": target.entity_id,
+            "url": target.url,
+            "top_level_keys": sorted(params),
+            "params": params,
+        }
 
     def set_params(self, payload: SetParamsInNodeArgs) -> dict[str, Any]:
         target = self.entity_service.resolve_entity(payload.node_id)
@@ -55,6 +80,10 @@ class WorkflowNodeParamService:
             next_params,
             message="Agent updated workflow node params.",
         )
+        synced_storage_key = None
+        if payload.node_id == "foundation_analysis":
+            write_json_to_storage(FOUNDATION_PARAMS_STORAGE_KEY, next_params)
+            synced_storage_key = FOUNDATION_PARAMS_STORAGE_KEY
 
         return {
             "node_id": payload.node_id,
@@ -62,7 +91,41 @@ class WorkflowNodeParamService:
             "url": target.url,
             "merge": payload.merge,
             "updated_top_level_keys": sorted(updates),
+            "synced_storage_key": synced_storage_key,
         }
+
+
+async def get_params_in_node_func(context: Any, args: str) -> str:
+    try:
+        payload = GetParamsInNodeArgs.model_validate_json(args or "{}")
+    except ValidationError as exc:
+        return validation_error_response(
+            tool="get_params_in_node",
+            message="Invalid workflow node params arguments.",
+            error=exc,
+            retry_tool="get_params_in_node",
+            retry_reason="Retry with node_id.",
+        )
+
+    try:
+        result = WorkflowNodeParamService().get_params(payload)
+    except (FileNotFoundError, KeyError):
+        return needs_workflow_run_response(
+            tool="get_params_in_node",
+            node_id=payload.node_id,
+        )
+    except Exception as exc:
+        return execution_error_response(
+            tool="get_params_in_node",
+            message="Could not read workflow node saved params.",
+            error=exc,
+        )
+
+    return tool_response(
+        "completed",
+        message="Read workflow node saved params.",
+        **result,
+    )
 
 
 async def set_params_in_node_func(context: Any, args: str) -> str:

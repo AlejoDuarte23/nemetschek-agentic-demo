@@ -287,7 +287,7 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
     try:
         set_last_saved_params(
             target,
-            compute_payload,
+            deep_merge_params(saved_params, compute_payload),
             message="Agent patched cost params with foundation and reinforcement workflow inputs.",
         )
     except Exception as exc:

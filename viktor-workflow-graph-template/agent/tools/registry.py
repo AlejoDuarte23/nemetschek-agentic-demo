@@ -35,6 +35,7 @@ from agent.tools.skill_tools import (
 from agent.tools.viktor_tools import (
     CptPileBearingParams,
     CreateWorkflowEntityDirectoryArgs,
+    GetParamsInNodeArgs,
     GetWorkflowEntityDirectoryArgs,
     ResetWorkflowEntityDirectoryArgs,
     SetParamsInNodeArgs,
@@ -43,6 +44,7 @@ from agent.tools.viktor_tools import (
     WindTurbineReinforcementParams,
     WindTurbineSelectorParams,
     create_workflow_entity_directory_func,
+    get_params_in_node_func,
     get_workflow_entity_directory_func,
     reset_workflow_entity_directory_func,
     run_cpt_pile_bearing_func,
@@ -69,6 +71,7 @@ TOOL_DISPLAY_NAMES = {
     "show_hide_optimization_results": "Show/Hide Optimization Results",
     "create_workflow_entity_directory": "Create Workflow Entities",
     "get_workflow_entity_directory": "Get Workflow Entities",
+    "get_params_in_node": "Get Params in Node",
     "set_params_in_node": "Set Params in Node",
     "reset_workflow_entity_directory": "Reset Workflow Entities",
     "run_wind_turbine_selector": "Run Wind Turbine Selector",
@@ -194,10 +197,20 @@ def get_tools() -> list[Any]:
             get_workflow_entity_directory_func,
         ),
         function_tool(
+            "get_params_in_node",
+            (
+                "Read the last saved JSON params from an active workflow node. Use "
+                "before running or patching a node when the user saved inputs manually."
+            ),
+            GetParamsInNodeArgs,
+            get_params_in_node_func,
+        ),
+        function_tool(
             "set_params_in_node",
             (
                 "Set or deep-merge a JSON params object into the saved params of an "
-                "active workflow node. Use after building the downstream params object."
+                "active workflow node. Use after building each downstream params "
+                "handoff; foundation params are also synced to workflow storage."
             ),
             SetParamsInNodeArgs,
             set_params_in_node_func,
@@ -224,8 +237,9 @@ def get_tools() -> list[Any]:
             (
                 "Read saved params from the active workflow CPT entity, run the CPT "
                 "required-depth VIKTOR app with max pile reaction and pile diameter "
-                "from foundation analysis, store the required pile length, and patch "
-                "that length back into the foundation params without rerunning SCIA. "
+                "from foundation analysis, store the required pile length, and return "
+                "the set_params_in_node patch needed for foundation params without "
+                "rerunning SCIA. "
                 "Use chat-provided coordinates when exact, or wait for the user to "
                 "save a map-selected CPT location in the VIKTOR app."
             ),
