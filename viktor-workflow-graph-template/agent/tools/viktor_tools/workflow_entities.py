@@ -794,8 +794,9 @@ async def create_workflow_entity_directory_func(context: Any, args: str) -> str:
     return tool_response(
         "completed",
         message=(
-            "Created fresh workflow entities. Open the node URLs, enter inputs, "
-            "save each VIKTOR app, then ask the agent to run the workflow."
+            "Created fresh workflow entities. The node URLs are available as "
+            "references; the user can either provide inputs in chat for the agent "
+            "to set, or open the VIKTOR apps for manual input and save."
         ),
         run_name=directory.run_name,
         directory_storage_key=WORKFLOW_ENTITY_DIRECTORY_KEY,

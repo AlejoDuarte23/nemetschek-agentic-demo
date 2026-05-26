@@ -214,7 +214,9 @@ def get_tools() -> list[Any]:
             (
                 "Read saved params from the active workflow CPT entity, run the CPT "
                 "pile bearing VIKTOR app, and store pile capacity, pile length, and "
-                "pile diameter for foundation analysis."
+                "pile diameter for foundation analysis. Use chat-provided coordinates "
+                "when exact, or wait for the user to save a map-selected CPT location "
+                "in the VIKTOR app."
             ),
             CptPileBearingParams,
             run_cpt_pile_bearing_func,

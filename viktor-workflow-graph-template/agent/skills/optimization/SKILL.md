@@ -30,16 +30,21 @@ Good first-pass variables are:
 
 This foundation app is a round concrete plate with piles in a circular layout. Do not use rectangular grid fields such as `pile_layout.rows`, `pile_layout.cols`, `plate.length`, `plate.width`, `spacing_x`, or `spacing_y`.
 
-Only vary `pile_length` or `pile_diameter` when the user allows changing the CPT/pile design assumptions. Otherwise treat them as soil-output values from the CPT app.
+Only vary pile length, pile tip level, or pile diameter when the user allows changing the CPT/pile design assumptions. Otherwise treat them as soil-output values from the CPT app.
+
+Pile length is iterative. The CPT app needs an initial pile tip level or length assumption before it can return pile bearing capacity. Use the saved/default CPT value for the first run. If the optimization is allowed to vary pile length, each candidate must first update the CPT pile assumption and rerun `run_cpt_pile_bearing`; the foundation candidate then uses that candidate-specific CPT output.
 
 ## Loop
 
 1. Make sure a workflow entity directory exists for the needed nodes.
-2. Ask the user to save upstream inputs in the VIKTOR apps.
+2. Offer two input paths:
+   - Chat setup: ask for turbine model, exact CPT coordinates if known, and CPT pile assumptions, then run the typed tools with those values.
+   - Manual setup: show the generated VIKTOR app URLs and ask the user to save inputs there.
 3. Run `run_wind_turbine_selector`.
-4. Ask the user to confirm the CPT coordinates/location in the CPT app, then run `run_cpt_pile_bearing`.
+4. For CPT, prefer chat coordinates only when the user knows the exact location. If the user needs to see the map, ask them to pick or confirm the CPT point in the CPT app and save it, then run `run_cpt_pile_bearing`.
 5. Start a cost optimization study with `start_cost_optimization_study`.
 6. For each candidate:
+   - If the candidate changes pile tip level, pile length, or diameter, first update the CPT inputs and run `run_cpt_pile_bearing`.
    - Build the candidate foundation params.
    - Call `set_params_in_node` for `foundation_analysis`.
    - Run `run_wind_turbine_foundation_analysis`.

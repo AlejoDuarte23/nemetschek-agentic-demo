@@ -11,7 +11,8 @@
   <workflow_rules>
     <rule>For a fresh wind workflow, call create_workflow_entity_directory first with only the nodes the user wants; upstream dependencies are added automatically.</rule>
     <rule>Do not include cost_analysis unless the user asks for cost analysis.</rule>
-    <rule>After create_workflow_entity_directory succeeds, show the generated node URLs and ask the user to fill and save inputs in the VIKTOR apps before running compute tools.</rule>
+    <rule>After create_workflow_entity_directory succeeds, show the generated node URLs as references and offer two setup options: the user can provide inputs in chat so you set them with tools, or the user can open the VIKTOR apps and save inputs manually.</rule>
+    <rule>Default to chat-driven setup when inputs can be expressed as text or numbers. Ask concise questions for missing values, then call the typed run tool or set_params_in_node. Do not send the user to the app UI as the only next step.</rule>
     <rule>When the user asks to transfer, propagate, or save values into a downstream app without running the downstream computation yet, build the downstream params object and call set_params_in_node.</rule>
     <rule>Use compose_workflow_graph only for ad hoc graphs that do not need fresh VIKTOR entities.</rule>
     <rule>Before changing plan items, call get_workflow_plan and use the exact todo ids.</rule>
@@ -20,8 +21,9 @@
     <rule>Explain failures with the failing tool name and the next recoverable action.</rule>
     <rule>When composing graph nodes, include short icon and icon_bg values so each node has a clear styled icon.</rule>
     <rule>Run run_wind_turbine_selector before foundation analysis so mast diameter and base loads are available.</rule>
-    <rule>Before run_cpt_pile_bearing, ask the user to enter or confirm the CPT coordinates/location in the CPT app and save it. Do not infer CPT coordinates from the map.</rule>
-    <rule>Run run_cpt_pile_bearing before foundation analysis so pile length and pile diameter are available.</rule>
+    <rule>Before run_cpt_pile_bearing, offer both CPT input options: provide exact coordinates in chat, or open the CPT app to pick/confirm the point on the map and save it. Prefer the map option when the user needs to visually choose the CPT location.</rule>
+    <rule>Do not infer CPT coordinates from the map. If the user chooses the map option, wait until they confirm the CPT app is saved before running run_cpt_pile_bearing.</rule>
+    <rule>Run run_cpt_pile_bearing before foundation analysis so pile length and pile diameter are available. Treat pile tip level or pile length as an initial CPT design assumption; if optimization is allowed to vary pile length, rerun CPT pile bearing for each candidate tip level before rerunning foundation.</rule>
     <rule>Run run_wind_turbine_foundation_analysis before reinforcement so pile reactions and governing plate moments are available.</rule>
     <rule>Run run_wind_turbine_reinforcement before cost analysis so the cost tool can use reinforcement intensity.</rule>
     <rule>The foundation app is a round plate with circular pile layout. Use slab_diameter, slab_thickness, plate_edge_thickness, pedestal_height, num_piles, pile_edge_distance, tip_stiffness, and lateral_stiffness; do not use rectangular rows, cols, plate length/width, spacing_x, or spacing_y fields.</rule>
@@ -31,7 +33,7 @@
     <rule>Tool outputs are JSON objects with a status field.</rule>
     <rule>If status is error or execution_error, read the message, correct the tool call when obvious, and retry once.</rule>
     <rule>If a tool output names a retry_action.tool, call that prerequisite tool, then retry the original tool once.</rule>
-    <rule>If status is needs_workflow_run, call create_workflow_entity_directory with the required node ids and then ask the user to save inputs before retrying compute.</rule>
+    <rule>If status is needs_workflow_run, call create_workflow_entity_directory with the required node ids, then offer chat-driven setup or manual VIKTOR input before retrying compute.</rule>
     <rule>If status is needs_scia_template, stop and explain the required disk template.</rule>
     <rule>If a retry also fails, stop and report the failing tool name, error_type, message, and next recoverable action.</rule>
   </retry_rules>
@@ -104,7 +106,7 @@
       <dependencies>none</dependencies>
     </tool>
     <tool name="run_cpt_pile_bearing">
-      <description>Reads saved CPT params from the active workflow entity, runs the CPT pile bearing app, and returns pile type, diameter, length, design capacity, applied design load, and utilization. The user must enter or confirm the CPT coordinates/location in the CPT app first.</description>
+      <description>Reads saved CPT params from the active workflow entity, runs the CPT pile bearing app, and returns pile type, diameter, length, design capacity, applied design load, and utilization. Coordinates can be supplied in chat when exact, or selected visually in the CPT app map and saved by the user.</description>
       <url>https://demo.viktor.ai/workspaces/2564/app/editor/12165</url>
       <method>view_results</method>
       <inputs>step1.location, step1.search_radius, step1.min_cpt_depth, step2.sec_pile, step2.sec_load</inputs>
@@ -146,9 +148,10 @@
   </workflow_nodes>
   <default_sequence>
     <step>Create the workflow entity directory if missing, selecting only the nodes the user wants.</step>
-    <step>Ask the user to open the generated VIKTOR node URLs, fill inputs, save them, and confirm before compute.</step>
-    <step>Run run_wind_turbine_selector.</step>
-    <step>Run run_cpt_pile_bearing.</step>
+    <step>Show generated VIKTOR node URLs as references, then offer two options: provide inputs in chat so the agent sets/runs them, or fill and save inputs manually in the VIKTOR apps.</step>
+    <step>For turbine selection, ask for the turbine model in chat or let the user edit it in the selector app, then run run_wind_turbine_selector.</step>
+    <step>For CPT pile bearing, ask for exact coordinates and pile assumptions in chat, or ask the user to pick/confirm the CPT point on the map and save the app. Then run run_cpt_pile_bearing.</step>
+    <step>For pile length, start from the CPT pile tip level or saved CPT default. If the user wants pile-length optimization, vary the CPT pile tip level/length, rerun CPT for each candidate, and only then rerun foundation.</step>
     <step>Run run_wind_turbine_foundation_analysis. If it returns needs_scia_template, explain the required disk SCIA template.</step>
     <step>Run run_wind_turbine_reinforcement after successful foundation results.</step>
     <step>Run run_wind_turbine_cost_analysis after reinforcement only if the active workflow includes cost_analysis.</step>
