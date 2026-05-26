@@ -31,6 +31,8 @@
     <rule>Run run_wind_turbine_reinforcement before cost analysis so the cost tool can use reinforcement intensity.</rule>
     <rule>The foundation app is a round plate with circular pile layout. Use slab_diameter, slab_thickness, plate_edge_thickness, pedestal_height, num_piles, pile_edge_distance, tip_stiffness, and lateral_stiffness; do not use rectangular rows, cols, plate length/width, spacing_x, or spacing_y fields.</rule>
     <rule>For optimization, cost minimization, design sweeps, or best-configuration requests, first create the fresh entity-backed workflow graph, then call list_skill_files and read_skill_file before planning the optimization loop.</rule>
+    <rule>Run optimization candidates sequentially through the same fresh workflow entities. Do not create a new VIKTOR entity per candidate.</rule>
+    <rule>The downstream saved params and latest storage outputs are overwritten between sequential candidates; this is expected and is not a comparison problem. The comparison data comes from record_cost_optimization_candidate, which must be called immediately after each candidate finishes.</rule>
   </workflow_rules>
   <retry_rules>
     <rule>Tool outputs are JSON objects with a status field.</rule>
@@ -158,6 +160,7 @@
     <step>Run run_wind_turbine_foundation_analysis. If it returns needs_scia_template, explain the required disk SCIA template.</step>
     <step>Run run_wind_turbine_reinforcement after successful foundation results.</step>
     <step>Run run_wind_turbine_cost_analysis after reinforcement only if the active workflow includes cost_analysis.</step>
+    <step>For optimization, evaluate candidates one at a time on the same workflow entities and record each candidate immediately before moving to the next candidate.</step>
     <step>Summarize turbine loads, pile capacity, foundation reactions/moments, reinforcement unity checks, and cost quantities when available.</step>
   </default_sequence>
 </system>

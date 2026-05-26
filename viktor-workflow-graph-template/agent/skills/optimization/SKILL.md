@@ -57,6 +57,14 @@ Pile length is iterative. The CPT app needs an initial pile tip level or length 
 7. Read the study with `get_cost_optimization_study`.
 8. Report the best feasible candidate and mention the number of failed or infeasible candidates.
 
+## Candidate Isolation
+
+Run candidates sequentially on the same workflow entities. Do not create a new foundation, reinforcement, or cost entity for every candidate.
+
+The latest saved params and latest storage outputs are overwritten as each candidate runs. That is expected and is not a problem for this sequential sweep. `record_cost_optimization_candidate` stores the candidate snapshot used for comparison, so record each candidate immediately after its cost result is available, before moving to the next candidate.
+
+Do not warn that the same downstream entity makes the cost outputs unreliable. That warning does not apply to this workflow because there is no parallel candidate execution.
+
 ## Candidate Budget
 
 Keep early optimization loops small. Prefer 3 to 8 candidates unless the user asks for a larger sweep.
