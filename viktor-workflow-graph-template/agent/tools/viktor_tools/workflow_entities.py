@@ -161,15 +161,15 @@ class WorkflowAppRegistry:
                 "cpt_pile_bearing": WorkflowAppTemplate(
                     node_id="cpt_pile_bearing",
                     app_name="CPT Pile Bearing",
-                    label="CPT Pile Bearing",
+                    label="CPT Required Depth",
                     workspace_id=2564,
                     sibling_entity_id=12165,
-                    method_name="view_results",
+                    method_name="view_required_depth",
                     result_key="data",
                     storage_key=CPT_PILE_BEARING_STORAGE_KEY,
                     icon="CPT",
                     icon_bg="#dcfce7",
-                    depends_on=[],
+                    depends_on=["foundation_analysis"],
                 ),
                 "foundation_analysis": WorkflowAppTemplate(
                     node_id="foundation_analysis",
@@ -182,7 +182,7 @@ class WorkflowAppRegistry:
                     storage_key=FOUNDATION_STORAGE_KEY,
                     icon="FND",
                     icon_bg="#fef3c7",
-                    depends_on=["wind_turbine_selector", "cpt_pile_bearing"],
+                    depends_on=["wind_turbine_selector"],
                 ),
                 "reinforcement": WorkflowAppTemplate(
                     node_id="reinforcement",
@@ -190,12 +190,12 @@ class WorkflowAppRegistry:
                     label="Reinforcement",
                     workspace_id=2640,
                     sibling_entity_id=12166,
-                    method_name="view_results",
+                    method_name="view_optimise",
                     result_key="data",
                     storage_key=REINFORCEMENT_STORAGE_KEY,
                     icon="RF",
                     icon_bg="#ede9fe",
-                    depends_on=["foundation_analysis"],
+                    depends_on=["foundation_analysis", "cpt_pile_bearing"],
                 ),
                 "cost_analysis": WorkflowAppTemplate(
                     node_id="cost_analysis",
@@ -208,7 +208,7 @@ class WorkflowAppRegistry:
                     storage_key=COST_STORAGE_KEY,
                     icon="$",
                     icon_bg="#ccfbf1",
-                    depends_on=["foundation_analysis", "reinforcement"],
+                    depends_on=["foundation_analysis", "cpt_pile_bearing", "reinforcement"],
                 ),
             }
         )

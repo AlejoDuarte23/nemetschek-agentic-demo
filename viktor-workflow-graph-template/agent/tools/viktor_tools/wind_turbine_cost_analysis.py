@@ -11,6 +11,7 @@ from agent.tools.viktor_tools.responses import (
 )
 from agent.tools.viktor_tools.sdk_compute import ViktorSdkComputeClient
 from agent.tools.viktor_tools.wind_turbine_common import (
+    CPT_PILE_BEARING_STORAGE_KEY,
     FOUNDATION_PARAMS_STORAGE_KEY,
     REINFORCEMENT_STORAGE_KEY,
     get_data_value,
@@ -187,21 +188,33 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
 
     try:
         foundation_params = read_json_from_storage(FOUNDATION_PARAMS_STORAGE_KEY)
-    except FileNotFoundError:
+        read_json_from_storage(CPT_PILE_BEARING_STORAGE_KEY)
+    except FileNotFoundError as exc:
+        missing_key = str(exc).split("'")[1] if "'" in str(exc) else FOUNDATION_PARAMS_STORAGE_KEY
+        retry_tool = (
+            "run_cpt_pile_bearing"
+            if missing_key == CPT_PILE_BEARING_STORAGE_KEY
+            else "run_wind_turbine_foundation_analysis"
+        )
+        retry_reason = (
+            "CPT required-depth sizing patches final pile length into foundation params before cost analysis."
+            if missing_key == CPT_PILE_BEARING_STORAGE_KEY
+            else "Foundation analysis stores geometry needed by cost analysis."
+        )
         return needs_prerequisite_response(
             tool="run_wind_turbine_cost_analysis",
-            message="Missing foundation geometry params in VIKTOR Storage.",
-            missing_storage_key=FOUNDATION_PARAMS_STORAGE_KEY,
-            retry_tool="run_wind_turbine_foundation_analysis",
-            retry_reason="Foundation analysis stores geometry needed by cost analysis.",
+            message="Missing foundation geometry params or CPT required-depth output in VIKTOR Storage.",
+            missing_storage_key=missing_key,
+            retry_tool=retry_tool,
+            retry_reason=retry_reason,
         )
     except (json.JSONDecodeError, ValueError) as exc:
         return validation_error_response(
             tool="run_wind_turbine_cost_analysis",
-            message="Stored foundation params are invalid.",
+            message="Stored foundation params or CPT required-depth output are invalid.",
             error=exc,
             retry_tool="run_wind_turbine_foundation_analysis",
-            retry_reason="Regenerate foundation params.",
+            retry_reason="Regenerate foundation params and CPT required-depth sizing.",
         )
 
     try:
@@ -319,7 +332,11 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
         entity_url=target.url,
         method_name=target.method_name,
         result_key=target.result_key,
-        input_storage_keys=[FOUNDATION_PARAMS_STORAGE_KEY, REINFORCEMENT_STORAGE_KEY],
+        input_storage_keys=[
+            FOUNDATION_PARAMS_STORAGE_KEY,
+            CPT_PILE_BEARING_STORAGE_KEY,
+            REINFORCEMENT_STORAGE_KEY,
+        ],
         storage_key=target.storage_key,
         summary=summarize_cost_data(data),
     )

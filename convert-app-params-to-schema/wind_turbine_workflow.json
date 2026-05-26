@@ -17,11 +17,11 @@
     },
     {
       "node_id": "cpt_pile_bearing",
-      "label": "CPT Pile Bearing",
+      "label": "CPT Required Depth",
       "workspace_id": 2564,
       "entity_id": 12165,
       "url": "https://demo.viktor.ai/workspaces/2564/app/editor/12165",
-      "primary_method": "view_results",
+      "primary_method": "view_required_depth",
       "result_key": "data",
       "storage_key": "cpt_pile_bearing_data",
       "icon": "CPT",
@@ -46,7 +46,7 @@
       "workspace_id": 2640,
       "entity_id": 12166,
       "url": "https://demo.viktor.ai/workspaces/2640/app/editor/12166",
-      "primary_method": "view_results",
+      "primary_method": "view_optimise",
       "result_key": "data",
       "storage_key": "reinforcement_data",
       "icon": "RF",
@@ -94,34 +94,24 @@
       ]
     },
     {
-      "from": "cpt_pile_bearing",
-      "to": "wind_turbine_foundation_analysis",
+      "from": "wind_turbine_foundation_analysis",
+      "to": "cpt_pile_bearing",
       "status": "ready_with_engineering_transform",
       "mappings": [
         {
-          "source": "data.pile_info.length_item",
-          "target": "step_geo.sec_piles.pile_length",
-          "transform": "pass through, m"
+          "source": "data.Maximum pile reaction (Rz)",
+          "target": "step2.sec_load.design_load",
+          "transform": "pass through, kN"
         },
         {
-          "source": "data.pile_info.diameter_item",
-          "target": "step_geo.sec_piles.pile_diameter",
+          "source": "params.step_geo.sec_piles.pile_diameter",
+          "target": "step2.sec_pile.pile_diameter",
           "transform": "pass through, mm"
         },
         {
-          "source": "data.results.rc_d",
-          "target": "step_geo.sec_piles.num_piles",
-          "transform": "engineering sizing/check input; default remains 30 unless a pile-count sizing rule is selected"
-        },
-        {
-          "source": "data.calc_params.qc_tip_item",
-          "target": "step_geo_tech.sec_tip.tip_stiffness",
-          "transform": "derive tip stiffness from CPT profile or project geotechnical rule"
-        },
-        {
-          "source": "data.results.rc_d",
-          "target": "foundation_capacity_check",
-          "transform": "compare against max pile reaction once foundation analysis table output is available"
+          "source": "CPT required depth result",
+          "target": "params.step_geo.sec_piles.pile_length",
+          "transform": "patch foundation params and storage without rerunning SCIA"
         }
       ]
     },
@@ -141,9 +131,9 @@
           "transform": "m to mm for section depth"
         },
         {
-          "source": "data.Minimum m_xD+, data.Maximum m_xD-, data.Minimum m_yD+, data.Maximum m_yD-",
+          "source": "data.Minimum m_xD+, data.Maximum m_xD-",
           "target": "tab_loading.combinations",
-          "transform": "map each governing moment extreme to a reinforcement load combination with N_Ed = 0 kN for the representative strip"
+          "transform": "map to two reinforcement load combinations with N_Ed = 0 kN for the representative strip"
         }
       ]
     },
@@ -214,8 +204,8 @@
   ],
   "default_sequence": [
     "wind_turbine_selector",
-    "cpt_pile_bearing",
     "wind_turbine_foundation_analysis",
+    "cpt_pile_bearing",
     "reinforcement",
     "wind_turbine_cost_analysis"
   ]

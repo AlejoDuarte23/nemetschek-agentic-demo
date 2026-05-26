@@ -11,12 +11,10 @@ from agent.tools.viktor_tools.responses import (
 )
 from agent.tools.viktor_tools.sdk_compute import ViktorSdkComputeClient
 from agent.tools.viktor_tools.wind_turbine_common import (
-    CPT_PILE_BEARING_STORAGE_KEY,
     FOUNDATION_PARAMS_STORAGE_KEY,
     FOUNDATION_STORAGE_KEY,
     WIND_TURBINE_SELECTOR_STORAGE_KEY,
     get_data_value,
-    get_int,
     get_number,
     read_json_from_storage,
     select_and_store_result,
@@ -41,6 +39,14 @@ class FoundationPlateInputs(BaseModel):
 
 class FoundationPileLayoutInputs(BaseModel):
     num_piles: int = Field(default=30, ge=6, description="Number of piles in the circular layout.")
+    pile_length: float = Field(
+        default=20.0,
+        description="Initial pile length in m used for the first SCIA analysis.",
+    )
+    pile_diameter: int = Field(
+        default=500,
+        description="Pile diameter or width in mm.",
+    )
     pile_edge_distance: int = Field(
         default=600,
         description="Horizontal distance from plate edge to pile centre in mm.",
@@ -142,6 +148,8 @@ def foundation_payload_from_saved_params(
         },
         "pile_layout": {
             "num_piles": sec_piles.get("num_piles"),
+            "pile_length": sec_piles.get("pile_length"),
+            "pile_diameter": sec_piles.get("pile_diameter"),
             "pile_edge_distance": sec_piles.get("pile_edge_distance"),
         },
         "geotechnical": {
@@ -163,7 +171,6 @@ def build_foundation_compute_params(
     *,
     payload: WindTurbineFoundationAnalysisParams,
     selector_data: Any,
-    cpt_data: Any,
 ) -> FoundationComputeParams:
     return FoundationComputeParams(
         step_geo=FoundationStepGeo(
@@ -201,8 +208,8 @@ def build_foundation_compute_params(
             ),
             sec_piles=FoundationSecPiles(
                 num_piles=payload.pile_layout.num_piles,
-                pile_length=get_number(cpt_data, "length_item", "Pile length", default=20.0),
-                pile_diameter=get_int(cpt_data, "diameter_item", "Diameter / width", default=500),
+                pile_length=payload.pile_layout.pile_length,
+                pile_diameter=payload.pile_layout.pile_diameter,
                 pile_edge_distance=payload.pile_layout.pile_edge_distance,
             ),
         ),
@@ -290,40 +297,17 @@ async def run_wind_turbine_foundation_analysis_func(context: Any, args: str) -> 
         )
 
     try:
-        cpt_data = read_json_from_storage(CPT_PILE_BEARING_STORAGE_KEY)
-    except FileNotFoundError:
-        return needs_prerequisite_response(
-            tool="run_wind_turbine_foundation_analysis",
-            message="Missing CPT pile bearing data in VIKTOR Storage.",
-            missing_storage_key=CPT_PILE_BEARING_STORAGE_KEY,
-            retry_tool="run_cpt_pile_bearing",
-            retry_reason=(
-                "run_cpt_pile_bearing stores pile length and pile diameter needed "
-                "by the foundation app."
-            ),
-        )
-    except (json.JSONDecodeError, ValueError) as exc:
-        return validation_error_response(
-            tool="run_wind_turbine_foundation_analysis",
-            message="Stored CPT pile bearing data is invalid.",
-            error=exc,
-            retry_tool="run_cpt_pile_bearing",
-            retry_reason="Regenerate CPT pile bearing data.",
-        )
-
-    try:
         compute_params = build_foundation_compute_params(
             payload=payload,
             selector_data=selector_data,
-            cpt_data=cpt_data,
         )
     except (ValueError, ValidationError) as exc:
         return validation_error_response(
             tool="run_wind_turbine_foundation_analysis",
-            message="Could not map upstream turbine/CPT data into foundation inputs.",
+            message="Could not map turbine data into foundation inputs.",
             error=exc,
             retry_tool="run_wind_turbine_selector",
-            retry_reason="Regenerate upstream turbine and CPT results, then retry foundation.",
+            retry_reason="Regenerate upstream turbine results, then retry foundation.",
         )
 
     compute_payload = compute_params.model_dump()
@@ -333,7 +317,7 @@ async def run_wind_turbine_foundation_analysis_func(context: Any, args: str) -> 
         set_last_saved_params(
             target,
             compute_payload,
-            message="Agent patched foundation params with turbine and CPT workflow inputs.",
+            message="Agent patched foundation params with turbine loads and current pile geometry.",
         )
     except Exception as exc:
         return execution_error_response(
@@ -378,16 +362,13 @@ async def run_wind_turbine_foundation_analysis_func(context: Any, args: str) -> 
         "completed",
         message=(
             "Computed foundation SCIA summary and stored pile reactions/moment extremes "
-            "for reinforcement."
+            "for CPT required-depth sizing and reinforcement."
         ),
         entity_id=target.entity_id,
         entity_url=target.url,
         method_name=target.method_name,
         result_key=target.result_key,
-        input_storage_keys=[
-            WIND_TURBINE_SELECTOR_STORAGE_KEY,
-            CPT_PILE_BEARING_STORAGE_KEY,
-        ],
+        input_storage_keys=[WIND_TURBINE_SELECTOR_STORAGE_KEY],
         params_storage_key=FOUNDATION_PARAMS_STORAGE_KEY,
         storage_key=target.storage_key,
         summary=summarize_foundation_data(data),

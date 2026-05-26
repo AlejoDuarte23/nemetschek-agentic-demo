@@ -72,7 +72,7 @@ TOOL_DISPLAY_NAMES = {
     "set_params_in_node": "Set Params in Node",
     "reset_workflow_entity_directory": "Reset Workflow Entities",
     "run_wind_turbine_selector": "Run Wind Turbine Selector",
-    "run_cpt_pile_bearing": "Run CPT Pile Bearing",
+    "run_cpt_pile_bearing": "Run CPT Required Depth",
     "run_wind_turbine_foundation_analysis": "Run Foundation Analysis",
     "run_wind_turbine_reinforcement": "Run Reinforcement",
     "run_wind_turbine_cost_analysis": "Run Cost Analysis",
@@ -223,10 +223,11 @@ def get_tools() -> list[Any]:
             "run_cpt_pile_bearing",
             (
                 "Read saved params from the active workflow CPT entity, run the CPT "
-                "pile bearing VIKTOR app, and store pile capacity, pile length, and "
-                "pile diameter for foundation analysis. Use chat-provided coordinates "
-                "when exact, or wait for the user to save a map-selected CPT location "
-                "in the VIKTOR app."
+                "required-depth VIKTOR app with max pile reaction and pile diameter "
+                "from foundation analysis, store the required pile length, and patch "
+                "that length back into the foundation params without rerunning SCIA. "
+                "Use chat-provided coordinates when exact, or wait for the user to "
+                "save a map-selected CPT location in the VIKTOR app."
             ),
             CptPileBearingParams,
             run_cpt_pile_bearing_func,
@@ -235,8 +236,8 @@ def get_tools() -> list[Any]:
             "run_wind_turbine_foundation_analysis",
             (
                 "Read saved params from the active workflow foundation entity, patch "
-                "turbine loads and CPT pile geometry, run the SCIA Results Summary, "
-                "and store foundation params and result data."
+                "turbine loads, run the SCIA Results Summary with current/default "
+                "pile geometry, and store foundation params and result data."
             ),
             WindTurbineFoundationAnalysisParams,
             run_wind_turbine_foundation_analysis_func,
@@ -245,8 +246,8 @@ def get_tools() -> list[Any]:
             "run_wind_turbine_reinforcement",
             (
                 "Read saved params from the active workflow reinforcement entity, "
-                "patch foundation plate thickness and governing m_xD/m_yD moments, "
-                "and run the reinforcement app."
+                "patch foundation plate thickness and the two governing m_xD load "
+                "combinations, and run the reinforcement optimized view."
             ),
             WindTurbineReinforcementParams,
             run_wind_turbine_reinforcement_func,

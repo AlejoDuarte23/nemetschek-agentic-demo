@@ -11,7 +11,8 @@ Find the lowest-cost feasible configuration by varying selected foundation desig
 Keep these fixed unless the user explicitly asks to vary them:
 
 - Turbine selection output: mast diameter, vertical load, horizontal load, overturning moment.
-- Soil/CPT output: selected CPT location, pile length, pile diameter, and bearing capacity.
+- Soil/CPT setup: selected CPT location and pile type/shape assumptions.
+- Foundation setup: initial/default pile length and pile diameter for the first SCIA run. The final pile length is patched after CPT required-depth sizing.
 - Cost rates: concrete, reinforcement, pile install, and pile material rates.
 - User constraints: minimum pile count, maximum pile count, available pile diameters, geometric limits, SCIA template availability.
 
@@ -20,15 +21,13 @@ Keep these fixed unless the user explicitly asks to vary them:
 Good first-pass variables are:
 
 - `step_geo.sec_plate.slab_diameter`
-- `step2.sec_pile.pile_tip_level` in the CPT app, which controls pile length
+- optionally `step_geo.sec_piles.pile_diameter` when the user allows changing pile diameter
 
 This foundation app is a round concrete plate with piles in a circular layout. Do not use rectangular grid fields such as `pile_layout.rows`, `pile_layout.cols`, `plate.length`, `plate.width`, `spacing_x`, or `spacing_y`.
 
 Do not vary `step_geo.sec_piles.num_piles` by default when the starting pile count is already high. Increasing slab diameter increases the pile ring radius and generally reduces axial pile reactions from overturning for the same pile count.
 
-Only vary pile length, pile tip level, or pile diameter when the user allows changing the CPT/pile design assumptions. Otherwise treat them as soil-output values from the CPT app.
-
-Pile length is iterative. The CPT app needs an initial pile tip level or length assumption before it can return pile bearing capacity. Use the saved/default CPT value for the first run. If the optimization is allowed to vary pile length, each candidate must first update the CPT pile assumption and rerun `run_cpt_pile_bearing`; the foundation candidate then uses that candidate-specific CPT output.
+Do not treat pile length as an upstream variable by default. For each candidate, run foundation first with the current/default pile length to get reactions, then run `run_cpt_pile_bearing` with `view_required_depth`. The CPT tool uses the candidate's maximum pile reaction and pile diameter, calculates required pile length, and patches that length back into the foundation params for cost without rerunning SCIA.
 
 Secondary variables can be added after the first sweep if needed:
 
@@ -41,20 +40,20 @@ Secondary variables can be added after the first sweep if needed:
 ## Loop
 
 1. Create a fresh entity-backed workflow graph immediately with `create_workflow_entity_directory`.
-   - Include `cost_analysis`; dependencies will add `wind_turbine_selector`, `cpt_pile_bearing`, `foundation_analysis`, and `reinforcement`.
+   - Include `cost_analysis`; dependencies will add `wind_turbine_selector`, `foundation_analysis`, `cpt_pile_bearing`, and `reinforcement`.
    - Use `replace_existing=true` so the graph uses newly created sibling entities for this optimization run.
    - Do this before asking for turbine model, CPT coordinates, budget, or variable ranges.
 2. Show the workflow graph/node URLs and tell the user to go through the workflow. Offer two input paths:
-   - Chat setup: ask for turbine model, exact CPT coordinates if known, and CPT pile assumptions, then run the typed tools with those values.
+   - Chat setup: ask for turbine model, foundation geometry/stiffness, exact CPT coordinates if known, and CPT pile type/shape assumptions, then run the typed tools in sequence.
    - Manual setup: show the generated VIKTOR app URLs and ask the user to save inputs there.
 3. Run `run_wind_turbine_selector`.
-4. For CPT, prefer chat coordinates only when the user knows the exact location. If the user needs to see the map, ask them to pick or confirm the CPT point in the CPT app and save it, then run `run_cpt_pile_bearing`.
+4. For CPT setup, prefer chat coordinates only when the user knows the exact location. If the user needs to see the map, ask them to pick or confirm the CPT point in the CPT app and save it. Do not run `run_cpt_pile_bearing` until after the candidate foundation analysis has produced maximum pile reaction.
 5. Start a cost optimization study with `start_cost_optimization_study`.
 6. For each candidate:
-   - If the candidate changes pile tip level, pile length, or diameter, first update the CPT inputs and run `run_cpt_pile_bearing`.
-   - Build the candidate foundation params.
+   - Build the candidate foundation params, including slab geometry and any allowed pile diameter change.
    - Call `set_params_in_node` for `foundation_analysis`.
    - Run `run_wind_turbine_foundation_analysis`.
+   - Run `run_cpt_pile_bearing`; it calculates required pile depth from max pile reaction and patches the foundation pile length without rerunning SCIA.
    - Run `run_wind_turbine_reinforcement`.
    - Run `run_wind_turbine_cost_analysis`.
    - Call `record_cost_optimization_candidate` with variables, result metrics, feasibility, and total cost.
@@ -77,9 +76,9 @@ Keep early optimization loops small. Prefer 3 to 8 candidates unless the user as
 Use coarse sweeps first, then refine around the best region. For example:
 
 - Plate diameter: 18, 20, 22 m
-- CPT pile tip level: -17, -20, -24 m NAP
+- Pile diameter, only when allowed: 400, 500, 600 mm
 
-If pile tip level becomes deeper, the resulting pile length should increase and CPT capacity should be recomputed before foundation analysis.
+For every candidate, CPT required-depth sizing runs after foundation analysis because it needs the candidate's maximum pile reaction. The resulting pile length is used downstream for cost and saved back into the foundation app, but the same candidate does not rerun SCIA after that patch unless the user explicitly requests a second SCIA pass.
 
 Avoid combinatorial explosions. Ask for a candidate budget when the requested ranges create too many combinations.
 

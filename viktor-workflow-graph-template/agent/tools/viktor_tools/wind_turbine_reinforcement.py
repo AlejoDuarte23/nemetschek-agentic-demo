@@ -11,6 +11,7 @@ from agent.tools.viktor_tools.responses import (
 )
 from agent.tools.viktor_tools.sdk_compute import ViktorSdkComputeClient
 from agent.tools.viktor_tools.wind_turbine_common import (
+    CPT_PILE_BEARING_STORAGE_KEY,
     FOUNDATION_PARAMS_STORAGE_KEY,
     FOUNDATION_STORAGE_KEY,
     get_data_value,
@@ -138,10 +139,8 @@ def reinforcement_payload_from_saved_params(
 
 def governing_foundation_combinations(data: Any) -> list[ReinforcementCombination]:
     moment_fields = [
-        ("m_xD+", get_data_value(data, "Minimum m_xD+")),
-        ("m_xD-", get_data_value(data, "Maximum m_xD-")),
-        ("m_yD+", get_data_value(data, "Minimum m_yD+")),
-        ("m_yD-", get_data_value(data, "Maximum m_yD-")),
+        ("Min m_xD+", get_data_value(data, "Minimum m_xD+")),
+        ("Max m_xD-", get_data_value(data, "Maximum m_xD-")),
     ]
     combinations: list[ReinforcementCombination] = []
     for label, value in moment_fields:
@@ -153,8 +152,10 @@ def governing_foundation_combinations(data: Any) -> list[ReinforcementCombinatio
 
     if not combinations:
         raise ValueError(
-            "Foundation data does not contain usable m_xD/m_yD moment extremes."
+            "Foundation data does not contain usable m_xD+ or m_xD- moment extremes."
         )
+    if len(combinations) < len(moment_fields):
+        raise ValueError("Foundation data is missing one of the required m_xD load combinations.")
     return combinations
 
 
@@ -192,25 +193,36 @@ async def run_wind_turbine_reinforcement_func(context: Any, args: str) -> str:
     try:
         foundation_params = read_json_from_storage(FOUNDATION_PARAMS_STORAGE_KEY)
         foundation_data = read_json_from_storage(FOUNDATION_STORAGE_KEY)
+        read_json_from_storage(CPT_PILE_BEARING_STORAGE_KEY)
     except FileNotFoundError as exc:
         missing_key = str(exc).split("'")[1] if "'" in str(exc) else FOUNDATION_STORAGE_KEY
-        return needs_prerequisite_response(
-            tool="run_wind_turbine_reinforcement",
-            message="Missing foundation analysis output in VIKTOR Storage.",
-            missing_storage_key=missing_key,
-            retry_tool="run_wind_turbine_foundation_analysis",
-            retry_reason=(
+        retry_tool = (
+            "run_cpt_pile_bearing"
+            if missing_key == CPT_PILE_BEARING_STORAGE_KEY
+            else "run_wind_turbine_foundation_analysis"
+        )
+        retry_reason = (
+            "run_cpt_pile_bearing patches the final required pile length before reinforcement."
+            if missing_key == CPT_PILE_BEARING_STORAGE_KEY
+            else (
                 "run_wind_turbine_foundation_analysis stores plate geometry and "
                 "governing moments needed by reinforcement."
-            ),
+            )
+        )
+        return needs_prerequisite_response(
+            tool="run_wind_turbine_reinforcement",
+            message="Missing upstream workflow output in VIKTOR Storage.",
+            missing_storage_key=missing_key,
+            retry_tool=retry_tool,
+            retry_reason=retry_reason,
         )
     except (json.JSONDecodeError, ValueError) as exc:
         return validation_error_response(
             tool="run_wind_turbine_reinforcement",
-            message="Stored foundation output is invalid.",
+            message="Stored foundation or CPT output is invalid.",
             error=exc,
             retry_tool="run_wind_turbine_foundation_analysis",
-            retry_reason="Regenerate foundation results.",
+            retry_reason="Regenerate foundation results and CPT required-depth sizing.",
         )
 
     try:
@@ -294,7 +306,11 @@ async def run_wind_turbine_reinforcement_func(context: Any, args: str) -> str:
         entity_url=target.url,
         method_name=target.method_name,
         result_key=target.result_key,
-        input_storage_keys=[FOUNDATION_PARAMS_STORAGE_KEY, FOUNDATION_STORAGE_KEY],
+        input_storage_keys=[
+            FOUNDATION_PARAMS_STORAGE_KEY,
+            FOUNDATION_STORAGE_KEY,
+            CPT_PILE_BEARING_STORAGE_KEY,
+        ],
         storage_key=target.storage_key,
         combination_count=len(compute_params.tab_loading.combinations),
         summary=summarize_reinforcement_data(data),
