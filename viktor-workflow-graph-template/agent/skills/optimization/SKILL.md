@@ -19,20 +19,24 @@ Keep these fixed unless the user explicitly asks to vary them:
 
 Good first-pass variables are:
 
-- `step_geo.sec_piles.num_piles`
-- `step_geo.sec_piles.pile_edge_distance`
 - `step_geo.sec_plate.slab_diameter`
-- `step_geo.sec_plate.slab_thickness`
-- `step_geo.sec_plate.plate_edge_thickness`
-- `step_geo.sec_plate.pedestal_height`
-- `step_geo_tech.sec_tip.tip_stiffness`
-- `step_geo_tech.sec_lateral.lateral_stiffness`
+- `step2.sec_pile.pile_tip_level` in the CPT app, which controls pile length
 
 This foundation app is a round concrete plate with piles in a circular layout. Do not use rectangular grid fields such as `pile_layout.rows`, `pile_layout.cols`, `plate.length`, `plate.width`, `spacing_x`, or `spacing_y`.
+
+Do not vary `step_geo.sec_piles.num_piles` by default when the starting pile count is already high. Increasing slab diameter increases the pile ring radius and generally reduces axial pile reactions from overturning for the same pile count.
 
 Only vary pile length, pile tip level, or pile diameter when the user allows changing the CPT/pile design assumptions. Otherwise treat them as soil-output values from the CPT app.
 
 Pile length is iterative. The CPT app needs an initial pile tip level or length assumption before it can return pile bearing capacity. Use the saved/default CPT value for the first run. If the optimization is allowed to vary pile length, each candidate must first update the CPT pile assumption and rerun `run_cpt_pile_bearing`; the foundation candidate then uses that candidate-specific CPT output.
+
+Secondary variables can be added after the first sweep if needed:
+
+- `step_geo.sec_plate.slab_thickness`
+- `step_geo.sec_plate.plate_edge_thickness`
+- `step_geo.sec_piles.pile_edge_distance`
+- `step_geo_tech.sec_tip.tip_stiffness`
+- `step_geo_tech.sec_lateral.lateral_stiffness`
 
 ## Loop
 
@@ -71,9 +75,10 @@ Keep early optimization loops small. Prefer 3 to 8 candidates unless the user as
 
 Use coarse sweeps first, then refine around the best region. For example:
 
-- Piles: 24, 30, 36
 - Plate diameter: 18, 20, 22 m
-- Centre thickness: 2.5, 3.0, 3.5 m
+- CPT pile tip level: -17, -20, -24 m NAP
+
+If pile tip level becomes deeper, the resulting pile length should increase and CPT capacity should be recomputed before foundation analysis.
 
 Avoid combinatorial explosions. Ask for a candidate budget when the requested ranges create too many combinations.
 

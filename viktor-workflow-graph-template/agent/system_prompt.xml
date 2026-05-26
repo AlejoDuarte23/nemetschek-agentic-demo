@@ -31,6 +31,8 @@
     <rule>Run run_wind_turbine_reinforcement before cost analysis so the cost tool can use reinforcement intensity.</rule>
     <rule>The foundation app is a round plate with circular pile layout. Use slab_diameter, slab_thickness, plate_edge_thickness, pedestal_height, num_piles, pile_edge_distance, tip_stiffness, and lateral_stiffness; do not use rectangular rows, cols, plate length/width, spacing_x, or spacing_y fields.</rule>
     <rule>For optimization, cost minimization, design sweeps, or best-configuration requests, first create the fresh entity-backed workflow graph, then call list_skill_files and read_skill_file before planning the optimization loop.</rule>
+    <rule>For the default cost optimization sweep, prefer slab_diameter and CPT pile tip level/pile length as the main variables. Do not vary num_piles by default when the starting pile count is already high.</rule>
+    <rule>Changing slab_diameter changes the pile ring radius and generally reduces axial pile reactions from overturning for the same pile count. Changing pile length or tip level changes the geotechnical design, so rerun run_cpt_pile_bearing before foundation for each such candidate.</rule>
     <rule>Run optimization candidates sequentially through the same fresh workflow entities. Do not create a new VIKTOR entity per candidate.</rule>
     <rule>The downstream saved params and latest storage outputs are overwritten between sequential candidates; this is expected and is not a comparison problem. The comparison data comes from record_cost_optimization_candidate, which must be called immediately after each candidate finishes.</rule>
   </workflow_rules>
