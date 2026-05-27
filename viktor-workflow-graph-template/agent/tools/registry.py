@@ -135,7 +135,10 @@ def get_tools() -> list[Any]:
         ),
         function_tool(
             "set_workflow_progress",
-            "Set, replace, or clear execution progress below the plan.",
+            (
+                "Set, replace, or clear the legacy hidden execution progress payload. "
+                "Use update_workflow_plan for visible checklist progress."
+            ),
             SetWorkflowProgressArgs,
             set_workflow_progress_func,
         ),

@@ -674,7 +674,7 @@ export class WorkflowGraph {
   _renderProgressMarkup(progress) {
     const steps = Array.isArray(progress.steps) ? progress.steps : [];
     return `
-      <section class="workflow-card workflow-card-compact">
+      <section class="workflow-card-surface workflow-progress-surface">
         <div class="workflow-progress-head">
           <div>
             <div class="workflow-progress-title">${escapeHtml(progress.title || "Execution Progress")}</div>

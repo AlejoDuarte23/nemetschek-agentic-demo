@@ -14,7 +14,7 @@ viktor-workflow-graph-template/
     system_prompt.xml            # Agent behavior, tools, workflow nodes, graph icons
     tools/
       registry.py                # Registers all Agents SDK tools
-      graph_tools/workflow.py    # Compose graph, plan, todo, progress tools
+      graph_tools/workflow.py    # Compose graph, plan, and checklist status tools
       viktor_tools/              # Generated tools that call VIKTOR apps
   workflow_graph/
     models.py                    # Workflow graph state models
@@ -229,7 +229,7 @@ They manage:
 - DAG composition;
 - plan card;
 - todo updates;
-- progress display;
+- visible checklist status via plan todos;
 - graph node icons.
 
 Graph nodes support:
@@ -254,7 +254,16 @@ When adding tools, add graph nodes with:
 - a clean `icon_bg`;
 - correct `depends_on`.
 
-The graph renderer is in `workflow_graph/`. It already supports draggable nodes, pan/zoom, fit view, plan overlay, progress overlay, and custom icon labels.
+The graph renderer is in `workflow_graph/`. It already supports draggable nodes, pan/zoom, fit view, a plan/checklist overlay, and custom icon labels.
+
+Visible progress lives in `WorkflowPlan.todos[*].status`.
+
+Rules:
+
+- Before changing visible status, call `get_workflow_plan` and use the exact todo ids.
+- Update visible status with `update_workflow_plan`.
+- The checklist circles in the WebView are display-only; manual clicks only expand/collapse descriptions and do not persist completion state.
+- Do not use `set_workflow_progress` for visible checklist progress. It is a legacy hidden payload unless a future UI explicitly renders it again.
 
 ## System Prompt Architecture
 
@@ -326,6 +335,7 @@ Requirements:
 - Register the tool.
 - Update system_prompt.xml.
 - Add graph nodes with icon and icon_bg.
+- Track visible progress with `get_workflow_plan` and `update_workflow_plan`.
 - Keep runtime output short and useful.
 - Return recoverable failures as JSON tool output.
 ```
