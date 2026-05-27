@@ -82,8 +82,8 @@ def _empty_html(message: str = "") -> str:
 
 
 class Parametrization(vkt.Parametrization):
-    title = vkt.Text(""" # Workflow Graph Agent
-Build a workflow graph, run VIKTOR-backed tools, and keep intermediate results in entity storage."""
+    title = vkt.Text(""" # Wind Turbine Foundation Agent
+Select a turbine, analyze the foundation, size piles from CPT, optimize reinforcement, and estimate cost."""
     )
     chat = vkt.Chat("", method="call_llm")
 

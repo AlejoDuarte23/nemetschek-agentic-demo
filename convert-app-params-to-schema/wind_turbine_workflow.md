@@ -44,7 +44,7 @@ The foundation analysis result handoff is based on the app's `view_results` Data
 | CPT | Foundation params | required pile depth/length -> `step_geo.sec_piles.pile_length` via `set_params_in_node` without rerunning SCIA |
 | Foundation | Reinforcement | design rule -> `tab_geometry.width = 1000 mm` representative strip |
 | Foundation | Reinforcement | `step_geo.sec_plate.slab_thickness` -> `tab_geometry.height` after m-to-mm conversion |
-| Foundation | Reinforcement | `Minimum m_xD+`, `Maximum m_xD-` -> two `tab_loading.combinations` |
+| Foundation | Reinforcement | `Minimum m_xD+`, `Maximum m_xD-` -> two `tab_loading.combinations` with labels `Min m_xD+` and `Max m_xD-` |
 | Foundation | Cost | mast, plate, pedestal, and pile geometry -> `step_1` geometry and pile inputs |
 | Reinforcement | Cost | `section.kg_m3` -> `step_1.rebar.plate_main_reinforcement` with a project reinforcement-intensity rule |
 

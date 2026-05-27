@@ -133,7 +133,7 @@
         {
           "source": "data.Minimum m_xD+, data.Maximum m_xD-",
           "target": "tab_loading.combinations",
-          "transform": "map to two reinforcement load combinations with N_Ed = 0 kN for the representative strip"
+          "transform": "map to two reinforcement load combinations with labels Min m_xD+ and Max m_xD-, M_Ed from the matching moment, and N_Ed = 0 kN for the representative strip"
         }
       ]
     },

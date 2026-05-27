@@ -55,7 +55,7 @@ Secondary variables can be added after the first sweep if needed:
    - Call `set_params_in_node` for `foundation_analysis`.
    - Run `run_wind_turbine_foundation_analysis`.
    - Call `set_params_in_node` for `cpt_pile_bearing` with maximum pile reaction and pile diameter.
-   - Call `set_params_in_node` for `reinforcement` with the two governing `m_xD` load combinations.
+   - Call `set_params_in_node` for `reinforcement` with the two governing `m_xD` load combinations, including labels `Min m_xD+` and `Max m_xD-`.
    - Run `run_cpt_pile_bearing`; it calculates required pile depth from max pile reaction.
    - Call `set_params_in_node` for `foundation_analysis` with the required pile length returned by CPT. Do not rerun SCIA.
    - Run `run_wind_turbine_reinforcement`.
