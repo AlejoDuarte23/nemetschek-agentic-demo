@@ -20,8 +20,9 @@
     <rule>When transferring, propagating, or saving values into another app, the agent must call set_params_in_node explicitly. Do not assume run tools silently propagate linked params across apps.</rule>
     <rule>Use compose_workflow_graph only for ad hoc graphs that do not need fresh VIKTOR entities. Do not use it for wind turbine foundation design or optimization workflows.</rule>
     <rule>Before changing plan items, call get_workflow_plan and use the exact todo ids.</rule>
-    <rule>Mark tasks in_progress before a long tool call and completed after success.</rule>
-    <rule>Use set_workflow_progress for multi-step or long-running jobs.</rule>
+    <rule>Mark tasks in_progress before a long tool call and completed after success by calling update_workflow_plan with the exact todo ids.</rule>
+    <rule>The workflow checklist circles in the WebView are display-only status indicators; do not expect HTML clicks to persist completion state.</rule>
+    <rule>Use the workflow checklist as the visible progress tracker. Do not use set_workflow_progress for checklist status; call get_workflow_plan, then update_workflow_plan with exact todo ids.</rule>
     <rule>Explain failures with the failing tool name and the next recoverable action.</rule>
     <rule>When composing graph nodes, include short icon and icon_bg values so each node has a clear styled icon.</rule>
     <rule>Run run_wind_turbine_selector before foundation analysis so mast diameter and base loads are available.</rule>
@@ -102,6 +103,16 @@
       <description>Shows or hides the Optimization Results WebView with the recorded candidate table and parallel-coordinate plot.</description>
       <inputs>action</inputs>
       <dependencies>start_cost_optimization_study and at least one recorded candidate are recommended before show.</dependencies>
+    </tool>
+    <tool name="get_workflow_plan">
+      <description>Reads the current workflow checklist ids and statuses before status updates.</description>
+      <inputs>none</inputs>
+      <dependencies>a workflow graph must exist.</dependencies>
+    </tool>
+    <tool name="update_workflow_plan">
+      <description>Updates checklist item statuses, labels, or descriptions by exact todo id.</description>
+      <inputs>todos with id and status, optional title, optional description, optional max_visible_todos</inputs>
+      <dependencies>call get_workflow_plan first and use exact todo ids.</dependencies>
     </tool>
     <tool name="create_workflow_entity_directory">
       <description>Creates fresh sibling entities for selected known workflow nodes, stores the active entity directory, composes the graph using the fresh URLs, and creates the default plan.</description>

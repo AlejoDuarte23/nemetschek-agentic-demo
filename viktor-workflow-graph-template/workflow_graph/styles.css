@@ -184,6 +184,10 @@ body {
   backdrop-filter: blur(16px) saturate(1.2);
 }
 
+.workflow-progress-surface {
+  padding: 14px 12px 12px;
+}
+
 .workflow-plan-summary {
   display: grid;
   gap: 7px;
