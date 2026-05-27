@@ -4,6 +4,10 @@ import viktor as vkt
 from dotenv import load_dotenv
 
 from agent.runner import AgentContext, workflow_agent_sync_stream
+from agent.tools.viktor_tools.foundation_moment_contours import (
+    FOUNDATION_MOMENT_CONTOURS_STORAGE_KEY,
+    SHOW_FOUNDATION_MOMENT_CONTOURS_KEY,
+)
 from agent.tools.optimization_tools import SHOW_OPTIMIZATION_RESULTS_KEY
 from agent.tools.optimization_tools.cost_optimization import (
     COST_OPTIMIZATION_STORAGE_KEY,
@@ -14,6 +18,7 @@ from agent.tools.optimization_tools.cost_optimization import (
     study_summary,
 )
 from workflow_graph.optimization_results_viewer import OptimizationResultsViewer
+from workflow_graph.plotly_figure_viewer import PlotlyFigureViewer
 from workflow_graph.state import delete_canvas_state, load_canvas_state
 from workflow_graph.viewer import WorkflowViewer
 
@@ -34,6 +39,27 @@ def get_optimization_results_visibility(params, **kwargs) -> bool:
             SHOW_OPTIMIZATION_RESULTS_KEY,
             scope="entity",
         ).getvalue() == "show"
+    except Exception:
+        return False
+
+
+def get_foundation_moment_contours_visibility(params, **kwargs) -> bool:
+    if not params.chat:
+        try:
+            vkt.Storage().delete(SHOW_FOUNDATION_MOMENT_CONTOURS_KEY, scope="entity")
+        except Exception:
+            pass
+        return False
+
+    try:
+        visible = (
+            vkt.Storage()
+            .get(SHOW_FOUNDATION_MOMENT_CONTOURS_KEY, scope="entity")
+            .getvalue()
+            == "show"
+        )
+        vkt.Storage().get(FOUNDATION_MOMENT_CONTOURS_STORAGE_KEY, scope="entity")
+        return visible
     except Exception:
         return False
 
@@ -118,4 +144,27 @@ class Controller(vkt.Controller):
         except Exception:
             return vkt.WebResult(
                 html=_empty_html("No optimization results are available yet.")
+            )
+
+    @vkt.WebView(
+        "2D Moment Contour Plots",
+        width=100,
+        visible=get_foundation_moment_contours_visibility,
+    )
+    def foundation_moment_contours_view(self, params, **kwargs):
+        try:
+            stored_file = vkt.Storage().get(
+                FOUNDATION_MOMENT_CONTOURS_STORAGE_KEY,
+                scope="entity",
+            )
+            raw = json.loads(stored_file.getvalue_binary().decode("utf-8"))
+            return vkt.WebResult(
+                html=PlotlyFigureViewer(
+                    figure=raw["figure"],
+                    title="2D Moment Contour Plots",
+                ).write()
+            )
+        except Exception:
+            return vkt.WebResult(
+                html=_empty_html("No moment contour plot is available yet.")
             )

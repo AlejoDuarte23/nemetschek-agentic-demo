@@ -284,6 +284,8 @@ class ViktorRestEntityClient:
         host = environment.strip().rstrip("/")
         if host.startswith("https://"):
             host = host.removeprefix("https://")
+        if "." not in host:
+            host = f"{host}.viktor.ai"
         if "/" in host or not host.endswith(".viktor.ai"):
             raise ValueError("VIKTOR_ENVIRONMENT must be host-only, for example demo.viktor.ai.")
         return f"https://{host}/api"

@@ -27,6 +27,9 @@
     <rule>Run run_wind_turbine_selector before foundation analysis so mast diameter and base loads are available.</rule>
     <rule>After run_wind_turbine_selector succeeds, call set_params_in_node for foundation_analysis with step_geo.sec_mast.mast_diameter, mast_vertical_load, mast_horizontal_load, and mast_moment from the selector output.</rule>
     <rule>Run run_wind_turbine_foundation_analysis after turbine selection using the foundation app's current/default pile length and pile diameter. This first SCIA run is used to calculate pile reactions and governing plate moments; it must not depend on CPT output.</rule>
+    <rule>For general non-optimization workflows, run run_foundation_moment_contours after run_wind_turbine_foundation_analysis succeeds so the user can see the 2D Moment Contour Plots. Do not run this automatically inside optimization candidate loops.</rule>
+    <rule>When the user asks to show, render, or inspect the foundation heatmap, moment contours, m_xD, or m_yD plots, run run_foundation_moment_contours after foundation params are available. It calls the SCIA view_mxd_plus_plot method and shows the 2D Moment Contour Plots WebView.</rule>
+    <rule>When the user asks to hide or close the foundation heatmap or 2D Moment Contour Plots view, call show_hide_foundation_moment_contours with action="hide".</rule>
     <rule>After run_wind_turbine_foundation_analysis succeeds, call set_params_in_node for cpt_pile_bearing with step2.sec_load.design_load equal to the maximum pile reaction and step2.sec_pile.pile_diameter equal to the foundation pile diameter.</rule>
     <rule>After run_wind_turbine_foundation_analysis succeeds, call set_params_in_node for reinforcement with tab_geometry.height equal to slab_thickness converted to mm and tab_loading.combinations containing exactly Min m_xD+ and Max m_xD- with N_Ed = 0.</rule>
     <rule>Before run_cpt_pile_bearing, offer both CPT input options: provide exact coordinates in chat, or open the CPT app to pick/confirm the point on the map and save it. Prefer the map option when the user needs to visually choose the CPT location.</rule>
@@ -148,6 +151,19 @@
       <dependencies>run_wind_turbine_selector must complete first.</dependencies>
       <note>The SCIA sample app reads sample_apps/scia/base_model.esa from disk.</note>
     </tool>
+    <tool name="run_foundation_moment_contours">
+      <description>Runs the foundation SCIA Plotly view method view_mxd_plus_plot, stores the returned Plotly figure, and shows the 2D Moment Contour Plots WebView.</description>
+      <url>https://demo.viktor.ai/workspaces/2677/app/editor/12173</url>
+      <method>view_mxd_plus_plot</method>
+      <inputs>none; uses stored foundation params or the foundation app's last saved params</inputs>
+      <output_key>plotly.figure</output_key>
+      <dependencies>foundation_analysis must exist in the active workflow; foundation params should be saved or stored.</dependencies>
+    </tool>
+    <tool name="show_hide_foundation_moment_contours">
+      <description>Shows or hides the 2D Moment Contour Plots WebView after the Plotly figure exists.</description>
+      <inputs>action</inputs>
+      <dependencies>run_foundation_moment_contours must complete first before action="show".</dependencies>
+    </tool>
     <tool name="run_wind_turbine_reinforcement">
       <description>Reads saved reinforcement params from the active workflow entity, patches foundation plate thickness and two governing m_xD load combinations, and runs the reinforcement app optimized view.</description>
       <url>https://demo.viktor.ai/workspaces/2640/app/editor/12166</url>
@@ -178,6 +194,8 @@
     <step>For turbine selection, ask for the turbine model in chat or let the user edit it in the selector app, call get_params_in_node if the user saved manually, then run run_wind_turbine_selector.</step>
     <step>After turbine selection, call set_params_in_node to propagate selector mast diameter and base loads into foundation_analysis.</step>
     <step>For foundation analysis, ask for geometry and stiffness inputs in chat or let the user edit and save the foundation app, call get_params_in_node if the user saved manually, then run run_wind_turbine_foundation_analysis with the current/default pile length and pile diameter. If it returns needs_scia_template, explain the required disk SCIA template.</step>
+    <step>For a general non-optimization workflow, run run_foundation_moment_contours after foundation analysis succeeds. Skip this automatic contour render during optimization candidate loops unless the user explicitly asks for it.</step>
+    <step>If the user asks for m_xD/m_yD heatmaps or 2D moment contours, run run_foundation_moment_contours and tell them the 2D Moment Contour Plots WebView is available. If they ask to hide it later, call show_hide_foundation_moment_contours with action="hide".</step>
     <step>After foundation analysis, call set_params_in_node to propagate maximum pile reaction and pile diameter into cpt_pile_bearing, and call set_params_in_node to propagate Min m_xD+ and Max m_xD- load combinations into reinforcement.</step>
     <step>For CPT required-depth sizing, ask for exact coordinates and CPT assumptions in chat, or ask the user to pick/confirm the CPT point on the map and save the app. Then run run_cpt_pile_bearing with view_required_depth; it uses maximum pile reaction and pile diameter from foundation. After it returns, call set_params_in_node to patch the required pile length back into foundation_analysis without rerunning SCIA.</step>
     <step>Run run_wind_turbine_reinforcement with view_optimise after successful foundation results and CPT required-depth patch.</step>

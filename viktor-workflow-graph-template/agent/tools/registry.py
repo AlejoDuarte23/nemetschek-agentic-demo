@@ -35,10 +35,12 @@ from agent.tools.skill_tools import (
 from agent.tools.viktor_tools import (
     CptPileBearingParams,
     CreateWorkflowEntityDirectoryArgs,
+    FoundationMomentContoursParams,
     GetParamsInNodeArgs,
     GetWorkflowEntityDirectoryArgs,
     ResetWorkflowEntityDirectoryArgs,
     SetParamsInNodeArgs,
+    ShowHideFoundationMomentContoursParams,
     WindTurbineCostAnalysisParams,
     WindTurbineFoundationAnalysisParams,
     WindTurbineReinforcementParams,
@@ -48,11 +50,13 @@ from agent.tools.viktor_tools import (
     get_workflow_entity_directory_func,
     reset_workflow_entity_directory_func,
     run_cpt_pile_bearing_func,
+    run_foundation_moment_contours_func,
     run_wind_turbine_cost_analysis_func,
     run_wind_turbine_foundation_analysis_func,
     run_wind_turbine_reinforcement_func,
     run_wind_turbine_selector_func,
     set_params_in_node_func,
+    show_hide_foundation_moment_contours_func,
 )
 
 
@@ -76,6 +80,8 @@ TOOL_DISPLAY_NAMES = {
     "reset_workflow_entity_directory": "Reset Workflow Entities",
     "run_wind_turbine_selector": "Run Wind Turbine Selector",
     "run_cpt_pile_bearing": "Run CPT Required Depth",
+    "run_foundation_moment_contours": "Run Moment Contours",
+    "show_hide_foundation_moment_contours": "Show/Hide Moment Contours",
     "run_wind_turbine_foundation_analysis": "Run Foundation Analysis",
     "run_wind_turbine_reinforcement": "Run Reinforcement",
     "run_wind_turbine_cost_analysis": "Run Cost Analysis",
@@ -255,6 +261,22 @@ def get_tools() -> list[Any]:
             ),
             WindTurbineFoundationAnalysisParams,
             run_wind_turbine_foundation_analysis_func,
+        ),
+        function_tool(
+            "run_foundation_moment_contours",
+            (
+                "Run the foundation SCIA Plotly view_mxd_plus_plot method, store "
+                "the inline Plotly figure, and show the 2D Moment Contour Plots "
+                "WebView."
+            ),
+            FoundationMomentContoursParams,
+            run_foundation_moment_contours_func,
+        ),
+        function_tool(
+            "show_hide_foundation_moment_contours",
+            "Show or hide the 2D Moment Contour Plots WebView after the plot exists.",
+            ShowHideFoundationMomentContoursParams,
+            show_hide_foundation_moment_contours_func,
         ),
         function_tool(
             "run_wind_turbine_reinforcement",

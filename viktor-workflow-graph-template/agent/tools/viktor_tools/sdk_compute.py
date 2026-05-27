@@ -23,6 +23,8 @@ def normalize_sdk_environment(value: str) -> str:
         raise ValueError(
             "VIKTOR_ENVIRONMENT must be the host only, for example demo.viktor.ai."
         )
+    if "." not in environment:
+        environment = f"{environment}.viktor.ai"
     if not environment.endswith(".viktor.ai"):
         raise ValueError(
             "VIKTOR_ENVIRONMENT must end with .viktor.ai, for example demo.viktor.ai."
