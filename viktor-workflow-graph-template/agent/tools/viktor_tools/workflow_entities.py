@@ -182,8 +182,8 @@ class WorkflowAppRegistry:
                     method_name="view_results",
                     result_key="data",
                     storage_key=FOUNDATION_STORAGE_KEY,
-                    icon="FND",
-                    icon_bg="#fef3c7",
+                    icon="SCIA",
+                    icon_bg="#ffffff",
                     depends_on=["wind_turbine_selector"],
                 ),
                 "reinforcement": WorkflowAppTemplate(

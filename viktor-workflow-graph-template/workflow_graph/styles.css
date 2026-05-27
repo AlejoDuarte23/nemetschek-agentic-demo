@@ -513,6 +513,11 @@ body {
   height: 30px;
 }
 
+.icon.icon-scia svg {
+  width: 32px;
+  height: 32px;
+}
+
 .icon.icon-custom {
   box-shadow:
     0 8px 18px rgba(15, 23, 42, 0.12),

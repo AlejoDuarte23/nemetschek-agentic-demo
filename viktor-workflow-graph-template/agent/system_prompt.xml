@@ -146,7 +146,7 @@
       <dependencies>run_wind_turbine_foundation_analysis must complete first.</dependencies>
     </tool>
     <tool name="run_wind_turbine_foundation_analysis">
-      <description>Reads saved foundation params from the active workflow entity, patches turbine loads, runs the foundation app Results Summary with current/default pile geometry, and stores reactions/moments plus the foundation input params.</description>
+      <description>Reads saved foundation params from the active workflow entity, patches turbine loads, runs the SCIA-backed foundation app Results Summary with current/default pile geometry, and stores reactions/moments plus the foundation input params.</description>
       <url>https://demo.viktor.ai/workspaces/2677/app/editor/12173</url>
       <method>view_results</method>
       <exposed_inputs>plate.slab_diameter, plate.slab_thickness, plate.plate_edge_thickness, plate.pedestal_height, pile_layout.num_piles, pile_layout.pile_length, pile_layout.pile_diameter, pile_layout.pile_edge_distance, geotechnical.tip_stiffness, geotechnical.lateral_stiffness</exposed_inputs>
@@ -186,7 +186,7 @@
   </tools>
   <workflow_nodes>
     <node id="wind_turbine_selector" tool="run_wind_turbine_selector" label="Wind Turbine Selector" icon="WT" icon_bg="#dbeafe" url="https://demo.viktor.ai/workspaces/2544/app/editor/12164" />
-    <node id="foundation_analysis" tool="run_wind_turbine_foundation_analysis" label="Foundation Analysis" icon="FND" icon_bg="#fef3c7" url="https://demo.viktor.ai/workspaces/2677/app/editor/12173" depends_on="wind_turbine_selector" />
+    <node id="foundation_analysis" tool="run_wind_turbine_foundation_analysis" label="Foundation Analysis" icon="SCIA" icon_bg="#ffffff" url="https://demo.viktor.ai/workspaces/2677/app/editor/12173" depends_on="wind_turbine_selector" />
     <node id="cpt_pile_bearing" tool="run_cpt_pile_bearing" label="CPT Required Depth" icon="CPT" icon_bg="#dcfce7" url="https://demo.viktor.ai/workspaces/2564/app/editor/12165" depends_on="foundation_analysis" />
     <node id="reinforcement" tool="run_wind_turbine_reinforcement" label="Reinforcement" icon="RF" icon_bg="#ede9fe" url="https://demo.viktor.ai/workspaces/2640/app/editor/12166" depends_on="foundation_analysis,cpt_pile_bearing" />
     <node id="cost_analysis" tool="run_wind_turbine_cost_analysis" label="Cost Analysis" icon="$" icon_bg="#ccfbf1" url="https://demo.viktor.ai/workspaces/2647/app/editor/12169" depends_on="foundation_analysis,cpt_pile_bearing,reinforcement" />
