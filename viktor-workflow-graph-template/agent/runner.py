@@ -28,7 +28,7 @@ from agent.tools import TOOL_DISPLAY_NAMES, get_tools
 PROMPT_PATH = Path(__file__).resolve().parent / "system_prompt.xml"
 MAX_AGENT_TURNS = 100
 DEFAULT_AGENT_MODEL = "gpt-5.4-mini"
-DEFAULT_AGENT_REASONING_EFFORT = "medium"
+DEFAULT_AGENT_REASONING_EFFORT = "high"
 DEFAULT_AGENT_VERBOSITY = "medium"
 
 event_loop: asyncio.AbstractEventLoop | None = None
