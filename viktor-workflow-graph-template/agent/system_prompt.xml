@@ -204,7 +204,7 @@
     </tool>
     <tool name="run_allplan_model">
       <description>Reads saved Allplan params from the active workflow entity, patches foundation geometry, CPT required pile length, and reinforcement detailing/output, and runs the Allplan visual geometry schedule table view.</description>
-      <url>https://demo.viktor.ai/workspaces/2787/app/editor/12491</url>
+      <url>https://demo.viktor.ai/workspaces/2787/app/editor/12509</url>
       <method>bar_schedule</method>
       <exposed_inputs>optional geometry and reinforcement overrides in mm</exposed_inputs>
       <output_key>table</output_key>
@@ -217,7 +217,7 @@
     <node id="cpt_pile_bearing" tool="run_cpt_pile_bearing" label="CPT Required Depth" icon="CPT" icon_bg="#dcfce7" url="https://demo.viktor.ai/workspaces/2564/app/editor/12165" depends_on="foundation_analysis" />
     <node id="reinforcement" tool="run_wind_turbine_reinforcement" label="Reinforcement" icon="RF" icon_bg="#ede9fe" url="https://demo.viktor.ai/workspaces/2640/app/editor/12166" depends_on="foundation_analysis,cpt_pile_bearing" />
     <node id="cost_analysis" tool="run_wind_turbine_cost_analysis" label="Cost Analysis" icon="$" icon_bg="#ccfbf1" url="https://demo.viktor.ai/workspaces/2647/app/editor/12169" depends_on="foundation_analysis,cpt_pile_bearing,reinforcement" />
-    <node id="allplan_model" tool="run_allplan_model" label="Allplan Model" icon="AP" icon_bg="#e0f2fe" url="https://demo.viktor.ai/workspaces/2787/app/editor/12491" depends_on="foundation_analysis,cpt_pile_bearing,reinforcement" />
+    <node id="allplan_model" tool="run_allplan_model" label="Allplan Model" icon="AP" icon_bg="#e0f2fe" url="https://demo.viktor.ai/workspaces/2787/app/editor/12509" depends_on="foundation_analysis,cpt_pile_bearing,reinforcement" />
   </workflow_nodes>
   <default_sequence>
     <step>Create a fresh workflow entity directory immediately with replace_existing=true, selecting only the nodes the user wants.</step>

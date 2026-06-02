@@ -32,7 +32,7 @@ flowchart LR
 | Wind Turbine Foundation Analysis | 2677 | 12173 | `view_results` | `data` |
 | Reinforcement | 2640 | 12166 | `view_optimise` | `data` |
 | Wind Turbine Cost Analysis | 2647 | 12169 | `view_data` | `data` |
-| Allplan Model | 2787 | 12491 | `bar_schedule` | `table` |
+| Allplan Model | 2787 | 12509 | `bar_schedule` | `table` |
 
 The foundation analysis result handoff is based on the app's `view_results` DataView. It returns maximum/minimum pile `Rz` plus governing `m_xD` and `m_yD` moment extremes. The SCIA sample app reads `sample_apps/scia/base_model.esa` from disk.
 

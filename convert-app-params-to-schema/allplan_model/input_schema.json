@@ -6,52 +6,52 @@
       "properties": {
         "foundation_diameter": {
           "type": "number",
-          "default": 14000.0
+          "default": 14500.0
         },
         "foundation_edge_thickness": {
           "type": "number",
-          "default": 900.0
+          "default": 1000.0
         },
         "foundation_center_thickness": {
           "type": "number",
-          "default": 1800.0
+          "default": 1900.0
         },
         "pedestal_diameter": {
           "type": "number",
-          "default": 4200.0
+          "default": 5000.0
         },
         "pedestal_height": {
           "type": "number",
-          "default": 2200.0
+          "default": 1000.0
         },
         "pile_count": {
           "type": "integer",
-          "default": 12
+          "default": 24
         },
         "pile_edge_distance": {
           "type": "number",
-          "default": 600.0
+          "default": 750.0
         },
         "pile_diameter": {
           "type": "number",
-          "default": 700.0
+          "default": 400.0
         },
         "pile_depth": {
           "type": "number",
-          "default": 12000.0
+          "default": 10000.0
         }
       },
       "additionalProperties": false,
       "default": {
-        "foundation_diameter": 14000.0,
-        "foundation_edge_thickness": 900.0,
-        "foundation_center_thickness": 1800.0,
-        "pedestal_diameter": 4200.0,
-        "pedestal_height": 2200.0,
-        "pile_count": 12,
-        "pile_edge_distance": 600.0,
-        "pile_diameter": 700.0,
-        "pile_depth": 12000.0
+        "foundation_diameter": 14500.0,
+        "foundation_edge_thickness": 1000.0,
+        "foundation_center_thickness": 1900.0,
+        "pedestal_diameter": 5000.0,
+        "pedestal_height": 1000.0,
+        "pile_count": 24,
+        "pile_edge_distance": 750.0,
+        "pile_diameter": 400.0,
+        "pile_depth": 10000.0
       }
     },
     "reinforcement": {
@@ -84,10 +84,6 @@
         "pedestal_grid_spacing": {
           "type": "number",
           "default": 350.0
-        },
-        "pedestal_frame_embed_depth": {
-          "type": "number",
-          "default": 1200.0
         },
         "pedestal_tie_diameter": {
           "type": "number",
@@ -127,7 +123,6 @@
         "ring_spacing": 550.0,
         "pedestal_grid_bar_diameter": 20.0,
         "pedestal_grid_spacing": 350.0,
-        "pedestal_frame_embed_depth": 1200.0,
         "pedestal_tie_diameter": 12.0,
         "pedestal_tie_spacing": 250.0,
         "pile_vertical_diameter": 16.0,

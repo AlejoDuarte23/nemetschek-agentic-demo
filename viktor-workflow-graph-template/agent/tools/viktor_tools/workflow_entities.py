@@ -219,7 +219,7 @@ class WorkflowAppRegistry:
                     app_name="Allplan Model",
                     label="Allplan Model",
                     workspace_id=2787,
-                    sibling_entity_id=12491,
+                    sibling_entity_id=12509,
                     method_name="bar_schedule",
                     result_key="table",
                     storage_key=ALLPLAN_MODEL_STORAGE_KEY,

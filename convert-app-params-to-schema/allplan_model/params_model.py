@@ -6,15 +6,15 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 class AllplanModelParamsGeometry(BaseModel):
-    foundation_diameter: float = Field(default=14000.0)
-    foundation_edge_thickness: float = Field(default=900.0)
-    foundation_center_thickness: float = Field(default=1800.0)
-    pedestal_diameter: float = Field(default=4200.0)
-    pedestal_height: float = Field(default=2200.0)
-    pile_count: int = Field(default=12)
-    pile_edge_distance: float = Field(default=600.0)
-    pile_diameter: float = Field(default=700.0)
-    pile_depth: float = Field(default=12000.0)
+    foundation_diameter: float = Field(default=14500.0)
+    foundation_edge_thickness: float = Field(default=1000.0)
+    foundation_center_thickness: float = Field(default=1900.0)
+    pedestal_diameter: float = Field(default=5000.0)
+    pedestal_height: float = Field(default=1000.0)
+    pile_count: int = Field(default=24)
+    pile_edge_distance: float = Field(default=750.0)
+    pile_diameter: float = Field(default=400.0)
+    pile_depth: float = Field(default=10000.0)
 
 
 class AllplanModelParamsReinforcement(BaseModel):
@@ -25,7 +25,6 @@ class AllplanModelParamsReinforcement(BaseModel):
     ring_spacing: float = Field(default=550.0)
     pedestal_grid_bar_diameter: float = Field(default=20.0)
     pedestal_grid_spacing: float = Field(default=350.0)
-    pedestal_frame_embed_depth: float = Field(default=1200.0)
     pedestal_tie_diameter: float = Field(default=12.0)
     pedestal_tie_spacing: float = Field(default=250.0)
     pile_vertical_diameter: float = Field(default=16.0)

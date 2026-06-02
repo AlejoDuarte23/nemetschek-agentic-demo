@@ -35,15 +35,15 @@ from agent.tools.viktor_tools.workflow_entities import (
 class AllplanGeometryInputs(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    foundation_diameter: float = Field(default=14000.0)
-    foundation_edge_thickness: float = Field(default=900.0)
-    foundation_center_thickness: float = Field(default=1800.0)
-    pedestal_diameter: float = Field(default=4200.0)
-    pedestal_height: float = Field(default=2200.0)
-    pile_count: int = Field(default=12)
-    pile_edge_distance: float = Field(default=600.0)
-    pile_diameter: float = Field(default=700.0)
-    pile_depth: float = Field(default=12000.0)
+    foundation_diameter: float = Field(default=14500.0)
+    foundation_edge_thickness: float = Field(default=1000.0)
+    foundation_center_thickness: float = Field(default=1900.0)
+    pedestal_diameter: float = Field(default=5000.0)
+    pedestal_height: float = Field(default=1000.0)
+    pile_count: int = Field(default=24)
+    pile_edge_distance: float = Field(default=750.0)
+    pile_diameter: float = Field(default=400.0)
+    pile_depth: float = Field(default=10000.0)
 
 
 class AllplanReinforcementInputs(BaseModel):
@@ -56,7 +56,6 @@ class AllplanReinforcementInputs(BaseModel):
     ring_spacing: float = Field(default=550.0)
     pedestal_grid_bar_diameter: float = Field(default=20.0)
     pedestal_grid_spacing: float = Field(default=350.0)
-    pedestal_frame_embed_depth: float = Field(default=1200.0)
     pedestal_tie_diameter: float = Field(default=12.0)
     pedestal_tie_spacing: float = Field(default=250.0)
     pile_vertical_diameter: float = Field(default=16.0)
@@ -105,9 +104,6 @@ class AllplanReinforcementOverrides(BaseModel):
         default=None, description="Override in mm."
     )
     pedestal_grid_spacing: float | None = Field(default=None, description="Override in mm.")
-    pedestal_frame_embed_depth: float | None = Field(
-        default=None, description="Override in mm."
-    )
     pedestal_tie_diameter: float | None = Field(default=None, description="Override in mm.")
     pedestal_tie_spacing: float | None = Field(default=None, description="Override in mm.")
     pile_vertical_diameter: float | None = Field(default=None, description="Override in mm.")
@@ -231,17 +227,17 @@ def build_allplan_upstream_payload(
     if required_pile_length is None:
         raise ValueError("Stored CPT output does not include a required pile length.")
 
-    foundation_diameter = metres_to_mm(plate["slab_diameter"], default=14000.0)
+    foundation_diameter = metres_to_mm(plate["slab_diameter"], default=14500.0)
     foundation_edge_thickness = metres_to_mm(
         plate["plate_edge_thickness"],
-        default=900.0,
+        default=1000.0,
     )
     foundation_center_thickness = metres_to_mm(
         plate["slab_thickness"],
-        default=1800.0,
+        default=1900.0,
     )
-    pedestal_diameter = metres_to_mm(mast["mast_diameter"], default=4200.0)
-    pedestal_height = metres_to_mm(plate["pedestal_height"], default=2200.0)
+    pedestal_diameter = metres_to_mm(mast["mast_diameter"], default=5000.0)
+    pedestal_height = metres_to_mm(plate["pedestal_height"], default=1000.0)
 
     reinforcement_params = reinforcement_params_from_saved_params(reinforcement_saved_params)
     cover = reinforcement_output_number(reinforcement_data, "cover", "Clear cover")
@@ -310,7 +306,7 @@ def build_allplan_upstream_payload(
                 "foundation_center_thickness": foundation_center_thickness,
                 "pedestal_diameter": pedestal_diameter,
                 "pedestal_height": pedestal_height,
-                "pile_count": rounded_positive_int(piles["num_piles"], default=12),
+                "pile_count": rounded_positive_int(piles["num_piles"], default=24),
                 "pile_edge_distance": float(piles["pile_edge_distance"]),
                 "pile_diameter": float(piles["pile_diameter"]),
                 "pile_depth": required_pile_length * 1000.0,
