@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from agent.tools.viktor_tools.responses import (
     execution_error_response,
@@ -28,29 +28,32 @@ from agent.tools.viktor_tools.workflow_entities import (
 )
 
 
+DEFAULT_DESIGN_STRIP_WIDTH = 1000
+
+
 class ReinforcementDetailingInputs(BaseModel):
-    design_strip_width: int = Field(
-        default=1000,
-        description="Representative design strip width in mm for plate moments in kNm/m.",
-    )
+    model_config = ConfigDict(extra="forbid")
+
     cover: int = Field(default=50, description="Concrete cover in mm.")
     stirrup_dia: int = Field(default=10, description="Stirrup diameter in mm.")
-    spacing_bottom: int = Field(default=200, description="Bottom reinforcement spacing in mm.")
-    dia_bottom: int = Field(default=25, description="Bottom reinforcement bar diameter in mm.")
-    spacing_top: int = Field(default=200, description="Top reinforcement spacing in mm.")
-    dia_top: int = Field(default=16, description="Top reinforcement bar diameter in mm.")
 
 
 class ReinforcementMaterialInputs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     concrete_class: str = Field(default="C25/30")
     steel_grade: str = Field(default="B500")
 
 
 class ReinforcementOptimiseInputs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     spacing_min: int = Field(default=50, description="Minimum reinforcement spacing in mm.")
 
 
 class WindTurbineReinforcementParams(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     detailing: ReinforcementDetailingInputs = Field(default_factory=ReinforcementDetailingInputs)
     materials: ReinforcementMaterialInputs = Field(default_factory=ReinforcementMaterialInputs)
     optimise: ReinforcementOptimiseInputs = Field(default_factory=ReinforcementOptimiseInputs)
@@ -93,11 +96,55 @@ def summarize_reinforcement_data(data: Any) -> dict[str, Any]:
     return {
         "width_mm": get_data_value(data, "width", "Width b"),
         "height_mm": get_data_value(data, "height", "Height h"),
-        "bottom_steel_mm2": get_data_value(data, "A_s", "Bottom steel A_s"),
-        "top_steel_mm2": get_data_value(data, "A_s2", "Top steel A_s2"),
-        "steel_mass_kg_m3": get_data_value(data, "kg_m3", "Steel mass per m3"),
-        "unity_check_1": get_data_value(data, "UC_item", "Unity check M_Ed / M_Rd"),
+        "spacing_ctc_top_bottom_mm": get_data_value(
+            data,
+            "spc_item",
+            "Spacing ctc (top & bottom)",
+        ),
+        "bottom_bar_diameter_mm": get_data_value(
+            data,
+            "dia_bot_item",
+            "Bottom bar diameter",
+        ),
+        "bottom_bar_count": get_data_value(
+            data,
+            "n_bot_item",
+            "Number of bottom bars",
+        ),
+        "bottom_steel_mm2": get_data_value(
+            data,
+            "As_bot_item",
+            "Bottom steel area A_s,bot",
+            "A_s",
+            "Bottom steel A_s",
+        ),
+        "top_bar_diameter_mm": get_data_value(
+            data,
+            "dia_top_item",
+            "Top bar diameter",
+        ),
+        "top_bar_count": get_data_value(data, "n_top_item", "Number of top bars"),
+        "top_steel_mm2": get_data_value(
+            data,
+            "As_top_item",
+            "Top steel area A_s,top",
+            "A_s2",
+            "Top steel A_s2",
+        ),
+        "steel_mass_kg_m3": get_data_value(
+            data,
+            "kg_m3_item",
+            "Steel mass per m3",
+        ),
+        "unity_check_1": get_data_value(data, "uc", "UC_item", "Unity check M_Ed / M_Rd"),
     }
+
+
+def saved_reinforcement_geometry(saved_params: dict[str, Any]) -> ReinforcementTabGeometry:
+    geometry = saved_params.get("tab_geometry", {}) if isinstance(saved_params, dict) else {}
+    return ReinforcementTabGeometry.model_validate(
+        deep_merge_params(ReinforcementTabGeometry().model_dump(), geometry)
+    )
 
 
 def reinforcement_payload_from_saved_params(
@@ -110,13 +157,8 @@ def reinforcement_payload_from_saved_params(
     default_payload = WindTurbineReinforcementParams().model_dump()
     saved_payload = {
         "detailing": {
-            "design_strip_width": geometry.get("width"),
             "cover": geometry.get("cover"),
             "stirrup_dia": geometry.get("stirrup_dia"),
-            "spacing_bottom": geometry.get("spacing_bottom"),
-            "dia_bottom": geometry.get("dia_bottom"),
-            "spacing_top": geometry.get("spacing_top"),
-            "dia_top": geometry.get("dia_top"),
         },
         "materials": {
             "concrete_class": loading.get("concrete_class"),
@@ -228,16 +270,17 @@ async def run_wind_turbine_reinforcement_func(context: Any, args: str) -> str:
     try:
         plate = foundation_params["step_geo"]["sec_plate"]
         combinations = governing_foundation_combinations(foundation_data)
+        saved_geometry = saved_reinforcement_geometry(saved_params)
         compute_params = ReinforcementComputeParams(
             tab_geometry=ReinforcementTabGeometry(
-                width=payload.detailing.design_strip_width,
+                width=DEFAULT_DESIGN_STRIP_WIDTH,
                 height=rounded_positive_int(plate["slab_thickness"] * 1000.0, default=3000),
                 cover=payload.detailing.cover,
                 stirrup_dia=payload.detailing.stirrup_dia,
-                spacing_bottom=payload.detailing.spacing_bottom,
-                dia_bottom=payload.detailing.dia_bottom,
-                spacing_top=payload.detailing.spacing_top,
-                dia_top=payload.detailing.dia_top,
+                spacing_bottom=saved_geometry.spacing_bottom,
+                dia_bottom=saved_geometry.dia_bottom,
+                spacing_top=saved_geometry.spacing_top,
+                dia_top=saved_geometry.dia_top,
             ),
             tab_loading=ReinforcementTabLoading(
                 concrete_class=payload.materials.concrete_class,

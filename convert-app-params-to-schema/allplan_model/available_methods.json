@@ -1,0 +1,30 @@
+[
+  {
+    "method_name": "visual_model",
+    "source": "entity_type.views",
+    "label": "3D geometry",
+    "view_type": "geometry",
+    "automatic_update": true
+  },
+  {
+    "method_name": "rebar_sketch",
+    "source": "entity_type.views",
+    "label": "Foundation sketch",
+    "view_type": "web",
+    "automatic_update": true
+  },
+  {
+    "method_name": "bar_schedule",
+    "source": "entity_type.views",
+    "label": "Visual geometry schedule",
+    "view_type": "table",
+    "automatic_update": true
+  },
+  {
+    "method_name": "download_allplan_project",
+    "source": "parametrization",
+    "label": "Download Allplan project",
+    "node_type": "download-button",
+    "path": "allplan.download"
+  }
+]

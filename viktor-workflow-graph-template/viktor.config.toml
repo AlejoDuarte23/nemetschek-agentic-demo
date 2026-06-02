@@ -3,4 +3,5 @@ python_version = "3.11"
 registered_name = "nemeshek-webinar"
 worker_integrations = [
     "scia",
+    "python",
 ]

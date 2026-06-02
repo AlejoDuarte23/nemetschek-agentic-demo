@@ -1,3 +1,7 @@
+from agent.tools.viktor_tools.allplan_model import (
+    AllplanModelParams,
+    run_allplan_model_func,
+)
 from agent.tools.viktor_tools.cpt_pile_bearing import (
     CptPileBearingParams,
     run_cpt_pile_bearing_func,
@@ -41,6 +45,7 @@ from agent.tools.viktor_tools.workflow_node_params import (
 
 
 __all__ = [
+    "AllplanModelParams",
     "CptPileBearingParams",
     "FoundationMomentContoursParams",
     "ShowHideFoundationMomentContoursParams",
@@ -57,6 +62,7 @@ __all__ = [
     "get_workflow_entity_directory_func",
     "get_params_in_node_func",
     "reset_workflow_entity_directory_func",
+    "run_allplan_model_func",
     "run_cpt_pile_bearing_func",
     "run_foundation_moment_contours_func",
     "set_params_in_node_func",

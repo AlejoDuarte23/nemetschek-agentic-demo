@@ -82,6 +82,8 @@
   "outputs": {
     "max_pile_reaction_kn": 5120.5,
     "min_pile_reaction_kn": -120.0,
+    "required_pile_length_m": 20.0,
+    "steel_mass_kg_m3": 72.0,
     "rebar_mass_kg": 62000.0,
     "total_pile_length_m": 480.0,
     "total_cost": 845000.0

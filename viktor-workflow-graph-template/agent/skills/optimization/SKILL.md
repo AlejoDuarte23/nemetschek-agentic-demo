@@ -109,6 +109,7 @@ The optimization storage keeps one flattened row per candidate. Each row should 
 - reinforcement metrics
 - cost metrics
 - objective value
+- required pile length and reinforcement mass per m3 when available
 
 Use `get_cost_optimization_study` to retrieve `parallel_coordinates_rows` and `parallel_coordinates_dimensions`.
 

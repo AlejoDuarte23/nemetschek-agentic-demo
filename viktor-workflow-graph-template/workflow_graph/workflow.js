@@ -33,6 +33,11 @@ export class WorkflowGraph {
         <path fill-rule="evenodd" clip-rule="evenodd" d="M14.4193 23.5845C14.4193 23.5845 15.9233 24.0138 17.1511 24.3204C17.1511 24.3204 17.1818 24.5351 17.3966 24.9031C17.3966 24.9031 15.4629 24.6578 15.0638 24.5964C15.0638 24.6271 14.6648 24.3818 14.4193 23.5845Z" fill="white"/>
       </svg>`;
 
+    const allplanIcon = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -6 49 48" aria-hidden="true">
+        <polygon fill="#1D1D1B" points="19.532,0 13.631,0 1.725,35.716 6.745,35.716 16.167,5.124 16.27,5.124 25.587,35.716 31.488,35.716"/>
+      </svg>`;
+
     // Pastel colors and custom icons for each node type
     this.typeStyles = {
       sap2000_load_combos: {
@@ -249,6 +254,11 @@ export class WorkflowGraph {
       },
       cost_analysis: {
         bg: "#ccfbf1"
+      },
+      allplan_model: {
+        bg: "#e0f2fe",
+        iconClassName: "icon-allplan",
+        icon: allplanIcon
       },
       show_hide_optimization_results: {
         bg: "#e0f2fe",

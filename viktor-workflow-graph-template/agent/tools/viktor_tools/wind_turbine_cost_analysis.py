@@ -1,4 +1,5 @@
 import json
+import math
 from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
@@ -9,6 +10,7 @@ from agent.tools.viktor_tools.responses import (
     tool_response,
     validation_error_response,
 )
+from agent.tools.viktor_tools.cpt_pile_bearing import required_pile_length_from_cpt_data
 from agent.tools.viktor_tools.sdk_compute import ViktorSdkComputeClient
 from agent.tools.viktor_tools.wind_turbine_common import (
     CPT_PILE_BEARING_STORAGE_KEY,
@@ -121,6 +123,14 @@ def summarize_cost_data(data: Any) -> dict[str, Any]:
     }
 
 
+def ceil_positive_int(value: float, *, default: int) -> int:
+    try:
+        rounded = int(math.ceil(float(value)))
+    except (TypeError, ValueError):
+        return default
+    return max(1, rounded)
+
+
 def cost_payload_from_saved_params(saved_params: dict[str, Any]) -> WindTurbineCostAnalysisParams:
     step_1 = saved_params.get("step_1", {}) if isinstance(saved_params, dict) else {}
     step_2 = saved_params.get("step_2", {}) if isinstance(saved_params, dict) else {}
@@ -188,7 +198,7 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
 
     try:
         foundation_params = read_json_from_storage(FOUNDATION_PARAMS_STORAGE_KEY)
-        read_json_from_storage(CPT_PILE_BEARING_STORAGE_KEY)
+        cpt_data = read_json_from_storage(CPT_PILE_BEARING_STORAGE_KEY)
     except FileNotFoundError as exc:
         missing_key = str(exc).split("'")[1] if "'" in str(exc) else FOUNDATION_PARAMS_STORAGE_KEY
         retry_tool = (
@@ -241,7 +251,17 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
         mast = step_geo["sec_mast"]
         plate = step_geo["sec_plate"]
         piles = step_geo["sec_piles"]
-        steel_mass = get_number(reinforcement_data, "kg_m3", "Steel mass per m3", default=60.0)
+        required_pile_length = required_pile_length_from_cpt_data(cpt_data)
+        if required_pile_length is None:
+            raise ValueError("Stored CPT output does not include a required pile length.")
+        steel_mass = get_number(
+            reinforcement_data,
+            "kg_m3_item",
+            "kg_m3",
+            "Steel mass per m3",
+            "Steel mass per m³",
+            default=60.0,
+        )
 
         compute_params = CostComputeParams(
             step_1=CostStep1(
@@ -260,7 +280,7 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
                 ),
                 piles=CostPilesGeometryInputs(
                     n_piles=rounded_positive_int(piles["num_piles"], default=30),
-                    pile_length=rounded_positive_int(piles["pile_length"], default=20),
+                    pile_length=ceil_positive_int(required_pile_length, default=20),
                     pile_diameter=rounded_positive_int(piles["pile_diameter"], default=500),
                 ),
             ),
@@ -325,6 +345,10 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
             error=exc,
         )
 
+    summary = summarize_cost_data(data)
+    summary["required_pile_length_m"] = required_pile_length
+    summary["steel_mass_kg_m3"] = steel_mass
+
     return tool_response(
         "completed",
         message="Computed wind turbine foundation quantities/cost inputs and stored cost data.",
@@ -338,5 +362,5 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
             REINFORCEMENT_STORAGE_KEY,
         ],
         storage_key=target.storage_key,
-        summary=summarize_cost_data(data),
+        summary=summary,
     )

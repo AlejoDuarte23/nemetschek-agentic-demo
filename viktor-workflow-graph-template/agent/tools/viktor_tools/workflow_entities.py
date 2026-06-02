@@ -18,6 +18,7 @@ from agent.tools.viktor_tools.sdk_compute import (
     get_required_token,
 )
 from agent.tools.viktor_tools.wind_turbine_common import (
+    ALLPLAN_MODEL_STORAGE_KEY,
     COST_STORAGE_KEY,
     CPT_PILE_BEARING_STORAGE_KEY,
     FOUNDATION_STORAGE_KEY,
@@ -38,6 +39,7 @@ WorkflowNodeId = Literal[
     "foundation_analysis",
     "reinforcement",
     "cost_analysis",
+    "allplan_model",
 ]
 
 
@@ -210,6 +212,19 @@ class WorkflowAppRegistry:
                     storage_key=COST_STORAGE_KEY,
                     icon="$",
                     icon_bg="#ccfbf1",
+                    depends_on=["foundation_analysis", "cpt_pile_bearing", "reinforcement"],
+                ),
+                "allplan_model": WorkflowAppTemplate(
+                    node_id="allplan_model",
+                    app_name="Allplan Model",
+                    label="Allplan Model",
+                    workspace_id=2787,
+                    sibling_entity_id=12491,
+                    method_name="bar_schedule",
+                    result_key="table",
+                    storage_key=ALLPLAN_MODEL_STORAGE_KEY,
+                    icon="AP",
+                    icon_bg="#e0f2fe",
                     depends_on=["foundation_analysis", "cpt_pile_bearing", "reinforcement"],
                 ),
             }

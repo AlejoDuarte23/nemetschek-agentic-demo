@@ -85,7 +85,7 @@ class Parametrization(vkt.Parametrization):
     title = vkt.Text(""" # Wind Turbine Foundation Agent
 Select a turbine, analyze the foundation, size piles from CPT, optimize reinforcement, and estimate cost."""
     )
-    chat = vkt.Chat("", method="call_llm")
+    chat = vkt.Chat("", method="call_llm", flex=100)
 
 
 class Controller(vkt.Controller):

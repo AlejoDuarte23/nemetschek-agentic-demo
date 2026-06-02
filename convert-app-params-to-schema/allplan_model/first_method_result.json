@@ -1,0 +1,301 @@
+{
+  "method": {
+    "method_name": "bar_schedule",
+    "source": "entity_type.views",
+    "label": "Visual geometry schedule",
+    "view_type": "table",
+    "automatic_update": true
+  },
+  "result_key": "table",
+  "result": {
+    "column_headers": [
+      {
+        "data_type": "string",
+        "id": "a680d6ca02a5a1cc76636442b5ac7a92",
+        "title": "Item"
+      },
+      {
+        "data_type": "string",
+        "id": "9ff68c0c8b675f6f32f49d985ed09f48",
+        "title": "Geometry"
+      },
+      {
+        "data_type": "number",
+        "id": "ab0e3003ed959840580b623ee0f286f7",
+        "title": "Diameter [mm]"
+      },
+      {
+        "data_type": "string",
+        "id": "7d322bdce97e34afeb00fb781e7b5d88",
+        "title": "Spacing / count"
+      },
+      {
+        "data_type": "number",
+        "id": "26dde5b5a377b16b9c63fef93c00213a",
+        "title": "Quantity"
+      },
+      {
+        "data_type": "number",
+        "id": "b9d7c626741b1a21bccf40d491749371",
+        "title": "Unit length [m]"
+      },
+      {
+        "data_type": "number",
+        "id": "5bfc64a8c10824df8125778ef5900955",
+        "title": "Total length [m]"
+      }
+    ],
+    "data": [
+      [
+        {
+          "value": "R1"
+        },
+        {
+          "value": "Base circular rings"
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": "@ 550 mm"
+        },
+        {
+          "value": 9
+        },
+        {
+          "value": 28.59
+        },
+        {
+          "value": 257.3
+        }
+      ],
+      [
+        {
+          "value": "R2"
+        },
+        {
+          "value": "Bottom radial bars to center"
+        },
+        {
+          "value": 25
+        },
+        {
+          "value": "32 bars"
+        },
+        {
+          "value": 32
+        },
+        {
+          "value": 7.3
+        },
+        {
+          "value": 233.6
+        }
+      ],
+      [
+        {
+          "value": "R3"
+        },
+        {
+          "value": "Top radial bars entering pedestal"
+        },
+        {
+          "value": 25
+        },
+        {
+          "value": "32 bars"
+        },
+        {
+          "value": 32
+        },
+        {
+          "value": 5.58
+        },
+        {
+          "value": 178.54
+        }
+      ],
+      [
+        {
+          "value": "R4"
+        },
+        {
+          "value": "Top circular cap rings"
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": "@ 550 mm"
+        },
+        {
+          "value": 12
+        },
+        {
+          "value": 24.06
+        },
+        {
+          "value": 288.78
+        }
+      ],
+      [
+        {
+          "value": "P1"
+        },
+        {
+          "value": "Pedestal rectangular frames X"
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": "@ 350 mm"
+        },
+        {
+          "value": 10
+        },
+        {
+          "value": 13.45
+        },
+        {
+          "value": 134.46
+        }
+      ],
+      [
+        {
+          "value": "P2"
+        },
+        {
+          "value": "Pedestal rectangular frames Y"
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": "@ 350 mm"
+        },
+        {
+          "value": 10
+        },
+        {
+          "value": 13.45
+        },
+        {
+          "value": 134.46
+        }
+      ],
+      [
+        {
+          "value": "P3"
+        },
+        {
+          "value": "Pedestal circular ties"
+        },
+        {
+          "value": 12
+        },
+        {
+          "value": "@ 250 mm"
+        },
+        {
+          "value": 14
+        },
+        {
+          "value": 12.72
+        },
+        {
+          "value": 178.13
+        }
+      ],
+      [
+        {
+          "value": "C1"
+        },
+        {
+          "value": "Pile verticals"
+        },
+        {
+          "value": 16
+        },
+        {
+          "value": "8 per pile"
+        },
+        {
+          "value": 96
+        },
+        {
+          "value": 12.43
+        },
+        {
+          "value": 1192.8
+        }
+      ],
+      [
+        {
+          "value": "C2"
+        },
+        {
+          "value": "Pile hoops"
+        },
+        {
+          "value": 10
+        },
+        {
+          "value": "@ 300 mm"
+        },
+        {
+          "value": 480
+        },
+        {
+          "value": 1.7
+        },
+        {
+          "value": 814.3
+        }
+      ]
+    ],
+    "enable_sorting_and_filtering": false,
+    "row_headers": [
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      },
+      {
+        "data_type": "mixed"
+      }
+    ]
+  },
+  "attempted_methods": [
+    {
+      "method": {
+        "method_name": "bar_schedule",
+        "source": "entity_type.views",
+        "label": "Visual geometry schedule",
+        "view_type": "table",
+        "automatic_update": true
+      },
+      "status": "success",
+      "result_key": "table"
+    }
+  ]
+}

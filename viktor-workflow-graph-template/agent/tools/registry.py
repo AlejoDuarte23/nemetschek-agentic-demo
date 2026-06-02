@@ -33,6 +33,7 @@ from agent.tools.skill_tools import (
     read_skill_file_func,
 )
 from agent.tools.viktor_tools import (
+    AllplanModelParams,
     CptPileBearingParams,
     CreateWorkflowEntityDirectoryArgs,
     FoundationMomentContoursParams,
@@ -49,6 +50,7 @@ from agent.tools.viktor_tools import (
     get_params_in_node_func,
     get_workflow_entity_directory_func,
     reset_workflow_entity_directory_func,
+    run_allplan_model_func,
     run_cpt_pile_bearing_func,
     run_foundation_moment_contours_func,
     run_wind_turbine_cost_analysis_func,
@@ -85,6 +87,7 @@ TOOL_DISPLAY_NAMES = {
     "run_wind_turbine_foundation_analysis": "Run Foundation Analysis",
     "run_wind_turbine_reinforcement": "Run Reinforcement",
     "run_wind_turbine_cost_analysis": "Run Cost Analysis",
+    "run_allplan_model": "Run Allplan Model",
 }
 
 
@@ -299,5 +302,17 @@ def get_tools() -> list[Any]:
             ),
             WindTurbineCostAnalysisParams,
             run_wind_turbine_cost_analysis_func,
+        ),
+        function_tool(
+            "run_allplan_model",
+            (
+                "Read foundation geometry, CPT required pile length, and reinforcement "
+                "detailing from upstream workflow storage, patch the Allplan model "
+                "entity, run the visual geometry schedule table view, and store the "
+                "resulting table."
+            ),
+            AllplanModelParams,
+            run_allplan_model_func,
+            strict_json_schema=False,
         ),
     ]

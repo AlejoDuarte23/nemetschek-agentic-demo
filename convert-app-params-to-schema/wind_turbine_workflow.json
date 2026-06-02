@@ -63,6 +63,19 @@
       "storage_key": "wind_turbine_cost_data",
       "icon": "$",
       "icon_bg": "#ccfbf1"
+    },
+    {
+      "node_id": "allplan_model",
+      "label": "Allplan Model",
+      "workspace_id": 2787,
+      "entity_id": 12491,
+      "url": "https://demo.viktor.ai/workspaces/2787/app/editor/12491",
+      "primary_method": "bar_schedule",
+      "result_key": "table",
+      "storage_key": "allplan_model_schedule",
+      "icon": "AP",
+      "icon_bg": "#e0f2fe",
+      "method_note": "The Visual geometry schedule TableView returns the Allplan reinforcement/model schedule. Geometry is converted from foundation params to mm; CPT required pile length becomes pile_depth."
     }
   ],
   "edges": [
@@ -190,14 +203,90 @@
       "status": "ready_with_engineering_transform",
       "mappings": [
         {
-          "source": "data.section.kg_m3",
+          "source": "data.design.kg_m3_item",
           "target": "step_1.rebar.plate_main_reinforcement",
           "transform": "use as estimated reinforcement intensity in kg/m3 or replace with project plate reinforcement assumption"
         },
         {
-          "source": "data.section.A_s and data.section.A_s2",
+          "source": "data.design.As_bot_item and data.design.As_top_item",
           "target": "step_1.rebar.multiplication_factor",
           "transform": "derive top/bottom reinforcement multiplier when needed; default is 2.0"
+        }
+      ]
+    },
+    {
+      "from": "wind_turbine_foundation_analysis",
+      "to": "allplan_model",
+      "status": "ready_with_unit_transform",
+      "mappings": [
+        {
+          "source": "params.step_geo.sec_plate.slab_diameter",
+          "target": "geometry.foundation_diameter",
+          "transform": "m to mm"
+        },
+        {
+          "source": "params.step_geo.sec_plate.plate_edge_thickness",
+          "target": "geometry.foundation_edge_thickness",
+          "transform": "m to mm"
+        },
+        {
+          "source": "params.step_geo.sec_plate.slab_thickness",
+          "target": "geometry.foundation_center_thickness",
+          "transform": "m to mm"
+        },
+        {
+          "source": "params.step_geo.sec_mast.mast_diameter",
+          "target": "geometry.pedestal_diameter",
+          "transform": "m to mm; SCIA pedestal uses mast diameter"
+        },
+        {
+          "source": "params.step_geo.sec_plate.pedestal_height",
+          "target": "geometry.pedestal_height",
+          "transform": "m to mm"
+        },
+        {
+          "source": "params.step_geo.sec_piles",
+          "target": "geometry.pile_count, geometry.pile_edge_distance, geometry.pile_diameter",
+          "transform": "pass count and mm values through"
+        }
+      ]
+    },
+    {
+      "from": "cpt_pile_bearing",
+      "to": "allplan_model",
+      "status": "ready_with_unit_transform",
+      "mappings": [
+        {
+          "source": "CPT required depth result",
+          "target": "geometry.pile_depth",
+          "transform": "required pile length m to mm"
+        }
+      ]
+    },
+    {
+      "from": "reinforcement",
+      "to": "allplan_model",
+      "status": "ready_with_engineering_transform",
+      "mappings": [
+        {
+          "source": "tab_geometry.cover and data.section.cover",
+          "target": "reinforcement.cover",
+          "transform": "pass through, mm"
+        },
+        {
+          "source": "optimise output Top bar diameter and Bottom bar diameter",
+          "target": "reinforcement.ring_bar_diameter and reinforcement.top_radial_bar_diameter",
+          "transform": "use the governing optimized main bar diameter because the current Allplan schema has one ring diameter and one radial diameter"
+        },
+        {
+          "source": "optimise output Spacing ctc (top & bottom)",
+          "target": "reinforcement.ring_spacing, reinforcement.pedestal_grid_spacing, and reinforcement.top_radial_bar_count",
+          "transform": "use optimized common top/bottom spacing in mm; derive radial count from effective foundation perimeter divided by spacing"
+        },
+        {
+          "source": "saved tab_geometry.stirrup_dia",
+          "target": "reinforcement.pedestal_tie_diameter and reinforcement.pile_hoop_diameter",
+          "transform": "stirrup diameter maps only to ties and hoops, not radial main reinforcement"
         }
       ]
     }
@@ -208,5 +297,8 @@
     "cpt_pile_bearing",
     "reinforcement",
     "wind_turbine_cost_analysis"
+  ],
+  "post_optimization_sequence": [
+    "allplan_model"
   ]
 }

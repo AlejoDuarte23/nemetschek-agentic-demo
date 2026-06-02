@@ -1,0 +1,142 @@
+{
+  "type": "object",
+  "properties": {
+    "geometry": {
+      "type": "object",
+      "properties": {
+        "foundation_diameter": {
+          "type": "number",
+          "default": 14000.0
+        },
+        "foundation_edge_thickness": {
+          "type": "number",
+          "default": 900.0
+        },
+        "foundation_center_thickness": {
+          "type": "number",
+          "default": 1800.0
+        },
+        "pedestal_diameter": {
+          "type": "number",
+          "default": 4200.0
+        },
+        "pedestal_height": {
+          "type": "number",
+          "default": 2200.0
+        },
+        "pile_count": {
+          "type": "integer",
+          "default": 12
+        },
+        "pile_edge_distance": {
+          "type": "number",
+          "default": 600.0
+        },
+        "pile_diameter": {
+          "type": "number",
+          "default": 700.0
+        },
+        "pile_depth": {
+          "type": "number",
+          "default": 12000.0
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "foundation_diameter": 14000.0,
+        "foundation_edge_thickness": 900.0,
+        "foundation_center_thickness": 1800.0,
+        "pedestal_diameter": 4200.0,
+        "pedestal_height": 2200.0,
+        "pile_count": 12,
+        "pile_edge_distance": 600.0,
+        "pile_diameter": 700.0,
+        "pile_depth": 12000.0
+      }
+    },
+    "reinforcement": {
+      "type": "object",
+      "properties": {
+        "cover": {
+          "type": "number",
+          "default": 75.0
+        },
+        "top_radial_bar_diameter": {
+          "type": "number",
+          "default": 25.0
+        },
+        "top_radial_bar_count": {
+          "type": "integer",
+          "default": 32
+        },
+        "ring_bar_diameter": {
+          "type": "number",
+          "default": 20.0
+        },
+        "ring_spacing": {
+          "type": "number",
+          "default": 550.0
+        },
+        "pedestal_grid_bar_diameter": {
+          "type": "number",
+          "default": 20.0
+        },
+        "pedestal_grid_spacing": {
+          "type": "number",
+          "default": 350.0
+        },
+        "pedestal_frame_embed_depth": {
+          "type": "number",
+          "default": 1200.0
+        },
+        "pedestal_tie_diameter": {
+          "type": "number",
+          "default": 12.0
+        },
+        "pedestal_tie_spacing": {
+          "type": "number",
+          "default": 250.0
+        },
+        "pile_vertical_diameter": {
+          "type": "number",
+          "default": 16.0
+        },
+        "pile_vertical_count": {
+          "type": "integer",
+          "default": 8
+        },
+        "pile_vertical_embed_depth": {
+          "type": "number",
+          "default": 500.0
+        },
+        "pile_hoop_diameter": {
+          "type": "number",
+          "default": 10.0
+        },
+        "pile_hoop_spacing": {
+          "type": "number",
+          "default": 300.0
+        }
+      },
+      "additionalProperties": false,
+      "default": {
+        "cover": 75.0,
+        "top_radial_bar_diameter": 25.0,
+        "top_radial_bar_count": 32,
+        "ring_bar_diameter": 20.0,
+        "ring_spacing": 550.0,
+        "pedestal_grid_bar_diameter": 20.0,
+        "pedestal_grid_spacing": 350.0,
+        "pedestal_frame_embed_depth": 1200.0,
+        "pedestal_tie_diameter": 12.0,
+        "pedestal_tie_spacing": 250.0,
+        "pile_vertical_diameter": 16.0,
+        "pile_vertical_count": 8,
+        "pile_vertical_embed_depth": 500.0,
+        "pile_hoop_diameter": 10.0,
+        "pile_hoop_spacing": 300.0
+      }
+    }
+  },
+  "additionalProperties": false
+}

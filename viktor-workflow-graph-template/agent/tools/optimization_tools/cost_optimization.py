@@ -10,6 +10,11 @@ from agent.tools.viktor_tools.responses import (
     validation_error_response,
 )
 from agent.tools.viktor_tools.wind_turbine_common import (
+    COST_STORAGE_KEY,
+    CPT_PILE_BEARING_STORAGE_KEY,
+    FOUNDATION_STORAGE_KEY,
+    REINFORCEMENT_STORAGE_KEY,
+    get_data_value,
     read_json_from_storage,
     write_json_to_storage,
 )
@@ -198,6 +203,92 @@ def merge_row_values(row: dict[str, Any], values: dict[str, Any], *, collision_p
         row[row_key] = value
 
 
+def add_stored_metric(
+    outputs: dict[str, Any],
+    output_key: str,
+    storage_key: str,
+    *data_keys: str,
+) -> None:
+    if outputs.get(output_key) not in (None, ""):
+        return
+
+    try:
+        data = read_json_from_storage(storage_key)
+        value = get_data_value(data, *data_keys)
+    except Exception:
+        return
+
+    if value is not None:
+        outputs[output_key] = value
+
+
+def enrich_candidate_outputs(outputs: dict[str, Any]) -> dict[str, Any]:
+    enriched = dict(outputs)
+    add_stored_metric(
+        enriched,
+        "max_pile_reaction_kn",
+        FOUNDATION_STORAGE_KEY,
+        "Maximum pile reaction (Rz)",
+    )
+    add_stored_metric(
+        enriched,
+        "min_pile_reaction_kn",
+        FOUNDATION_STORAGE_KEY,
+        "Minimum pile reaction (Rz)",
+    )
+    add_stored_metric(
+        enriched,
+        "required_pile_length_m",
+        CPT_PILE_BEARING_STORAGE_KEY,
+        "length_item",
+        "Pile length",
+        "required_length",
+        "required_length_item",
+        "required_pile_length",
+        "required_pile_length_item",
+        "Required pile length",
+        "depth_item",
+        "Depth",
+        "required_depth",
+        "required_depth_item",
+        "required_pile_depth",
+        "required_pile_depth_item",
+        "Required depth",
+        "Required pile depth",
+    )
+    add_stored_metric(
+        enriched,
+        "steel_mass_kg_m3",
+        REINFORCEMENT_STORAGE_KEY,
+        "kg_m3_item",
+        "kg_m3",
+        "Steel mass per m3",
+        "Steel mass per m³",
+    )
+    add_stored_metric(
+        enriched,
+        "rebar_mass_kg",
+        COST_STORAGE_KEY,
+        "rebar_mass",
+        "Rebar mass (plate)",
+    )
+    add_stored_metric(
+        enriched,
+        "plate_total_reinforcement_kg",
+        COST_STORAGE_KEY,
+        "plate_total_reinforcement",
+        "Plate total reinforcement",
+    )
+    add_stored_metric(
+        enriched,
+        "total_pile_length_m",
+        COST_STORAGE_KEY,
+        "total_pile_length",
+        "Total pile length",
+    )
+    return enriched
+
+
 def candidate_row(candidate: CostOptimizationCandidate) -> dict[str, Any]:
     row: dict[str, Any] = {
         "candidate_id": candidate.candidate_id,
@@ -341,16 +432,19 @@ async def record_cost_optimization_candidate_func(context: Any, args: str) -> st
             error=exc,
         )
 
+    outputs = dict(payload.outputs)
+    if payload.status == "completed" and payload.feasible:
+        outputs = enrich_candidate_outputs(outputs)
     objective_value = payload.cost
     if objective_value is None:
-        objective_value = to_float(payload.outputs.get("total_cost"))
+        objective_value = to_float(outputs.get("total_cost"))
 
     candidate = CostOptimizationCandidate(
         candidate_id=payload.candidate_id,
         status=payload.status,
         feasible=payload.feasible,
         variables=payload.variables,
-        outputs=payload.outputs,
+        outputs=outputs,
         objective_value=objective_value,
         notes=payload.notes,
         input_storage_keys=payload.input_storage_keys,

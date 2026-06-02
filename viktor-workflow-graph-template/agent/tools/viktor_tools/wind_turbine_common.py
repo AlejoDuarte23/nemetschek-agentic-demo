@@ -12,6 +12,7 @@ FOUNDATION_STORAGE_KEY = "wind_turbine_foundation_data"
 FOUNDATION_PARAMS_STORAGE_KEY = "wind_turbine_foundation_params"
 REINFORCEMENT_STORAGE_KEY = "wind_turbine_reinforcement_data"
 COST_STORAGE_KEY = "wind_turbine_cost_data"
+ALLPLAN_MODEL_STORAGE_KEY = "allplan_model_schedule"
 
 
 def write_json_to_storage(key: str, payload: Any) -> None:

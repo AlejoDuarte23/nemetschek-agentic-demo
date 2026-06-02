@@ -151,7 +151,7 @@ HTML_TEMPLATE = r"""<!doctype html>
     }
 
     .chart-wrap {
-      height: 520px;
+      height: 540px;
       padding: 12px;
     }
 
@@ -182,6 +182,8 @@ HTML_TEMPLATE = r"""<!doctype html>
       stroke: #2563eb;
       stroke-width: 1.8;
       opacity: 0.42;
+      transition: opacity 120ms ease, stroke 120ms ease, stroke-width 120ms ease;
+      vector-effect: non-scaling-stroke;
     }
 
     .polyline.best {
@@ -190,10 +192,33 @@ HTML_TEMPLATE = r"""<!doctype html>
       opacity: 0.96;
     }
 
+    .polyline.is-muted {
+      opacity: 0.12;
+    }
+
+    .polyline.is-active {
+      stroke: var(--accent);
+      stroke-width: 4;
+      opacity: 1;
+    }
+
+    .polyline.best.is-active {
+      stroke: var(--accent-2);
+      stroke-width: 4.6;
+    }
+
+    .polyline-hit {
+      fill: none;
+      stroke: transparent;
+      stroke-width: 14;
+      pointer-events: stroke;
+      cursor: pointer;
+    }
+
     .table-wrap {
       width: 100%;
       overflow: auto;
-      max-height: 360px;
+      max-height: min(560px, 62vh);
     }
 
     table {
@@ -220,8 +245,44 @@ HTML_TEMPLATE = r"""<!doctype html>
       font-weight: 680;
     }
 
+    .sort-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 0;
+      padding: 0;
+      color: inherit;
+      background: transparent;
+      font: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .sort-indicator {
+      min-width: 10px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    tbody tr {
+      transition: background 120ms ease, box-shadow 120ms ease;
+    }
+
+    tbody tr[data-candidate-id] {
+      cursor: pointer;
+    }
+
     tr.best-row {
       background: #fffbeb;
+    }
+
+    tr.hover-row {
+      background: #ecfeff;
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    tr.best-row.hover-row {
+      background: #fef3c7;
     }
 
     .badge {
@@ -272,6 +333,10 @@ HTML_TEMPLATE = r"""<!doctype html>
       .chart-wrap {
         height: 460px;
       }
+
+      .table-wrap {
+        max-height: 520px;
+      }
     }
   </style>
 </head>
@@ -292,15 +357,38 @@ HTML_TEMPLATE = r"""<!doctype html>
     const encodedPayload = "__OPTIMIZATION_DATA__";
     const payloadBytes = Uint8Array.from(atob(encodedPayload), (char) => char.charCodeAt(0));
     const payload = JSON.parse(new TextDecoder().decode(payloadBytes));
-    const rows = payload.rows || [];
-    const dims = (payload.dimensions || []).filter((key) =>
-      rows.some((row) => Number.isFinite(Number(row[key])))
-    );
+    const rows = (payload.rows || []).map((row) => ({ ...row }));
+    const dimensionBlocklist = new Set(["candidate_id", "status", "feasible"]);
+    const dims = (payload.dimensions || [])
+      .filter((key) => !dimensionBlocklist.has(key))
+      .filter((key) => rows.some((row) => Number.isFinite(Number(row[key]))));
     const summary = payload.summary || {};
     const bestId = payload.bestCandidateId || summary.best_candidate_id || null;
+    let activeCandidateId = null;
+
+    const hasValue = (value) => value !== null && value !== undefined && value !== "";
+    const hasKey = (key) => rows.some((row) => hasValue(row[key]));
+    const firstExistingKey = (keys) => keys.find((key) => hasKey(key));
+    const defaultSortKey = firstExistingKey(["objective_value", "total_cost"]) || "candidate_id";
+    let sortState = { key: defaultSortKey, direction: "asc" };
+
+    const labelMap = {
+      candidate_id: "Candidate",
+      objective_value: "Total Cost",
+      total_cost: "Total Cost",
+      feasible: "Feasible",
+      required_pile_length_m: "Required pile length",
+      total_pile_length_m: "Total pile length",
+      steel_mass_kg_m3: "Rebar mass per m3",
+      rebar_mass_kg: "Rebar mass",
+      plate_total_reinforcement_kg: "Plate reinforcement",
+      max_pile_reaction_kn: "Max pile reaction",
+      min_pile_reaction_kn: "Min pile reaction",
+    };
 
     const fmt = (value) => {
-      if (value === null || value === undefined || value === "") return "-";
+      if (!hasValue(value)) return "-";
+      if (typeof value === "boolean") return value ? "yes" : "no";
       const n = Number(value);
       if (!Number.isFinite(n)) return String(value);
       if (Math.abs(n) >= 1000000) return n.toExponential(2);
@@ -308,6 +396,15 @@ HTML_TEMPLATE = r"""<!doctype html>
       if (Math.abs(n) >= 10) return n.toFixed(2);
       return n.toFixed(3).replace(/0+$/, "").replace(/\.$/, "");
     };
+
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+    const candidateId = (row) => String(row.candidate_id ?? "");
 
     document.getElementById("studyName").textContent = summary.study_name || "Cost optimization study";
     document.getElementById("updatedAt").textContent = summary.objective || "";
@@ -321,8 +418,8 @@ HTML_TEMPLATE = r"""<!doctype html>
     ];
     document.getElementById("stats").innerHTML = statItems.map(([label, value]) => `
       <div class="stat">
-        <div class="label">${label}</div>
-        <div class="value">${fmt(value)}</div>
+        <div class="label">${escapeHtml(label)}</div>
+        <div class="value">${escapeHtml(fmt(value))}</div>
       </div>
     `).join("");
 
@@ -341,7 +438,7 @@ HTML_TEMPLATE = r"""<!doctype html>
         <section class="panel">
           <div class="panel-title">
             <h2>Candidate Runs</h2>
-            <span>Best candidate is highlighted</span>
+            <span>Sorted by ${escapeHtml(niceLabel(defaultSortKey))}</span>
           </div>
           <div class="table-wrap" id="tableWrap"></div>
         </section>
@@ -351,11 +448,50 @@ HTML_TEMPLATE = r"""<!doctype html>
     }
 
     function niceLabel(key) {
+      if (labelMap[key]) return labelMap[key];
       return key
         .replace(/step_geo\.sec_/g, "")
         .replace(/step_geo_tech\.sec_/g, "")
         .replace(/_/g, " ")
         .replace(/\./g, " / ");
+    }
+
+    function addHoverHandlers(element, row, options = {}) {
+      const id = candidateId(row);
+      if (!id) return;
+      element.addEventListener("mouseenter", () => setActiveCandidate(id, options));
+      element.addEventListener("mouseleave", clearActiveCandidate);
+      element.addEventListener("focus", () => setActiveCandidate(id, options));
+      element.addEventListener("blur", clearActiveCandidate);
+    }
+
+    function setActiveCandidate(id, { scrollTable = false } = {}) {
+      activeCandidateId = id || null;
+      const hasActive = Boolean(activeCandidateId);
+      let activeRow = null;
+
+      document.querySelectorAll(".polyline[data-candidate-id]").forEach((polyline) => {
+        const isActive = hasActive && polyline.dataset.candidateId === activeCandidateId;
+        polyline.classList.toggle("is-active", isActive);
+        polyline.classList.toggle("is-muted", hasActive && !isActive);
+        if (isActive && polyline.parentNode) {
+          polyline.parentNode.appendChild(polyline);
+        }
+      });
+
+      document.querySelectorAll("tbody tr[data-candidate-id]").forEach((row) => {
+        const isActive = hasActive && row.dataset.candidateId === activeCandidateId;
+        row.classList.toggle("hover-row", isActive);
+        if (isActive) activeRow = row;
+      });
+
+      if (scrollTable && activeRow) {
+        activeRow.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
+    }
+
+    function clearActiveCandidate() {
+      setActiveCandidate(null);
     }
 
     function drawParallelCoordinates() {
@@ -391,13 +527,28 @@ HTML_TEMPLATE = r"""<!doctype html>
 
       const x = (index) => margin.left + index * axisGap;
       const ns = "http://www.w3.org/2000/svg";
+      const lineLayer = document.createElementNS(ns, "g");
+      const hitLayer = document.createElementNS(ns, "g");
+      const axisLayer = document.createElementNS(ns, "g");
+      svg.appendChild(lineLayer);
+      svg.appendChild(hitLayer);
+      svg.appendChild(axisLayer);
 
       rows.forEach((row) => {
+        const id = candidateId(row);
         const points = dims.map((dim, index) => `${x(index)},${y(dim, row[dim])}`).join(" ");
         const poly = document.createElementNS(ns, "polyline");
         poly.setAttribute("points", points);
-        poly.setAttribute("class", row.candidate_id === bestId ? "polyline best" : "polyline");
-        svg.appendChild(poly);
+        poly.setAttribute("class", id === String(bestId) ? "polyline best" : "polyline");
+        poly.dataset.candidateId = id;
+        lineLayer.appendChild(poly);
+
+        const hit = document.createElementNS(ns, "polyline");
+        hit.setAttribute("points", points);
+        hit.setAttribute("class", "polyline-hit");
+        hit.dataset.candidateId = id;
+        addHoverHandlers(hit, row, { scrollTable: true });
+        hitLayer.appendChild(hit);
       });
 
       dims.forEach((dim, index) => {
@@ -437,25 +588,123 @@ HTML_TEMPLATE = r"""<!doctype html>
         label.textContent = niceLabel(dim);
         group.appendChild(label);
 
-        svg.appendChild(group);
+        axisLayer.appendChild(group);
       });
     }
 
+    function tableKeys() {
+      const keys = [];
+      const addKey = (key) => {
+        if (key && hasKey(key) && !keys.includes(key)) keys.push(key);
+      };
+
+      addKey("candidate_id");
+      addKey("status");
+      addKey("feasible");
+      if (hasKey("objective_value")) {
+        addKey("objective_value");
+      } else {
+        addKey("total_cost");
+      }
+
+      [
+        "required_pile_length_m",
+        "total_pile_length_m",
+        "steel_mass_kg_m3",
+        "rebar_mass_kg",
+        "plate_total_reinforcement_kg",
+        "max_pile_reaction_kn",
+        "min_pile_reaction_kn",
+      ].forEach(addKey);
+
+      dims.forEach((key) => {
+        if (key === "total_cost" && keys.includes("objective_value")) return;
+        addKey(key);
+      });
+      return keys;
+    }
+
+    function compareRows(a, b, key) {
+      const direction = sortState.direction === "asc" ? 1 : -1;
+      const aValue = a[key];
+      const bValue = b[key];
+      const aEmpty = !hasValue(aValue);
+      const bEmpty = !hasValue(bValue);
+      if (aEmpty && bEmpty) return 0;
+      if (aEmpty) return 1;
+      if (bEmpty) return -1;
+
+      const aNumber = Number(aValue);
+      const bNumber = Number(bValue);
+      if (Number.isFinite(aNumber) && Number.isFinite(bNumber)) {
+        return (aNumber - bNumber) * direction;
+      }
+      return String(aValue).localeCompare(String(bValue), undefined, {
+        numeric: true,
+        sensitivity: "base",
+      }) * direction;
+    }
+
+    function sortedRows() {
+      return [...rows].sort((a, b) => compareRows(a, b, sortState.key));
+    }
+
+    function updateSort(key) {
+      if (sortState.key === key) {
+        sortState = {
+          key,
+          direction: sortState.direction === "asc" ? "desc" : "asc",
+        };
+      } else {
+        sortState = { key, direction: "asc" };
+      }
+      drawTable();
+    }
+
     function drawTable() {
-      const keys = ["candidate_id", "status", "feasible", "objective_value", ...dims];
-      const header = keys.map((key) => `<th>${niceLabel(key)}</th>`).join("");
-      const body = rows.map((row) => {
-        const bestClass = row.candidate_id === bestId ? "best-row" : "";
+      const keys = tableKeys();
+      const header = keys.map((key) => {
+        const indicator = sortState.key === key
+          ? (sortState.direction === "asc" ? "^" : "v")
+          : "";
+        return `
+          <th>
+            <button type="button" class="sort-button" data-sort-key="${escapeHtml(key)}">
+              <span>${escapeHtml(niceLabel(key))}</span>
+              <span class="sort-indicator">${indicator}</span>
+            </button>
+          </th>
+        `;
+      }).join("");
+      const body = sortedRows().map((row) => {
+        const id = candidateId(row);
+        const bestClass = id === String(bestId) ? "best-row" : "";
         const cells = keys.map((key) => {
           if (key === "feasible") {
             const ok = Boolean(row[key]);
             return `<td><span class="badge ${ok ? "ok" : "bad"}">${ok ? "yes" : "no"}</span></td>`;
           }
-          return `<td>${fmt(row[key])}</td>`;
+          return `<td>${escapeHtml(fmt(row[key]))}</td>`;
         }).join("");
-        return `<tr class="${bestClass}">${cells}</tr>`;
+        return `<tr class="${bestClass}" data-candidate-id="${escapeHtml(id)}">${cells}</tr>`;
       }).join("");
-      document.getElementById("tableWrap").innerHTML = `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>`;
+      document.getElementById("tableWrap").innerHTML = `
+        <table>
+          <thead><tr>${header}</tr></thead>
+          <tbody>${body}</tbody>
+        </table>
+      `;
+
+      document.querySelectorAll("[data-sort-key]").forEach((button) => {
+        button.addEventListener("click", () => updateSort(button.dataset.sortKey));
+      });
+      document.querySelectorAll("tbody tr[data-candidate-id]").forEach((tableRow) => {
+        tableRow.addEventListener("mouseenter", () => {
+          setActiveCandidate(tableRow.dataset.candidateId);
+        });
+        tableRow.addEventListener("mouseleave", clearActiveCandidate);
+      });
+      setActiveCandidate(activeCandidateId);
     }
   </script>
 </body>

@@ -43,6 +43,7 @@ pip install requests python-dotenv
 
 - **`app1_reaction_load_params.ipynb`**: Extracts schema from workspace 2672, entity 12162
 - **`app2_reaction_load_params.ipynb`**: Extracts schema from workspace 2673, entity 12163
+- **`allplan_model_params.ipynb`**: Extracts schema from workspace 2787, entity 12491
 
 Each notebook will:
 1. Connect to the VIKTOR REST API with Bearer token authentication without printing the token
@@ -70,6 +71,9 @@ Each notebook generates one folder per VIKTOR app:
 - `app2/input_schema.json`
 - `app2/available_methods.json`
 - `app2/first_method_result.json`
+- `allplan_model/input_schema.json`
+- `allplan_model/available_methods.json`
+- `allplan_model/first_method_result.json`
 
 The schema files can be used for:
 - OpenAI Structured Outputs
