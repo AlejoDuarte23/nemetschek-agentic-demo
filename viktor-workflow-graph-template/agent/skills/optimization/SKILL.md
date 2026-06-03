@@ -65,18 +65,18 @@ Secondary variables can be added after the first sweep if needed:
 7. Read the study with `get_cost_optimization_study`.
 8. Call `show_hide_optimization_results` with `action="show"` so the Optimization Results WebView displays the candidate table and parallel-coordinate plot.
 9. Report the best feasible candidate and mention the number of failed or infeasible candidates.
-10. Leave the Allplan node visible but pending. Run `run_allplan_model` only when the user asks to set, finalize, model, visualize, schedule, or export the best/final candidate.
+10. Restore the best/final candidate outputs and run `run_allplan_model` once after the optimization loop. Allplan receives only the selected best/final parameters, never every candidate.
 
 ## Finalizing the Best Candidate
 
-When the user asks to set or apply the optimal parameters after a study:
+When the user asks to set or apply the optimal parameters after a study, or when finalizing the selected best candidate:
 
 1. Call `get_cost_optimization_study` and use the best feasible candidate.
 2. Apply the best candidate's stored design variables to `foundation_analysis` with `set_params_in_node`.
 3. Rerun the final candidate sequence once: foundation, CPT required-depth sizing, foundation pile-length patch, reinforcement, and cost.
 4. Run `run_allplan_model` once after those final foundation, CPT, and reinforcement outputs are active.
 
-Do not run Allplan for every candidate. It is a final downstream handoff for the selected best/final candidate.
+Do not run Allplan for every candidate. It is part of the workflow graph, but it is a final downstream handoff for the selected best/final candidate.
 
 ## Candidate Isolation
 

@@ -83,7 +83,7 @@ def _empty_html(message: str = "") -> str:
 
 class Parametrization(vkt.Parametrization):
     title = vkt.Text(""" # Wind Turbine Foundation Agent
-Select a turbine, analyze the foundation, size piles from CPT, optimize reinforcement, and estimate cost."""
+Select a turbine, analyze the foundation, size piles from CPT, optimize reinforcement, generate the Allplan model schedule, and estimate cost."""
     )
     chat = vkt.Chat("", method="call_llm", flex=100)
 
