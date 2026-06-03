@@ -36,7 +36,8 @@ class Parametrization(vkt.Parametrization):
 
     # ── Step 1: Define Loads & Geometry ─────────────────────────────────────
     step_geo = vkt.Step("Define Loads & Geometry", views=["view_geometry"])
-    step_geo.intro = vkt.Text(
+    step_geo.sec_intro = vkt.Section("Overview")
+    step_geo.sec_intro.text = vkt.Text(
         """# Round Plate Foundation
 Set the mast loads, tapered circular plate geometry, and circular pile layout used for the SCIA model. The geometry preview shows the plate, pedestal, and pile ring before analysis.
 """
@@ -122,7 +123,8 @@ Set the mast loads, tapered circular plate geometry, and circular pile layout us
 
     # ── Step 2: Geotechnical Parameters ─────────────────────────────────────
     step_geo_tech = vkt.Step("Geotechnical Parameters")
-    step_geo_tech.intro = vkt.Text(
+    step_geo_tech.sec_intro = vkt.Section("Overview")
+    step_geo_tech.sec_intro.text = vkt.Text(
         """# Soil Springs
 Define simplified axial tip and lateral shaft springs for the pile supports. These values control the support stiffness used in the SCIA analysis.
 """
@@ -154,17 +156,19 @@ Define simplified axial tip and lateral shaft springs for the pile supports. The
 
     # ── Step 3: Run SCIA Analysis ────────────────────────────────────────────
     step_analysis = vkt.Step("Run SCIA Analysis", views=["view_results", "view_pile_reactions", "view_2d_internal_forces", "view_mxd_plus_plot"])
-    step_analysis.intro = vkt.Text(
+    step_analysis.sec_intro = vkt.Section("Overview")
+    step_analysis.sec_intro.text = vkt.Text(
         """# SCIA Results
 Run the analysis to review pile reactions, 2D internal forces, and m_xD contour plots. Use the download buttons when you need to inspect the generated SCIA input files.
 """
     )
 
-    step_analysis.download_xml = vkt.DownloadButton(
+    step_analysis.sec_files = vkt.Section("Files")
+    step_analysis.sec_files.download_xml = vkt.DownloadButton(
         "Download SCIA input XML",
         method="download_scia_input_xml",
     )
-    step_analysis.download_def = vkt.DownloadButton(
+    step_analysis.sec_files.download_def = vkt.DownloadButton(
         "Download SCIA .def file",
         method="download_scia_input_def",
     )
