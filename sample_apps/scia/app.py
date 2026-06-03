@@ -375,12 +375,7 @@ class Controller(vkt.Controller):
             )
             objects.append(pile)
 
-        # ── Labels ────────────────────────────────────────────────────────
-        labels = [
-            vkt.Label(vkt.Point(0, 0, plate_thickness + 0.3), f"⌀ {plate_diameter} m plate"),
-        ]
-
-        return vkt.GeometryResult(geometry=vkt.Group(objects), labels=labels)
+        return vkt.GeometryResult(geometry=vkt.Group(objects))
 
     # ------------------------------------------------------------------
     # Helper: build the SCIA model
