@@ -10,7 +10,7 @@
         },
         "height": {
           "type": "integer",
-          "default": 3000
+          "default": 4500
         },
         "cover": {
           "type": "integer",
@@ -40,7 +40,7 @@
       "additionalProperties": false,
       "default": {
         "width": 1000,
-        "height": 3000,
+        "height": 4500,
         "cover": 50,
         "stirrup_dia": 10,
         "spacing_bottom": 200,

@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class AllplanModelParamsGeometry(BaseModel):
     foundation_diameter: float = Field(default=14500.0)
     foundation_edge_thickness: float = Field(default=1000.0)
-    foundation_center_thickness: float = Field(default=1900.0)
+    foundation_center_thickness: float = Field(default=4500.0)
     pedestal_diameter: float = Field(default=5000.0)
     pedestal_height: float = Field(default=1000.0)
     pile_count: int = Field(default=24)

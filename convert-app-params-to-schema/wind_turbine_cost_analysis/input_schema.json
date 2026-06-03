@@ -25,8 +25,8 @@
               "default": 20
             },
             "t_centre": {
-              "type": "integer",
-              "default": 3
+              "type": "number",
+              "default": 4.5
             },
             "t_edge": {
               "type": "integer",
@@ -40,7 +40,7 @@
           "additionalProperties": false,
           "default": {
             "d_plate": 20,
-            "t_centre": 3,
+            "t_centre": 4.5,
             "t_edge": 1,
             "h_pedestal": 1.0
           }
@@ -92,10 +92,10 @@
         "mast": {
           "d_mast": 5
         },
-        "plate": {
-          "d_plate": 20,
-          "t_centre": 3,
-          "t_edge": 1,
+          "plate": {
+            "d_plate": 20,
+            "t_centre": 4.5,
+            "t_edge": 1,
           "h_pedestal": 1.0
         },
         "rebar": {

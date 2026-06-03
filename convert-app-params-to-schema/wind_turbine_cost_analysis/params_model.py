@@ -11,7 +11,7 @@ class WindTurbineCostAnalysisParamsStep1Mast(BaseModel):
 
 class WindTurbineCostAnalysisParamsStep1Plate(BaseModel):
     d_plate: int = Field(default=20)
-    t_centre: int = Field(default=3)
+    t_centre: float = Field(default=4.5)
     t_edge: int = Field(default=1)
     h_pedestal: float = Field(default=1.0)
 

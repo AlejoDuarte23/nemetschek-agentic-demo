@@ -32,7 +32,7 @@ from agent.tools.viktor_tools.workflow_entities import (
 
 class FoundationPlateInputs(BaseModel):
     slab_diameter: float = Field(default=20.0, description="Circular plate diameter in m.")
-    slab_thickness: float = Field(default=3.0, description="Plate thickness at centre in m.")
+    slab_thickness: float = Field(default=4.5, description="Plate thickness at centre in m.")
     plate_edge_thickness: float = Field(default=1.0, description="Plate thickness at edge in m.")
     pedestal_height: float = Field(default=1.0, description="Pedestal height in m.")
 
@@ -81,7 +81,7 @@ class FoundationSecMast(BaseModel):
 
 class FoundationSecPlate(BaseModel):
     slab_diameter: float = Field(default=20.0)
-    slab_thickness: float = Field(default=3.0)
+    slab_thickness: float = Field(default=4.5)
     plate_edge_thickness: float = Field(default=1.0)
     pedestal_height: float = Field(default=1.0)
 

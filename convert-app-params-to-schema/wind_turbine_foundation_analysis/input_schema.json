@@ -41,7 +41,7 @@
             },
             "slab_thickness": {
               "type": "number",
-              "default": 3.0
+              "default": 4.5
             },
             "plate_edge_thickness": {
               "type": "number",
@@ -55,7 +55,7 @@
           "additionalProperties": false,
           "default": {
             "slab_diameter": 20.0,
-            "slab_thickness": 3.0,
+            "slab_thickness": 4.5,
             "plate_edge_thickness": 1.0,
             "pedestal_height": 1.0
           }
@@ -99,7 +99,7 @@
         },
         "sec_plate": {
           "slab_diameter": 20.0,
-          "slab_thickness": 3.0,
+          "slab_thickness": 4.5,
           "plate_edge_thickness": 1.0,
           "pedestal_height": 1.0
         },

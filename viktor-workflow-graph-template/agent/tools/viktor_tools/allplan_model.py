@@ -37,7 +37,7 @@ class AllplanGeometryInputs(BaseModel):
 
     foundation_diameter: float = Field(default=14500.0)
     foundation_edge_thickness: float = Field(default=1000.0)
-    foundation_center_thickness: float = Field(default=1900.0)
+    foundation_center_thickness: float = Field(default=4500.0)
     pedestal_diameter: float = Field(default=5000.0)
     pedestal_height: float = Field(default=1000.0)
     pile_count: int = Field(default=24)
@@ -234,7 +234,7 @@ def build_allplan_upstream_payload(
     )
     foundation_center_thickness = metres_to_mm(
         plate["slab_thickness"],
-        default=1900.0,
+        default=4500.0,
     )
     pedestal_diameter = metres_to_mm(mast["mast_diameter"], default=5000.0)
     pedestal_height = metres_to_mm(plate["pedestal_height"], default=1000.0)

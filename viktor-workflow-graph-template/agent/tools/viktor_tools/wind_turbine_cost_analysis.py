@@ -61,7 +61,7 @@ class CostMastInputs(BaseModel):
 
 class CostPlateInputs(BaseModel):
     d_plate: int = Field(default=20)
-    t_centre: int = Field(default=3)
+    t_centre: float = Field(default=4.5)
     t_edge: int = Field(default=1)
     h_pedestal: float = Field(default=1.0)
 
@@ -270,7 +270,7 @@ async def run_wind_turbine_cost_analysis_func(context: Any, args: str) -> str:
                 ),
                 plate=CostPlateInputs(
                     d_plate=rounded_positive_int(plate["slab_diameter"], default=20),
-                    t_centre=rounded_positive_int(plate["slab_thickness"], default=3),
+                    t_centre=float(plate.get("slab_thickness") or 4.5),
                     t_edge=rounded_positive_int(plate["plate_edge_thickness"], default=1),
                     h_pedestal=float(plate["pedestal_height"]),
                 ),

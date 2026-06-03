@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 class ReinforcementParamsTabGeometry(BaseModel):
     width: int = Field(default=1000)
-    height: int = Field(default=3000)
+    height: int = Field(default=4500)
     cover: int = Field(default=50)
     stirrup_dia: int = Field(default=10)
     spacing_bottom: int = Field(default=200)

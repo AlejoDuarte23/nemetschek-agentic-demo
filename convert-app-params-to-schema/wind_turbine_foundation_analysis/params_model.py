@@ -14,7 +14,7 @@ class WindTurbineFoundationAnalysisParamsStepGeoSecMast(BaseModel):
 
 class WindTurbineFoundationAnalysisParamsStepGeoSecPlate(BaseModel):
     slab_diameter: float = Field(default=20.0)
-    slab_thickness: float = Field(default=3.0)
+    slab_thickness: float = Field(default=4.5)
     plate_edge_thickness: float = Field(default=1.0)
     pedestal_height: float = Field(default=1.0)
 

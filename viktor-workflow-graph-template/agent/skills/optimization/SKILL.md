@@ -40,7 +40,8 @@ Secondary variables can be added after the first sweep if needed:
 ## Loop
 
 1. Create a fresh entity-backed workflow graph immediately with `create_workflow_entity_directory`.
-   - Include `cost_analysis`; dependencies will add `wind_turbine_selector`, `foundation_analysis`, `cpt_pile_bearing`, and `reinforcement`.
+   - Include both `cost_analysis` and `allplan_model`; dependencies will add `wind_turbine_selector`, `foundation_analysis`, `cpt_pile_bearing`, and `reinforcement`.
+   - Keep `allplan_model` visible as a downstream post-processing node, but do not run it inside the candidate loop.
    - Use `replace_existing=true` so the graph uses newly created sibling entities for this optimization run.
    - Do this before asking for turbine model, CPT coordinates, budget, or variable ranges.
 2. Show the workflow graph/node URLs and tell the user to go through the workflow. Offer two input paths:
@@ -64,6 +65,18 @@ Secondary variables can be added after the first sweep if needed:
 7. Read the study with `get_cost_optimization_study`.
 8. Call `show_hide_optimization_results` with `action="show"` so the Optimization Results WebView displays the candidate table and parallel-coordinate plot.
 9. Report the best feasible candidate and mention the number of failed or infeasible candidates.
+10. Leave the Allplan node visible but pending. Run `run_allplan_model` only when the user asks to set, finalize, model, visualize, schedule, or export the best/final candidate.
+
+## Finalizing the Best Candidate
+
+When the user asks to set or apply the optimal parameters after a study:
+
+1. Call `get_cost_optimization_study` and use the best feasible candidate.
+2. Apply the best candidate's stored design variables to `foundation_analysis` with `set_params_in_node`.
+3. Rerun the final candidate sequence once: foundation, CPT required-depth sizing, foundation pile-length patch, reinforcement, and cost.
+4. Run `run_allplan_model` once after those final foundation, CPT, and reinforcement outputs are active.
+
+Do not run Allplan for every candidate. It is a final downstream handoff for the selected best/final candidate.
 
 ## Candidate Isolation
 

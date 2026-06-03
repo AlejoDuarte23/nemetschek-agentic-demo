@@ -67,7 +67,7 @@ class ReinforcementCombination(BaseModel):
 
 class ReinforcementTabGeometry(BaseModel):
     width: int = Field(default=1000)
-    height: int = Field(default=3000)
+    height: int = Field(default=4500)
     cover: int = Field(default=50)
     stirrup_dia: int = Field(default=10)
     spacing_bottom: int = Field(default=200)
@@ -274,7 +274,7 @@ async def run_wind_turbine_reinforcement_func(context: Any, args: str) -> str:
         compute_params = ReinforcementComputeParams(
             tab_geometry=ReinforcementTabGeometry(
                 width=DEFAULT_DESIGN_STRIP_WIDTH,
-                height=rounded_positive_int(plate["slab_thickness"] * 1000.0, default=3000),
+                height=rounded_positive_int(plate["slab_thickness"] * 1000.0, default=4500),
                 cover=payload.detailing.cover,
                 stirrup_dia=payload.detailing.stirrup_dia,
                 spacing_bottom=saved_geometry.spacing_bottom,
