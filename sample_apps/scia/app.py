@@ -167,6 +167,11 @@ Run the analysis to review pile reactions, 2D internal forces, and m_xD contour 
     )
 
     step_analysis.sec_files = vkt.Section("Files", initially_expanded=True)
+    step_analysis.sec_files.text = vkt.Text(
+        """## Generated files
+Download the XML and DEF files when you need to review the SCIA input model outside VIKTOR. The files are generated from the current saved loads, geometry, and soil spring values.
+"""
+    )
     step_analysis.sec_files.download_xml = vkt.DownloadButton(
         "Download SCIA input XML",
         method="download_scia_input_xml",
