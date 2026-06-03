@@ -36,7 +36,7 @@ class Parametrization(vkt.Parametrization):
 
     # ── Step 1: Define Loads & Geometry ─────────────────────────────────────
     step_geo = vkt.Step("Define Loads & Geometry", views=["view_geometry"])
-    step_geo.sec_intro = vkt.Section("Overview")
+    step_geo.sec_intro = vkt.Section("Overview", initially_expanded=True)
     step_geo.sec_intro.text = vkt.Text(
         """# Round Plate Foundation
 Set the mast loads, tapered circular plate geometry, and circular pile layout used for the SCIA model. The geometry preview shows the plate, pedestal, and pile ring before analysis.
@@ -123,14 +123,14 @@ Set the mast loads, tapered circular plate geometry, and circular pile layout us
 
     # ── Step 2: Geotechnical Parameters ─────────────────────────────────────
     step_geo_tech = vkt.Step("Geotechnical Parameters")
-    step_geo_tech.sec_intro = vkt.Section("Overview")
+    step_geo_tech.sec_intro = vkt.Section("Overview", initially_expanded=True)
     step_geo_tech.sec_intro.text = vkt.Text(
         """# Soil Springs
 Define simplified axial tip and lateral shaft springs for the pile supports. These values control the support stiffness used in the SCIA analysis.
 """
     )
 
-    step_geo_tech.sec_tip = vkt.Section("Pile Tip – Axial Spring")
+    step_geo_tech.sec_tip = vkt.Section("Pile Tip – Axial Spring", initially_expanded=True)
     step_geo_tech.sec_tip.tip_stiffness = vkt.NumberField(
         "Axial spring stiffness at pile tip",
         default=50000.0,
@@ -142,7 +142,10 @@ Define simplified axial tip and lateral shaft springs for the pile supports. The
         ),
     )
 
-    step_geo_tech.sec_lateral = vkt.Section("Pile Shaft – Horizontal Spring")
+    step_geo_tech.sec_lateral = vkt.Section(
+        "Pile Shaft – Horizontal Spring",
+        initially_expanded=True,
+    )
     step_geo_tech.sec_lateral.lateral_stiffness = vkt.NumberField(
         "Horizontal spring stiffness (per unit length)",
         default=10000.0,
@@ -156,14 +159,14 @@ Define simplified axial tip and lateral shaft springs for the pile supports. The
 
     # ── Step 3: Run SCIA Analysis ────────────────────────────────────────────
     step_analysis = vkt.Step("Run SCIA Analysis", views=["view_results", "view_pile_reactions", "view_2d_internal_forces", "view_mxd_plus_plot"])
-    step_analysis.sec_intro = vkt.Section("Overview")
+    step_analysis.sec_intro = vkt.Section("Overview", initially_expanded=True)
     step_analysis.sec_intro.text = vkt.Text(
         """# SCIA Results
 Run the analysis to review pile reactions, 2D internal forces, and m_xD contour plots. Use the download buttons when you need to inspect the generated SCIA input files.
 """
     )
 
-    step_analysis.sec_files = vkt.Section("Files")
+    step_analysis.sec_files = vkt.Section("Files", initially_expanded=True)
     step_analysis.sec_files.download_xml = vkt.DownloadButton(
         "Download SCIA input XML",
         method="download_scia_input_xml",
